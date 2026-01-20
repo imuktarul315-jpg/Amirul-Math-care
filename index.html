@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্মার্ট প্রশ্ন ব্যাংক - আল্টিমেট এডিশন</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']] },
+            options: { enableMenu: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root { 
+            --primary: #6366f1; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc;
+        }
+        
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; color: #1e293b; }
+        
+        .header { background: #fff; padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .nav-tabs { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .nav-tabs button { padding: 10px 18px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; background: #f1f5f9; color: #64748b; font-size: 15px; }
+        .nav-tabs button.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+
+        /* Dashboard Styles */
+        .db-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-bottom: 4px solid var(--primary); }
+        .stat-card h3 { margin: 0; color: #64748b; font-size: 16px; }
+        .stat-card .count { font-size: 32px; font-weight: 700; color: #1e293b; margin: 10px 0; }
+        
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        
+        @media (max-width: 600px) { .grid-3 { grid-template-columns: 1fr; } }
+
+        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; transition: 0.3s; box-sizing: border-box; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
+
+        .preview-box { background: #fdfdfd; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 15px; margin: 15px 0; min-height: 40px; }
+
+        .q-card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; gap: 15px; border-left: 5px solid var(--primary); transition: 0.3s; align-items: flex-start; }
+        .badge { font-size: 12px; padding: 4px 10px; border-radius: 6px; background: #f1f5f9; font-weight: 600; margin-right: 5px; color: #475569; }
+        .badge-type { background: #fee2e2; color: #b91c1c; }
+
+        .footer-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 25px; border-radius: 50px; display: flex; gap: 20px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1000; }
+        .btn-action { background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .btn-edit { color: var(--primary); cursor: pointer; font-size: 20px; }
+        .btn-delete { color: var(--danger); cursor: pointer; font-size: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="nav-tabs">
+        <button id="homeBtn" class="active" onclick="showTab('home')">🏠 হোম</button>
+        <button id="adminBtn" onclick="showTab('admin')">➕ প্রশ্ন তৈরি</button>
+        <button id="userBtn" onclick="showTab('user')">📚 প্রশ্ন ব্যাংক</button>
+    </div>
+</div>
+
+<div class="container">
+    
+    <div id="homeTab">
+        <h2 style="margin-bottom: 25px;">📊 একনজরে ড্যাশবোর্ড</h2>
+        <div class="db-grid">
+            <div class="stat-card" style="border-color: var(--primary);">
+                <h3>মোট প্রশ্ন</h3>
+                <div class="count" id="totalQ">0</div>
+            </div>
+            <div class="stat-card" style="border-color: var(--success);">
+                <h3>সৃজনশীল</h3>
+                <div class="count" id="totalCQ">0</div>
+            </div>
+            <div class="stat-card" style="border-color: var(--warning);">
+                <h3>এমসিকিউ</h3>
+                <div class="count" id="totalMCQ">0</div>
+            </div>
+            <div class="stat-card" style="border-color: var(--danger);">
+                <h3>সংক্ষিপ্ত</h3>
+                <div class="count" id="totalSQ">0</div>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white;">
+            <h3>নতুন প্রশ্ন তৈরি করতে চান?</h3>
+            <p>সহজেই ম্যাথ ইকুয়েশন সহ প্রশ্ন তৈরি করুন এবং PDF ডাউনলোড করুন।</p>
+            <button class="btn-action" onclick="showTab('admin')" style="background: white; color: var(--primary); padding: 12px 30px;">শুরু করুন</button>
+        </div>
+    </div>
+
+    <div id="adminTab" style="display:none">
+        <div class="card">
+            <h2 id="title">📝 নতুন প্রশ্ন যোগ করুন</h2>
+            <input type="hidden" id="editId">
+            
+            <div class="grid-3">
+                <div>
+                    <label>শ্রেণী</label>
+                    <input type="text" id="classInput" list="classList" placeholder="উদা: ১০ম">
+                    <datalist id="classList"></datalist>
+                </div>
+                <div>
+                    <label>বিষয়</label>
+                    <input type="text" id="subjectInput" list="subjectList" placeholder="উদা: গণিত">
+                    <datalist id="subjectList"></datalist>
+                </div>
+                <div>
+                    <label>প্রশ্নের ধরন</label>
+                    <select id="qType">
+                        <option value="সৃজনশীল">সৃজনশীল</option>
+                        <option value="সংক্ষিপ্ত">সংক্ষিপ্ত</option>
+                        <option value="এমসিকিউ">এমসিকিউ</option>
+                    </select>
+                </div>
+            </div>
+
+            <textarea id="mainInput" rows="4" placeholder="প্রশ্ন লিখুন (ম্যাথের জন্য $x^2$ ব্যবহার করুন)..." onkeyup="doPreview()"></textarea>
+            
+            <div class="preview-box" id="livePreview">প্রিভিউ এখানে দেখা যাবে...</div>
+
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <input type="number" id="marks" placeholder="নম্বর" style="width: 100px;">
+                <button onclick="saveData()" id="saveBtn" class="btn-action" style="background: var(--primary); flex: 1;">💾 ডাটা সেভ করুন</button>
+                <button onclick="resetForm()" class="btn-action" style="background: #6b7280;">🔄 রিসেট</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="userTab" style="display:none">
+        <div class="card" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            🔍 ফিল্টার: 
+            <select id="filterClass" onchange="renderQuestions()" style="width: auto;"><option value="">সকল শ্রেণী</option></select>
+            <select id="filterType" onchange="renderQuestions()" style="width: auto;">
+                <option value="">সকল ধরন</option>
+                <option value="সৃজনশীল">সৃজনশীল</option>
+                <option value="সংক্ষিপ্ত">সংক্ষিপ্ত</option>
+                <option value="এমসিকিউ">এমসিকিউ</option>
+            </select>
+        </div>
+        <div id="listArea"></div>
+    </div>
+</div>
+
+<div class="footer-bar" id="footer" style="display:none">
+    <span>নির্বাচিত: <span id="count" style="color: var(--success); font-weight: bold;">0</span> টি</span>
+    <button class="btn-action" onclick="makePDF()">📥 PDF ডাউনলোড করুন</button>
+</div>
+
+<script>
+    let db = JSON.parse(localStorage.getItem('smart_qb')) || [];
+    let classes = [...new Set(db.map(q => q.className))];
+    let subjects = [...new Set(db.map(q => q.subject))];
+
+    function updateStats() {
+        document.getElementById('totalQ').innerText = db.length;
+        document.getElementById('totalCQ').innerText = db.filter(q => q.type === 'সৃজনশীল').length;
+        document.getElementById('totalMCQ').innerText = db.filter(q => q.type === 'এমসিকিউ').length;
+        document.getElementById('totalSQ').innerText = db.filter(q => q.type === 'সংক্ষিপ্ত').length;
+    }
+
+    function updateLists() {
+        const cList = document.getElementById('classList');
+        const sList = document.getElementById('subjectList');
+        const fClass = document.getElementById('filterClass');
+
+        cList.innerHTML = classes.map(c => `<option value="${c}">`).join('');
+        sList.innerHTML = subjects.map(s => `<option value="${s}">`).join('');
+        
+        let filterHtml = '<option value="">সকল শ্রেণী</option>';
+        classes.forEach(c => filterHtml += `<option value="${c}">${c}</option>`);
+        fClass.innerHTML = filterHtml;
+    }
+
+    function doPreview() {
+        const val = document.getElementById('mainInput').value;
+        const box = document.getElementById('livePreview');
+        box.innerHTML = val || "প্রিভিউ এখানে দেখা যাবে...";
+        if(window.MathJax) MathJax.typesetPromise([box]);
+    }
+
+    function showTab(tab) {
+        const tabs = ['home', 'admin', 'user'];
+        tabs.forEach(t => {
+            document.getElementById(t + 'Tab').style.display = tab === t ? 'block' : 'none';
+            document.getElementById(t + 'Btn').classList.toggle('active', tab === t);
+        });
+
+        document.getElementById('footer').style.display = tab === 'user' ? 'flex' : 'none';
+        
+        if(tab === 'home') updateStats();
+        if(tab === 'user') renderQuestions();
+        updateLists();
+    }
+
+    function saveData() {
+        const id = document.getElementById('editId').value;
+        const className = document.getElementById('classInput').value.trim();
+        const subject = document.getElementById('subjectInput').value.trim();
+        const type = document.getElementById('qType').value;
+        const text = document.getElementById('mainInput').value.trim();
+        const marks = document.getElementById('marks').value;
+
+        if(!className || !text) return alert("শ্রেণী ও প্রশ্ন অবশ্যই দিতে হবে!");
+
+        const data = { id: id ? parseInt(id) : Date.now(), className, subject, type, text, marks };
+
+        if(id) {
+            const idx = db.findIndex(q => q.id == id);
+            db[idx] = data;
+        } else {
+            db.push(data);
+        }
+
+        localStorage.setItem('smart_qb', JSON.stringify(db));
+        if(!classes.includes(className)) classes.push(className);
+        if(!subjects.includes(subject)) subjects.push(subject);
+
+        resetForm();
+        alert("সফলভাবে সংরক্ষিত হয়েছে!");
+        showTab('home');
+    }
+
+    function resetForm() {
+        document.getElementById('editId').value = '';
+        document.getElementById('mainInput').value = '';
+        document.getElementById('marks').value = '';
+        document.getElementById('livePreview').innerHTML = 'প্রিভিউ এখানে দেখা যাবে...';
+        document.getElementById('title').innerText = "📝 নতুন প্রশ্ন যোগ করুন";
+        document.getElementById('saveBtn').innerText = "💾 ডাটা সেভ করুন";
+    }
+
+    function renderQuestions() {
+        const area = document.getElementById('listArea');
+        const fClass = document.getElementById('filterClass').value;
+        const fType = document.getElementById('filterType').value;
+        
+        let filtered = db.filter(q => {
+            return (fClass === '' || q.className === fClass) && (fType === '' || q.type === fType);
+        });
+
+        if(filtered.length === 0) {
+            area.innerHTML = `<p style="text-align:center; color:#64748b; margin-top:30px;">কোনো প্রশ্ন পাওয়া যায়নি।</p>`;
+            return;
+        }
+
+        area.innerHTML = filtered.map(q => `
+            <div class="q-card">
+                <input type="checkbox" class="sel-q" value="${q.id}" onchange="updateCount()" style="width:20px; height:20px; cursor:pointer;">
+                <div style="flex:1">
+                    <span class="badge">${q.className}</span>
+                    <span class="badge" style="background:#e0e7ff; color:#4338ca">${q.subject}</span>
+                    <span class="badge badge-type">${q.type}</span>
+                    <div class="q-text-content" style="margin-top:10px; font-size:18px; line-height:1.6">${q.text}</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <span class="btn-edit" onclick="editQ(${q.id})" title="এডিট">✏️</span>
+                    <span class="btn-delete" onclick="deleteQ(${q.id})" title="ডিলিট">🗑️</span>
+                </div>
+            </div>
+        `).join('');
+
+        if(window.MathJax) MathJax.typesetPromise([area]);
+    }
+
+    function deleteQ(id) {
+        if(confirm("আপনি কি নিশ্চিতভাবে এটি ডিলিট করতে চান?")) {
+            db = db.filter(q => q.id != id);
+            localStorage.setItem('smart_qb', JSON.stringify(db));
+            renderQuestions();
+            updateStats();
+        }
+    }
+
+    function editQ(id) {
+        const q = db.find(item => item.id == id);
+        document.getElementById('editId').value = q.id;
+        document.getElementById('classInput').value = q.className;
+        document.getElementById('subjectInput').value = q.subject;
+        document.getElementById('qType').value = q.type;
+        document.getElementById('mainInput').value = q.text;
+        document.getElementById('marks').value = q.marks;
+        document.getElementById('title').innerText = "🔄 প্রশ্ন আপডেট করুন";
+        document.getElementById('saveBtn').innerText = "আপডেট করুন";
+        showTab('admin');
+        setTimeout(doPreview, 100);
+    }
+
+    function updateCount() {
+        document.getElementById('count').innerText = document.querySelectorAll('.sel-q:checked').length;
+    }
+
+    function makePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const selected = Array.from(document.querySelectorAll('.sel-q:checked')).map(cb => db.find(q => q.id == cb.value));
+
+        if(selected.length === 0) return alert("প্রথমে প্রশ্ন সিলেক্ট করুন!");
+
+        doc.setFontSize(18);
+        doc.text("Question Bank Paper", 105, 20, {align:'center'});
+        doc.setFontSize(12);
+        
+        let y = 40;
+        selected.forEach((q, i) => {
+            const line = `${i+1}. [${q.type}] ${q.text} (Marks: ${q.marks || 0})`;
+            const textLines = doc.splitTextToSize(line, 170);
+            doc.text(textLines, 20, y);
+            y += (textLines.length * 8) + 5;
+            if(y > 270) { doc.addPage(); y = 20; }
+        });
+
+        doc.save("Question_Paper.pdf");
+    }
+
+    window.onload = () => {
+        updateStats();
+        updateLists();
+    };
+</script>
+
+</body>
+</html>
