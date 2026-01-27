@@ -23,41 +23,49 @@
         :root { --gold: #f59e0b; --bg: #020617; --sidebar: #0f172a; --card: #1e293b; }
         body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); color: #f8fafc; margin: 0; scroll-behavior: smooth; }
         
-        /* Sidebar & Layout */
-        .sidebar { transition: 0.3s; width: 280px; height: 100vh; background: var(--sidebar); position: fixed; left: -280px; z-index: 50; border-right: 1px solid #1e293b; }
+        .sidebar { transition: 0.3s; width: 280px; height: 100vh; background: var(--sidebar); position: fixed; left: -280px; z-index: 100; border-right: 1px solid #1e293b; }
         .sidebar.active { left: 0; }
         @media (min-width: 1024px) { .sidebar { left: 0; position: sticky; } }
 
         .nav-link { padding: 12px 15px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #94a3b8; margin-bottom: 8px; transition: 0.3s; }
-        .nav-link:hover { background: #1e293b; color: #fff; transform: translateX(5px); }
-        .nav-link.active { background: linear-gradient(45deg, #f59e0b, #d97706); color: #000; font-weight: 700; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+        .nav-link:hover { background: #1e293b; color: #fff; }
+        .nav-link.active { background: linear-gradient(45deg, #f59e0b, #d97706); color: #000; font-weight: 700; }
 
-        /* UI Components */
-        .q-card { background: var(--card); border: 1px solid #334155; border-radius: 16px; transition: 0.3s; overflow: hidden; }
-        .q-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
-        
-        input, select, textarea { background: #0f172a !important; border: 1px solid #334155 !important; color: white !important; padding: 14px !important; border-radius: 10px !important; width: 100%; margin-bottom: 15px; font-size: 15px; }
-        input:focus, select:focus { border-color: var(--gold) !important; ring: 2px solid var(--gold); outline: none; }
+        /* Input Fix: Ensure Focus works */
+        input, select, textarea { 
+            background: #0f172a !important; 
+            border: 1px solid #334155 !important; 
+            color: white !important; 
+            padding: 12px !important; 
+            border-radius: 10px !important; 
+            width: 100%; 
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 10;
+        }
+        input:focus, textarea:focus { border-color: var(--gold) !important; outline: none; ring: 1px solid var(--gold); }
 
-        .symbol-btn { background: #334155; padding: 6px 10px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .symbol-btn:hover { background: var(--gold); color: black; border-color: white; }
+        .q-card { background: var(--card); border: 1px solid #334155; border-radius: 16px; transition: 0.3s; }
+        .symbol-btn { background: #334155; padding: 6px 12px; border-radius: 6px; cursor: pointer; border: 1px solid #475569; }
+        .symbol-btn:hover { background: var(--gold); color: black; }
 
-        #pdf-template { background: white; color: black; padding: 50px; width: 800px; position: absolute; left: -9999px; }
+        #pdf-template { background: white; color: black; padding: 40px; width: 800px; position: absolute; left: -9999px; }
+        #overlay.active { display: block; }
     </style>
 </head>
 <body class="lg:flex">
 
-<div class="lg:hidden w-full bg-[#0f172a] p-4 flex justify-between items-center border-b border-slate-800 sticky top-0 z-40">
+<div class="lg:hidden w-full bg-[#0f172a] p-4 flex justify-between items-center border-b border-slate-800 sticky top-0 z-[110]">
     <h2 class="text-amber-500 text-xl font-black italic">SMART QB <span class="text-xs text-white not-italic">PRO</span></h2>
     <button onclick="toggleSidebar()" class="text-white text-2xl"><i class="fas fa-bars"></i></button>
 </div>
 
-<div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-40"></div>
+<div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 hidden z-[90]"></div>
 
 <nav class="sidebar flex flex-col p-5" id="sidebar">
     <div class="mb-10 text-center">
         <h2 class="text-amber-500 text-3xl font-black italic tracking-tighter">Smart QB</h2>
-        <div class="bg-amber-500 text-[9px] text-black font-bold py-0.5 px-2 rounded inline-block">ENTERPRISE EDITION</div>
+        <div class="bg-amber-500 text-[9px] text-black font-bold py-0.5 px-2 rounded inline-block uppercase">Enterprise Edition</div>
     </div>
     
     <div class="space-y-1">
@@ -75,182 +83,123 @@
     </div>
 </nav>
 
-<main class="flex-1 p-4 lg:p-10 max-w-7xl mx-auto w-full">
+<main class="flex-1 p-4 lg:p-10 max-w-7xl mx-auto w-full relative z-10">
     
     <section id="homeTab">
         <div class="mb-8">
             <h1 class="text-3xl font-bold">সিস্টেম স্ট্যাটাস</h1>
-            <p class="text-slate-400">রিয়েল-টাইম ডাটাবেজ আপডেট এবং স্ট্যাটিস্টিকস</p>
+            <p class="text-slate-400">রিয়েল-টাইম ডাটাবেজ আপডেট</p>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            <div class="bg-slate-900/50 p-6 rounded-3xl border border-slate-800 hover:border-amber-500/50 transition">
-                <i class="fas fa-database text-amber-500 mb-3 text-xl"></i>
-                <p class="text-xs text-slate-500 font-bold uppercase">মোট প্রশ্ন</p>
-                <h2 id="totalQ" class="text-4xl font-black">0</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                <p class="text-xs text-slate-500 font-bold uppercase mb-2">মোট প্রশ্ন</p>
+                <h2 id="totalQ" class="text-4xl font-black text-amber-500">0</h2>
             </div>
-            <div class="bg-slate-900/50 p-6 rounded-3xl border border-slate-800 hover:border-emerald-500/50 transition">
-                <i class="fas fa-heart text-emerald-500 mb-3 text-xl"></i>
-                <p class="text-xs text-slate-500 font-bold uppercase">সংরক্ষিত</p>
-                <h2 id="savedCount" class="text-4xl font-black">0</h2>
-            </div>
-            <div class="bg-slate-900/50 p-6 rounded-3xl border border-slate-800">
-                <i class="fas fa-users text-blue-500 mb-3 text-xl"></i>
-                <p class="text-xs text-slate-500 font-bold uppercase">অ্যাক্সেস</p>
-                <h2 class="text-xl font-bold mt-2">Enterprise</h2>
-            </div>
-            <div class="bg-slate-900/50 p-6 rounded-3xl border border-slate-800">
-                <i class="fas fa-shield-alt text-purple-500 mb-3 text-xl"></i>
-                <p class="text-xs text-slate-500 font-bold uppercase">সার্ভার</p>
-                <h2 class="text-emerald-400 text-xl font-bold flex items-center gap-2 mt-2">Online</h2>
+            <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                <p class="text-xs text-slate-500 font-bold uppercase mb-2">সংরক্ষিত</p>
+                <h2 id="savedCount" class="text-4xl font-black text-emerald-500">0</h2>
             </div>
         </div>
     </section>
 
     <section id="adminTab" class="hidden">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-xl max-w-3xl mx-auto">
-            <h2 class="text-2xl font-bold mb-8 text-amber-500 flex items-center gap-3">
+        <div class="bg-slate-900 border border-slate-800 p-6 md:p-8 rounded-3xl shadow-xl max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6 text-amber-500 flex items-center gap-3">
                 <i class="fas fa-pen-fancy"></i> প্রশ্ন ইনপুট এডিটর
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5">
                 <div>
-                    <label class="text-xs font-bold text-slate-500 mb-2 block">শ্রেণি নির্বাচন</label>
+                    <label class="text-xs font-bold text-slate-500 mb-1 block">শ্রেণি</label>
                     <select id="qClass" onchange="updateSubjects(this.value)">
-                        <option value="">শ্রেণি বাছাই করুন</option>
-                        <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option>
-                        <option value="৭ম">৭ম শ্রেণী</option>
-                        <option value="৮ম">৮ম শ্রেণী</option>
+                        <option value="">বাছাই করুন</option>
                         <option value="৯ম">৯ম শ্রেণী</option>
                         <option value="১০ম">১০ম শ্রেণী</option>
                         <option value="একাদশ">একাদশ শ্রেণী</option>
                         <option value="দ্বাদশ">দ্বাদশ শ্রেণী</option>
-                        <option value="Admission">বিশ্ববিদ্যালয় ভর্তি</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-slate-500 mb-2 block">বিষয় নির্বাচন</label>
+                    <label class="text-xs font-bold text-slate-500 mb-1 block">বিষয়</label>
                     <select id="qSubject">
-                        <option value="">প্রথমে শ্রেণি নির্বাচন করুন</option>
+                        <option value="">প্রথমে শ্রেণি বাছাই করুন</option>
                     </select>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-5">
-                <input type="text" id="qChapter" placeholder="অধ্যায়ের নাম (উদা: বল ও গতি)">
+            <div class="grid grid-cols-2 gap-x-5">
+                <input type="text" id="qChapter" placeholder="অধ্যায়ের নাম">
                 <input type="number" id="qMarks" placeholder="মান (উদা: ৫)">
             </div>
 
-            <div class="mb-2">
-                <label class="text-xs font-bold text-slate-500 mb-2 block">জ্যামিতিক ও গাণিতিক সিম্বল টুলস</label>
-                <div class="flex flex-wrap gap-2 p-3 bg-slate-950 rounded-lg border border-slate-800 mb-3">
-                    <button onclick="insertAtCursor('$\\angle$')" class="symbol-btn" title="কোণ">∠</button>
-                    <button onclick="insertAtCursor('$\\triangle$')" class="symbol-btn" title="ত্রিভুজ">△</button>
-                    <button onclick="insertAtCursor('$\\parallel$')" class="symbol-btn" title="সমান্তরাল">∥</button>
-                    <button onclick="insertAtCursor('$\\perp$')" class="symbol-btn" title="লম্ব">⊥</button>
-                    <button onclick="insertAtCursor('$\\cong$')" class="symbol-btn" title="সর্বসম">≅</button>
-                    <button onclick="insertAtCursor('$\\pi$')" class="symbol-btn" title="পাই">π</button>
-                    <button onclick="insertAtCursor('$\\theta$')" class="symbol-btn" title="থিটা">θ</button>
-                    <button onclick="insertAtCursor('$\\sqrt{x}$')" class="symbol-btn" title="রুট">√</button>
-                    <button onclick="insertAtCursor('^2')" class="symbol-btn" title="স্কয়ার">x²</button>
-                    <button onclick="insertAtCursor('$\\infty$')" class="symbol-btn" title="ইনফিনিটি">∞</button>
-                    <button onclick="insertAtCursor('$\\int$')" class="symbol-btn" title="ইন্টিগ্রেশন">∫</button>
-                    <button onclick="insertAtCursor('$\\Sigma$')" class="symbol-btn" title="সামেশন">Σ</button>
-                    <button onclick="insertAtCursor('$\\alpha$')" class="symbol-btn">α</button>
-                    <button onclick="insertAtCursor('$\\beta$')" class="symbol-btn">β</button>
-                    <button onclick="insertAtCursor('$\\gamma$')" class="symbol-btn">γ</button>
-                </div>
+            <label class="text-xs font-bold text-slate-500 mb-2 block">ম্যাথ ও জ্যামিতি সিম্বল</label>
+            <div class="flex flex-wrap gap-2 p-3 bg-slate-950 rounded-lg border border-slate-800 mb-4">
+                <button onclick="insertAtCursor('$\\angle$')" class="symbol-btn">∠</button>
+                <button onclick="insertAtCursor('$\\triangle$')" class="symbol-btn">△</button>
+                <button onclick="insertAtCursor('$\\parallel$')" class="symbol-btn">∥</button>
+                <button onclick="insertAtCursor('$\\pi$')" class="symbol-btn">π</button>
+                <button onclick="insertAtCursor('^2')" class="symbol-btn">x²</button>
+                <button onclick="insertAtCursor('$\\sqrt{x}$')" class="symbol-btn">√</button>
             </div>
 
-            <textarea id="qText" rows="6" placeholder="এখানে প্রশ্নটি লিখুন... গাণিতিক সূত্রের জন্য $...$ ব্যবহার করুন।"></textarea>
+            <textarea id="qText" rows="5" placeholder="এখানে প্রশ্ন টাইপ করুন..."></textarea>
             
-            <button onclick="saveQuestion()" id="saveBtn" class="bg-amber-500 hover:bg-amber-600 text-black font-black py-4 px-8 rounded-2xl w-full flex justify-center items-center gap-3 transition-all transform active:scale-95">
-                <i class="fas fa-cloud-upload-alt"></i> ডাটাবেজে সাবমিট করুন
+            <button onclick="saveQuestion()" id="saveBtn" class="bg-amber-500 hover:bg-amber-600 text-black font-black py-4 rounded-xl w-full flex justify-center items-center gap-2 transition-all active:scale-95">
+                <i class="fas fa-paper-plane"></i> ডাটাবেজে যুক্ত করুন
             </button>
         </div>
     </section>
 
     <section id="userTab" class="hidden">
         <div class="flex flex-col md:flex-row gap-4 mb-8">
-            <div class="relative flex-1">
-                <i class="fas fa-search absolute left-4 top-4 text-slate-500"></i>
-                <input type="text" id="searchInput" placeholder="প্রশ্ন বা অধ্যায় দিয়ে সার্চ করুন..." oninput="filterQuestions()" class="!pl-12 !mb-0">
-            </div>
-            <div class="flex gap-3">
-                <select id="filterClass" onchange="filterQuestions()" class="!mb-0 w-40">
-                    <option value="">সকল শ্রেণি</option>
-                    <option value="৯ম">৯ম শ্রেণি</option>
-                    <option value="১০ম">১০ম শ্রেণি</option>
-                    <option value="একাদশ">একাদশ</option>
-                    <option value="দ্বাদশ">দ্বাদশ</option>
-                </select>
-                <button onclick="clearFilters()" class="bg-slate-800 hover:bg-slate-700 px-5 rounded-xl transition"><i class="fas fa-sync-alt"></i></button>
-            </div>
+            <input type="text" id="searchInput" placeholder="সার্চ করুন..." oninput="filterQuestions()" class="!mb-0 flex-1">
+            <select id="filterClass" onchange="filterQuestions()" class="!mb-0 md:w-48">
+                <option value="">সকল শ্রেণি</option>
+                <option value="৯ম">৯ম শ্রেণি</option>
+                <option value="১০ম">১০ম শ্রেণি</option>
+            </select>
         </div>
-        <div id="questionList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            </div>
+        <div id="questionList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
     </section>
 
     <section id="savedTab" class="hidden">
-        <div class="flex justify-between items-center mb-8 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-            <div>
-                <h2 class="text-2xl font-bold">আমার কালেকশন</h2>
-                <p class="text-slate-500 text-sm">পিডিএফ তৈরির জন্য প্রশ্নগুলো এখানে জমা থাকে</p>
-            </div>
-            <button onclick="clearSaved()" class="bg-red-500/10 text-red-500 px-4 py-2 rounded-lg text-sm font-bold border border-red-500/20 hover:bg-red-500 hover:text-white transition">
-                <i class="fas fa-trash-alt mr-2"></i> সব মুছুন
-            </button>
-        </div>
         <div id="savedList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
     </section>
 
 </main>
 
-<div id="pdfFloat" class="fixed bottom-10 right-10 bg-red-600 hover:bg-red-700 text-white px-8 py-5 rounded-2xl shadow-2xl cursor-pointer hidden z-50 transition-all active:scale-90 flex items-center gap-4 border-4 border-white/10" onclick="generatePDF()">
-    <i class="fas fa-file-pdf text-2xl"></i>
-    <div>
-        <div class="text-[10px] uppercase font-bold opacity-80">Generate Export</div>
-        <span class="font-black text-lg">PDF ডাউনলোড (<span id="selectedCount">0</span>)</span>
-    </div>
+<div id="pdfFloat" class="fixed bottom-6 right-6 bg-red-600 text-white px-6 py-4 rounded-2xl shadow-2xl cursor-pointer hidden z-50 items-center gap-3" onclick="generatePDF()">
+    <i class="fas fa-file-pdf"></i>
+    <span class="font-bold">PDF ডাউনলোড (<span id="selectedCount">0</span>)</span>
 </div>
 
-<div id="loginModal" class="fixed inset-0 bg-black/95 hidden z-[100] flex items-center justify-center p-6 backdrop-blur-sm">
-    <div class="bg-[#0f172a] border border-slate-800 p-10 rounded-[40px] w-full max-w-md shadow-2xl">
-        <div class="text-center mb-8">
-            <div class="bg-amber-500/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 rotate-12">
-                <i class="fas fa-shield-cat text-amber-500 text-3xl -rotate-12"></i>
-            </div>
-            <h2 class="text-3xl font-black">অ্যাডমিন অ্যাক্সেস</h2>
-            <p class="text-slate-500 mt-2">শুধুমাত্র অনুমোদিত ইউজারদের জন্য</p>
-        </div>
-        <input type="email" id="email" placeholder="ইমেইল অ্যাড্রেস">
+<div id="loginModal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-6">
+    <div class="bg-[#0f172a] border border-slate-800 p-8 rounded-3xl w-full max-w-sm">
+        <h2 class="text-2xl font-bold mb-6 text-center">অ্যাডমিন লগইন</h2>
+        <input type="email" id="email" placeholder="ইমেইল">
         <input type="password" id="password" placeholder="পাসওয়ার্ড">
-        <button onclick="handleLogin()" class="bg-amber-500 text-black font-black w-full py-4 rounded-2xl mb-4 hover:scale-[1.02] transition">লগইন করুন</button>
-        <button onclick="toggleModal('loginModal', false)" class="text-slate-500 w-full text-sm hover:text-white">ফিরে যান</button>
+        <button onclick="handleLogin()" class="bg-amber-500 text-black font-bold w-full py-3 rounded-lg mb-3">লগইন</button>
+        <button onclick="toggleModal('loginModal', false)" class="text-slate-500 w-full text-sm">বাতিল</button>
     </div>
 </div>
 
 <div id="pdf-template">
-    <div style="text-align:center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 30px;">
-        <h1 style="margin:0; font-size: 28px; color: #000;">স্মার্ট প্রশ্ন ব্যাংক - অটোমেটেড শিট</h1>
-        <p style="margin:5px 0; font-size: 14px;">শিক্ষা ও প্রযুক্তির সমন্বয় | তারিখ: <span id="pdfDate"></span></p>
+    <div style="text-align:center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+        <h2>স্মার্ট প্রশ্ন ব্যাংক - অটোমেটেড শিট</h2>
+        <p>তারিখ: <span id="pdfDate"></span></p>
     </div>
     <div id="pdfContent"></div>
 </div>
 
 <script>
-    // 1. Full Subject Database
+    // Config & Data
     const subjectData = {
-        "৬ষ্ঠ": ["গণিত", "বিজ্ঞান", "বাংলা", "ইংরেজি", "ইতিহাস ও সামাজিক বিজ্ঞান", "ডিজিটাল প্রযুক্তি"],
-        "৭ম": ["গণিত", "বিজ্ঞান", "বাংলা", "ইংরেজি", "ইতিহাস ও সামাজিক বিজ্ঞান", "জীবন ও জীবিকা"],
-        "৮ম": ["গণিত", "বিজ্ঞান", "বাংলা", "ইংরেজি", "ইতিহাস ও সামাজিক বিজ্ঞান", "ডিজিটাল প্রযুক্তি"],
-        "৯ম": ["গণিত", "উচ্চতর গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীববিজ্ঞান", "বাংলা", "ইংরেজি"],
-        "১০ম": ["গণিত", "উচ্চতর গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "জীববিজ্ঞান", "বাংলা", "ইংরেজি"],
-        "একাদশ": ["পদার্থবিজ্ঞান ১ম", "পদার্থবিজ্ঞান ২য়", "রসায়ন ১ম", "রসায়ন ২য়", "উচ্চতর গণিত ১ম", "উচ্চতর গণিত ২য়", "জীববিজ্ঞান ১ম", "জীববিজ্ঞান ২য়", "ICT", "বাংলা ১ম", "ইংরেজি ১ম"],
-        "দ্বাদশ": ["পদার্থবিজ্ঞান ২য়", "রসায়ন ২য়", "উচ্চতর গণিত ২য়", "জীববিজ্ঞান ২য়", "ICT", "বাংলা ২য়", "ইংরেজি ২য়"],
-        "Admission": ["BUET Math", "Medical Physics", "DU Chemistry", "Versity General Knowledge"]
+        "৯ম": ["পদার্থবিজ্ঞান", "রসায়ন", "গণিত", "উচ্চতর গণিত", "জীববিজ্ঞান"],
+        "১০ম": ["পদার্থবিজ্ঞান", "রসায়ন", "গণিত", "উচ্চতর গণিত", "জীববিজ্ঞান"],
+        "একাদশ": ["পদার্থবিজ্ঞান ১ম", "রসায়ন ১ম", "উচ্চতর গণিত ১ম"],
+        "দ্বাদশ": ["পদার্থবিজ্ঞান ২য়", "রসায়ন ২য়", "উচ্চতর গণিত ২য়"]
     };
 
-    // 2. Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCmlyWM3zRYURL_saQgpt4-Ke5d5aBtgzo", 
         authDomain: "smart-qb.firebaseapp.com",
@@ -258,50 +207,49 @@
         projectId: "smart-qb"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database().ref('full_enterprise_qb');
+    const db = firebase.database().ref('questions_v2');
     const auth = firebase.auth();
 
-    // 3. State
     let allData = [];
     let savedIds = JSON.parse(localStorage.getItem('saved_questions')) || [];
     let selectedForPDF = [];
 
-    // 4. UI Logic
+    // Functions
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
         document.getElementById('overlay').classList.toggle('hidden');
     }
 
     function showTab(tab) {
-        ['home', 'admin', 'user', 'saved'].forEach(s => {
-            document.getElementById(s + 'Tab').classList.add('hidden');
-            document.getElementById(s + 'Btn')?.classList.remove('active');
+        ['home', 'admin', 'user', 'saved'].forEach(t => {
+            document.getElementById(t + 'Tab').classList.add('hidden');
+            document.getElementById(t + 'Btn')?.classList.remove('active');
         });
         document.getElementById(tab + 'Tab').classList.remove('hidden');
         document.getElementById(tab + 'Btn')?.classList.add('active');
         document.getElementById('pdfFloat').style.display = (tab === 'user' || tab === 'saved') ? 'flex' : 'none';
-        if (window.innerWidth < 1024) toggleSidebar();
+        if(window.innerWidth < 1024) {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.add('hidden');
+        }
     }
 
     function updateSubjects(cls) {
         const subSelect = document.getElementById('qSubject');
         subSelect.innerHTML = '<option value="">বিষয় নির্বাচন করুন</option>';
         if (subjectData[cls]) {
-            subjectData[cls].forEach(s => {
-                subSelect.innerHTML += `<option value="${s}">${s}</option>`;
-            });
+            subjectData[cls].forEach(s => subSelect.innerHTML += `<option value="${s}">${s}</option>`);
         }
     }
 
     function insertAtCursor(text) {
-        const textarea = document.getElementById('qText');
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(end);
-        textarea.focus();
+        const txtArea = document.getElementById('qText');
+        const start = txtArea.selectionStart;
+        const end = txtArea.selectionEnd;
+        txtArea.value = txtArea.value.substring(0, start) + text + txtArea.value.substring(end);
+        txtArea.focus();
     }
 
-    // 5. Database Interaction
     function saveQuestion() {
         const data = {
             cls: document.getElementById('qClass').value,
@@ -312,23 +260,17 @@
             time: Date.now()
         };
 
-        if (!data.cls || !data.sub || !data.txt) return alert("অনুগ্রহ করে সব তথ্য দিন!");
-
-        const btn = document.getElementById('saveBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...';
+        if (!data.cls || !data.sub || !data.txt) return alert("সব তথ্য দিন!");
 
         db.push(data).then(() => {
-            alert("প্রশ্নটি ডাটাবেজে যুক্ত হয়েছে!");
+            alert("সফলভাবে সেভ হয়েছে!");
             document.getElementById('qText').value = "";
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> ডাটাবেজে সাবমিট করুন';
         });
     }
 
     db.on('value', snap => {
         const val = snap.val();
-        allData = val ? Object.entries(val).map(([id, data]) => ({ id, ...data })) : [];
+        allData = val ? Object.entries(val).map(([id, d]) => ({ id, ...d })) : [];
         updateUI();
     });
 
@@ -339,38 +281,26 @@
         renderList('savedList', allData.filter(q => savedIds.includes(q.id)));
     }
 
-    function renderList(targetId, dataArray) {
+    function renderList(targetId, data) {
         const container = document.getElementById(targetId);
-        container.innerHTML = dataArray.sort((a,b) => b.time - a.time).map(q => `
-            <div class="q-card p-6 relative">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="flex gap-2">
-                        <span class="bg-amber-500 text-black text-[10px] font-black px-2 py-1 rounded-md uppercase">${q.cls}</span>
-                        <span class="bg-slate-800 text-slate-300 text-[10px] font-bold px-2 py-1 rounded-md">${q.sub}</span>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button onclick="toggleSave('${q.id}')" class="text-xl transition ${savedIds.includes(q.id) ? 'text-amber-500' : 'text-slate-600 hover:text-slate-400'}">
-                            <i class="${savedIds.includes(q.id) ? 'fas' : 'far'} fa-star"></i>
-                        </button>
-                        <input type="checkbox" onchange="toggleSelect('${q.id}')" class="w-6 h-6 accent-amber-500 cursor-pointer">
-                    </div>
+        container.innerHTML = data.map(q => `
+            <div class="q-card p-5 relative">
+                <div class="flex justify-between mb-3">
+                    <span class="text-[10px] bg-amber-500 text-black px-2 py-1 rounded font-bold">${q.cls} | ${q.sub}</span>
+                    <input type="checkbox" onchange="toggleSelect('${q.id}')" class="w-5 h-5 accent-amber-500">
                 </div>
-                <div class="text-slate-100 leading-relaxed mb-6 text-xl math-area font-medium">${q.txt}</div>
-                <div class="flex justify-between items-center text-[11px] text-slate-500 border-t border-slate-800/50 pt-4">
-                    <span class="flex items-center gap-2"><i class="fas fa-folder-open text-amber-500/50"></i> ${q.chp || 'সাধারণ'}</span>
-                    <span class="font-bold bg-slate-800 px-3 py-1 rounded-full text-slate-400">মার্ক: ${q.mks}</span>
-                    ${auth.currentUser ? `<button onclick="deleteQ('${q.id}')" class="text-red-900 hover:text-red-500 transition"><i class="fas fa-trash"></i></button>` : ''}
+                <div class="text-lg mb-4">${q.txt}</div>
+                <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-700 pt-3">
+                    <span>${q.chp || 'General'}</span>
+                    <button onclick="toggleSave('${q.id}')" class="${savedIds.includes(q.id) ? 'text-amber-500' : ''}">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
                 </div>
             </div>
         `).join('');
-        
-        renderMathInElement(container, {
-            delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
-            throwOnError: false
-        });
+        renderMathInElement(container, { delimiters: [{left: '$', right: '$', display: false}] });
     }
 
-    // 6. PDF & Selection
     function toggleSave(id) {
         savedIds = savedIds.includes(id) ? savedIds.filter(i => i !== id) : [...savedIds, id];
         localStorage.setItem('saved_questions', JSON.stringify(savedIds));
@@ -383,52 +313,29 @@
     }
 
     async function generatePDF() {
-        if (selectedForPDF.length === 0) return alert("প্রথমে প্রশ্ন সিলেক্ট করুন!");
-        
+        if (selectedForPDF.length === 0) return alert("প্রশ্ন সিলেক্ট করুন!");
         const content = document.getElementById('pdfContent');
-        document.getElementById('pdfDate').innerText = new Date().toLocaleDateString('bn-BD');
-        
-        content.innerHTML = selectedForPDF.map((id, index) => {
-            const q = allData.find(item => item.id === id);
-            return `
-                <div style="margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
-                    <div style="font-weight: bold; color: #444; margin-bottom: 8px;">
-                        প্রশ্ন ${index + 1} <span style="float:right; font-size:12px">শ্রেণি: ${q.cls} | বিষয়: ${q.sub} | মান: ${q.mks}</span>
-                    </div>
-                    <div style="font-size: 18px; line-height: 1.6;">${q.txt}</div>
-                </div>
-            `;
+        content.innerHTML = selectedForPDF.map((id, i) => {
+            const q = allData.find(x => x.id === id);
+            return `<p><b>${i+1}.</b> ${q.txt} <span style="float:right">[${q.mks}]</span></p>`;
         }).join('');
-
+        
         renderMathInElement(content, { delimiters: [{left: '$', right: '$', display: false}] });
-
+        
         const { jsPDF } = window.jspdf;
-        const pdfElement = document.getElementById('pdf-template');
-        pdfElement.style.left = "0";
-        
-        const canvas = await html2canvas(pdfElement, { scale: 2 });
-        const imgData = canvas.toDataURL('image/png');
+        const canvas = await html2canvas(document.getElementById('pdf-template'));
         const doc = new jsPDF('p', 'pt', 'a4');
-        const width = doc.internal.pageSize.getWidth();
-        const height = (canvas.height * width) / canvas.width;
-        
-        doc.addImage(imgData, 'PNG', 0, 0, width, height);
-        doc.save(`SmartQB_Export_${Date.now()}.pdf`);
-        pdfElement.style.left = "-9999px";
+        doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 600, 0);
+        doc.save('Question_Bank.pdf');
     }
 
-    // 7. Auth Functions
     function handleLogin() {
         const e = document.getElementById('email').value;
         const p = document.getElementById('password').value;
-        auth.signInWithEmailAndPassword(e, p)
-            .then(() => { toggleModal('loginModal', false); alert("অ্যাডমিন লগইন সফল!"); })
-            .catch(err => alert("ভুল ইমেইল বা পাসওয়ার্ড!"));
+        auth.signInWithEmailAndPassword(e, p).then(() => toggleModal('loginModal', false)).catch(err => alert("Error!"));
     }
 
-    function handleLogout() {
-        auth.signOut().then(() => alert("লগআউট সফল!"));
-    }
+    function handleLogout() { auth.signOut(); }
 
     auth.onAuthStateChanged(user => {
         document.getElementById('adminLink').classList.toggle('hidden', !user);
@@ -436,21 +343,13 @@
         document.getElementById('loginBtn').classList.toggle('hidden', !!user);
     });
 
-    function toggleModal(id, show) {
-        document.getElementById(id).classList.toggle('hidden', !show);
-    }
+    function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
 
     function filterQuestions() {
         const term = document.getElementById('searchInput').value.toLowerCase();
         const cls = document.getElementById('filterClass').value;
-        const filtered = allData.filter(q => (q.txt.toLowerCase().includes(term) || q.chp.toLowerCase().includes(term)) && (cls === "" || q.cls === cls));
+        const filtered = allData.filter(q => (q.txt.toLowerCase().includes(term)) && (cls === "" || q.cls === cls));
         renderList('questionList', filtered);
-    }
-
-    function clearFilters() {
-        document.getElementById('searchInput').value = "";
-        document.getElementById('filterClass').value = "";
-        updateUI();
     }
 </script>
 </body>
