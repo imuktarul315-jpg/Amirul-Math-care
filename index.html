@@ -3,226 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart QB Pro - Full Enterprise Solution</title>
+    <title>Smart QB Pro - Full Enterprise Mobile</title>
     
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root { 
-            --gold: #fbbf24; --gold-dark: #d97706;
-            --bg: #020617; --sidebar: #0f172a; --card: #1e293b;
-            --accent: #10b981; --text: #f8fafc;
+            --gold: #f59e0b; --bg: #020617; --sidebar: #0f172a; --card: #1e293b; --text: #f8fafc;
         }
 
-        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); margin: 0; display: flex; color: var(--text); height: 100vh; overflow: hidden; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
 
-        /* --- Sidebar & Desktop Layout --- */
-        .sidebar { width: 260px; background: var(--sidebar); padding: 25px; display: flex; flex-direction: column; border-right: 1px solid #334155; transition: 0.3s; flex-shrink: 0; }
-        .sidebar h2 { color: var(--gold); text-align: center; margin-bottom: 25px; font-size: 22px; border-bottom: 1px solid #334155; padding-bottom: 15px; }
+        /* --- Sidebar & Mobile Navigation --- */
+        .sidebar { 
+            position: fixed; left: -100%; top: 0; bottom: 0; width: 280px; 
+            background: var(--sidebar); z-index: 1000; transition: 0.4s; 
+            padding: 20px; border-right: 1px solid #1e293b;
+        }
+        .sidebar.active { left: 0; }
         
-        .nav-link { padding: 12px 18px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #94a3b8; transition: 0.3s; margin-bottom: 8px; font-weight: 500; }
-        .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        .nav-link.active { background: var(--gold); color: #000; font-weight: 700; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3); }
-
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #0f172a, #020617); }
-        .card { background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #334155; margin-bottom: 25px; }
-
-        /* --- Mobile View Responsive Fix (যাতে ড্যাশবোর্ড না ভাঙে) --- */
-        @media (max-width: 768px) {
-            body { flex-direction: column; overflow: auto; }
-            .sidebar { 
-                width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; 
-                justify-content: center; position: sticky; top: 0; z-index: 1000; 
-                border-right: none; border-bottom: 1px solid #334155; padding: 10px;
-            }
-            .sidebar h2, .sidebar span, #authStatusText { display: none; }
-            .nav-link { padding: 10px; margin: 5px; border-radius: 10px; }
-            .main-content { padding: 20px; }
-            .footer-action { bottom: 90px; right: 20px; }
+        @media (min-width: 1024px) {
+            .sidebar { left: 0; position: sticky; height: 100vh; flex-shrink: 0; }
+            .mobile-header { display: none; }
         }
+
+        .nav-link { padding: 12px 15px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #94a3b8; transition: 0.3s; margin-bottom: 5px; font-size: 15px; }
+        .nav-link.active { background: var(--gold); color: #000; font-weight: 700; }
+        .nav-link:hover:not(.active) { background: rgba(245, 158, 11, 0.1); color: var(--gold); }
 
         /* --- UI Elements --- */
-        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #334155; border-radius: 10px; background: #0f172a; color: white; margin-bottom: 15px; font-family: inherit; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--gold); }
-        .btn { padding: 12px 25px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; background: var(--gold); color: #000; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .btn:hover { background: var(--gold-dark); transform: translateY(-2px); }
-
-        .q-card { background: #1e293b; padding: 25px; border-radius: 18px; border: 1px solid #334155; margin-bottom: 20px; position: relative; }
-        .badge { padding: 4px 12px; border-radius: 8px; font-size: 12px; background: #020617; color: var(--gold); margin-right: 8px; border: 1px solid #334155; }
+        .main-content { flex: 1; padding: 15px; width: 100%; max-width: 100vw; }
+        .stat-card { background: var(--card); padding: 12px; border-radius: 12px; border-left: 4px solid var(--gold); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .q-card { background: var(--card); padding: 18px; border-radius: 15px; border: 1px solid #334155; margin-bottom: 15px; position: relative; }
         
-        #loginOverlay { position: fixed; inset: 0; background: rgba(2,6,23,0.98); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .footer-action { position: fixed; bottom: 30px; right: 30px; background: #fff; color: #000; padding: 15px 35px; border-radius: 50px; font-weight: 800; cursor: pointer; display: none; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; margin-bottom: 12px; outline: none; font-size: 14px; }
+        input:focus { border-color: var(--gold); }
+
+        .footer-action { position: fixed; bottom: 20px; right: 20px; background: #ef4444; color: white; padding: 14px 24px; border-radius: 50px; font-weight: 800; z-index: 999; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: none; font-size: 14px; }
+        
+        #pdf-template { width: 210mm; position: absolute; left: -9999px; background: white; color: black; }
+        
+        /* Math Rendering Fix */
+        .math-render { overflow-x: auto; font-size: 16px; }
     </style>
 </head>
-<body>
+<body class="lg:flex">
 
-<div id="loginOverlay">
-    <div style="width: 320px; text-align: center; background: var(--sidebar); padding: 40px; border-radius: 25px; border: 1px solid var(--gold);">
-        <i class="fas fa-lock" style="font-size: 50px; color: var(--gold); margin-bottom: 20px;"></i>
-        <h2 style="margin-bottom: 20px;">অ্যাডমিন এক্সেস</h2>
-        <input type="email" id="loginEmail" placeholder="ইমেইল">
-        <input type="password" id="loginPass" placeholder="পাসওয়ার্ড">
-        <button class="btn" style="width: 100%; justify-content: center;" onclick="handleLogin()">লগইন</button>
-        <p onclick="closeLogin()" style="margin-top: 15px; cursor: pointer; color: #94a3b8;">বাতিল</p>
+<div class="mobile-header w-full bg-[#0f172a] p-4 flex justify-between items-center border-b border-slate-800 sticky top-0 z-[1001]">
+    <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-amber-500 rounded flex items-center justify-center text-black font-black italic">S</div>
+        <h2 class="text-amber-500 text-lg font-black">Smart QB</h2>
     </div>
+    <button onclick="toggleSidebar()" class="text-white text-2xl p-2"><i class="fas fa-bars"></i></button>
 </div>
 
-<div class="sidebar">
-    <h2>Smart QB Pro</h2>
-    <div class="nav-link active" id="homeBtn" onclick="showTab('home')"><i class="fas fa-chart-pie"></i> <span>ড্যাশবোর্ড</span></div>
-    <div class="nav-link" id="userBtn" onclick="showTab('user')"><i class="fas fa-list-ul"></i> <span>প্রশ্ন ব্যাংক</span></div>
-    <div class="nav-link" id="savedBtn" onclick="showTab('saved')"><i class="fas fa-star"></i> <span>সংরক্ষিত</span></div>
+<div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 hidden z-[999]"></div>
+
+<div class="sidebar flex flex-col" id="sidebar">
+    <div class="hidden lg:block text-center mb-8 pb-4 border-b border-slate-800">
+        <h2 class="text-amber-500 text-2xl font-black italic">Smart QB</h2>
+        <span class="text-[9px] text-slate-500 tracking-[4px] font-bold">ENTERPRISE v18.5</span>
+    </div>
     
-    <div class="nav-link" id="adminBtn" style="display:none;" onclick="showTab('admin')"><i class="fas fa-plus-square"></i> <span>নতুন এন্ট্রি</span></div>
+    <div class="nav-link active" id="homeBtn" onclick="tabAction('home')"><i class="fas fa-th-large w-5"></i> ড্যাশবোর্ড</div>
+    <div class="nav-link" id="userBtn" onclick="tabAction('user')"><i class="fas fa-book-open w-5"></i> প্রশ্ন ব্যাংক</div>
+    <div class="nav-link" id="savedBtn" onclick="tabAction('saved')"><i class="fas fa-star w-5"></i> সংরক্ষিত</div>
+    <div class="nav-link" id="adminBtn" style="display:none;" onclick="tabAction('admin')"><i class="fas fa-plus-circle w-5"></i> নতুন প্রশ্ন</div>
     
-    <div style="margin-top: auto; border-top: 1px solid #334155; padding-top: 20px;">
-        <div id="loginNav" class="nav-link" onclick="openLogin()"><i class="fas fa-user-shield"></i> <span>অ্যাডমিন লগইন</span></div>
-        <div id="logoutNav" class="nav-link" onclick="handleLogout()" style="display:none; color: #f87171;"><i class="fas fa-power-off"></i> <span>লগআউট</span></div>
+    <div class="mt-auto pt-6 border-t border-slate-800">
+        <div id="loginNav" class="nav-link" onclick="openLogin()"><i class="fas fa-shield-alt w-5"></i> অ্যাডমিন লগইন</div>
+        <div id="logoutNav" class="nav-link text-red-400" style="display:none;" onclick="handleLogout()"><i class="fas fa-power-off w-5"></i> লগআউট</div>
     </div>
 </div>
 
 <div class="main-content">
+    
     <div id="homeTab">
-        <h1 style="font-weight: 700;">মেইন ড্যাশবোর্ড</h1>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px;">
-            <div class="card" style="border-left: 5px solid var(--gold);"><h3>মোট প্রশ্ন সংখ্যা</h3><h2 id="totalQ" style="font-size: 40px; margin: 10px 0;">0</h2></div>
-            <div class="card" style="border-left: 5px solid var(--accent);"><h3>সংরক্ষিত প্রশ্ন</h3><h2 id="savedCount" style="font-size: 40px; margin: 10px 0;">0</h2></div>
+        <h1 class="text-lg font-bold mb-4 opacity-70"><i class="fas fa-chart-pie mr-2"></i> সিস্টেম স্ট্যাটাস</h1>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            <div class="stat-card"><p class="text-[10px] text-slate-400 uppercase">মোট প্রশ্ন</p><h2 id="totalQ" class="text-2xl font-black">0</h2></div>
+            <div class="stat-card" style="border-left-color: #10b981;"><p class="text-[10px] text-slate-400 uppercase">কালেকশন</p><h2 id="savedCount" class="text-2xl font-black">0</h2></div>
+            <div class="stat-card" style="border-left-color: #3b82f6;"><p class="text-[10px] text-slate-400 uppercase">ভার্সন</p><h2 class="text-xl font-black">18.5</h2></div>
+            <div class="stat-card" style="border-left-color: #ef4444;"><p class="text-[10px] text-slate-400 uppercase">সার্ভার</p><h2 class="text-green-500 text-xs font-bold flex items-center gap-1 mt-1"><i class="fas fa-circle text-[8px] animate-pulse"></i> কানেক্টেড</h2></div>
         </div>
     </div>
 
-    <div id="adminTab" style="display:none;">
-        <div class="card">
-            <h2 style="color: var(--gold); margin-top: 0;"><i class="fas fa-plus-circle"></i> নতুন প্রশ্ন যুক্ত করুন</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <select id="classSelect" onchange="autoLoadSubjects()">
+    <div id="adminTab" class="hidden">
+        <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800">
+            <h2 class="font-bold mb-5 text-amber-500 flex items-center gap-2"><i class="fas fa-edit"></i> ডাটা এন্ট্রি প্যানেল</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                <select id="classSelect" onchange="loadSubjects()">
                     <option value="">শ্রেণি নির্বাচন করুন</option>
-                    <option value="Play">প্লে (Play)</option>
-                    <option value="Nursery">নার্সারি</option>
-                    <option value="KG">কেজি</option>
-                    <option value="One">প্রথম শ্রেণি</option>
-                    <option value="Five">পঞ্চম শ্রেণি</option>
-                    <option value="Six">ষষ্ঠ শ্রেণি</option>
-                    <option value="Ten">দশম শ্রেণি</option>
-                    <option value="Eleven">একাদশ শ্রেণি</option>
+                    <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণি</option><option value="৭ম">৭ম শ্রেণি</option>
+                    <option value="৮ম">৮ম শ্রেণি</option><option value="৯ম">৯ম শ্রেণি</option>
+                    <option value="১০ম">১০ম শ্রেণি</option><option value="একাদশ">একাদশ শ্রেণি</option>
+                    <option value="দ্বাদশ">দ্বাদশ শ্রেণি</option>
                 </select>
-                <select id="subjectSelect"><option value="">বিষয় নির্বাচন</option></select>
+                <select id="subjectSelect"><option value="">প্রথমে শ্রেণি সিলেক্ট করুন</option></select>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <input type="text" id="chapterInput" placeholder="অধ্যায়ের নাম">
-                <input type="text" id="exerciseInput" placeholder="অনুশীলনী (ঐচ্ছিক)">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <input type="text" id="chapterInput" placeholder="অধ্যায়">
+                <input type="number" id="marks" placeholder="নম্বর">
+                <select id="geoSelect" class="col-span-2 md:col-span-1">
+                    <option value="">জ্যামিতি চিত্র নেই</option>
+                    <option value="triangle">ত্রিভুজ</option><option value="circle">বৃত্ত</option>
+                    <option value="rectangle">আয়তক্ষেত্র</option><option value="square">বর্গক্ষেত্র</option>
+                    <option value="rhombus">রম্বস</option><option value="parallelogram">সামান্তরিক</option>
+                </select>
             </div>
-            <textarea id="mainInput" rows="5" placeholder="এখানে প্রশ্নটি লিখুন..."></textarea>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <input type="number" id="marks" placeholder="নম্বর" style="width: 100px; margin: 0;">
-                <button class="btn" onclick="saveData()"><i class="fas fa-save"></i> ডেটাবেসে সেভ করুন</button>
-            </div>
+            <textarea id="mainInput" rows="5" placeholder="এখানে প্রশ্ন টাইপ করুন... (Math: $x^2+y^2=r^2$)"></textarea>
+            <button class="bg-amber-500 text-black w-full py-4 rounded-xl font-black text-lg shadow-lg" onclick="saveData()"><i class="fas fa-save mr-2"></i> ডাটাবেসে সেভ করুন</button>
         </div>
     </div>
 
-    <div id="userTab" style="display:none;">
-        <h1 style="color: var(--gold);">প্রশ্ন ভাণ্ডার</h1>
-        <div id="listArea">লোড হচ্ছে...</div>
+    <div id="userTab" class="hidden">
+        <div class="sticky top-[70px] lg:top-0 bg-[#020617] py-4 z-30">
+            <div class="flex flex-col md:flex-row gap-3">
+                <input type="text" id="searchQ" class="!mb-0" placeholder="বিষয় বা প্রশ্ন খুঁজুন..." oninput="filterData()">
+                <div class="flex gap-2">
+                    <select id="classFilter" class="!mb-0" onchange="filterData()">
+                        <option value="">সব শ্রেণি</option><option value="৬ষ্ঠ">৬ষ্ঠ</option>
+                        <option value="১০ম">১০ম</option><option value="একাদশ">একাদশ</option>
+                    </select>
+                    <button onclick="location.reload()" class="bg-slate-800 px-4 rounded-lg"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="listArea" class="mt-4"></div>
     </div>
 
-    <div id="savedTab" style="display:none;">
-        <h1>আপনার সংরক্ষিত প্রশ্ন</h1>
+    <div id="savedTab" class="hidden">
+        <h2 class="text-xl font-bold mb-6 text-emerald-400 flex items-center gap-2"><i class="fas fa-star"></i> আপনার কালেকশন</h2>
         <div id="savedArea"></div>
     </div>
 </div>
 
 <div class="footer-action" id="footer" onclick="generatePDF()">
-    <i class="fas fa-file-pdf"></i> PDF ডাউনলোড (<span id="count">0</span>)
+    <i class="fas fa-file-pdf mr-2"></i> প্রশ্নপত্র ডাউনলোড (<span id="count">0</span>)
 </div>
 
-<script>
-    // --- FULL SUBJECT DATABASE ---
-    const subjectDB = {
-        "Play": ["বাংলা", "English", "গণিত"],
-        "Nursery": ["বাংলা", "English", "গণিত", "ছড়া"],
-        "KG": ["বাংলা", "English", "গণিত", "সাধারণ জ্ঞান"],
-        "One": ["বাংলা", "English", "গণিত"],
-        "Five": ["বাংলা", "English", "গণিত", "বিজ্ঞান", "বিজিএস", "ধর্ম"],
-        "Six": ["বাংলা", "English", "গণিত", "বিজ্ঞান", "ইতিহাস", "ডিজিটাল প্রযুক্তি", "জীবন ও জীবিকা"],
-        "Ten": ["বাংলা", "English", "গণিত", "পদার্থবিজ্ঞান", "রসায়ন", "উচ্চতর গণিত", "জীববিজ্ঞান", "ICT"],
-        "Eleven": ["বাংলা ১ম", "English", "ICT", "পদার্থবিজ্ঞান ১ম", "রসায়ন ১ম", "উচ্চতর গণিত ১ম", "জীববিজ্ঞান ১ম"]
-    };
+<div id="loginOverlay" class="fixed inset-0 bg-black/95 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-slate-900 p-8 rounded-3xl border border-amber-500 w-full max-w-[350px] shadow-2xl">
+        <div class="text-center mb-6">
+            <i class="fas fa-user-shield text-4xl text-amber-500 mb-2"></i>
+            <h2 class="text-white font-bold text-xl">অ্যাডমিন এক্সেস</h2>
+        </div>
+        <input type="email" id="loginEmail" placeholder="ইমেইল">
+        <input type="password" id="loginPass" placeholder="পাসওয়ার্ড">
+        <button class="bg-amber-500 w-full py-3 rounded-xl text-black font-black" onclick="handleLogin()">প্রবেশ করুন</button>
+        <button onclick="closeLogin()" class="w-full text-slate-500 mt-4 text-sm">বাতিল করুন</button>
+    </div>
+</div>
 
-    // Firebase Config (Original)
+<div id="pdf-template"></div>
+
+<script>
+    // --- Configuration ---
     const firebaseConfig = {
         apiKey: "AIzaSyCmlyWM3zRYURL_saQgpt4-Ke5d5aBtgzo",
         authDomain: "smart-qb.firebaseapp.com",
         databaseURL: "https://smart-qb-default-rtdb.firebaseio.com",
-        projectId: "smart-qb",
-        storageBucket: "smart-qb.firebasestorage.app",
-        messagingSenderId: "890982420266",
-        appId: "1:890982420266:web:6b94f3980ef36d24059853"
+        projectId: "smart-qb"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database().ref('questions_v2');
+    const db = firebase.database().ref('questions_v18_enterprise');
     const auth = firebase.auth();
 
+    const subjects = {
+        "৬ষ্ঠ": ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস", "ডিজিটাল প্রযুক্তি", "ধর্ম"],
+        "৭ম": ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস", "ডিজিটাল প্রযুক্তি", "ধর্ম"],
+        "৮ম": ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস", "ডিজিটাল প্রযুক্তি", "ধর্ম"],
+        "৯ম": ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "ইতিহাস", "ডিজিটাল প্রযুক্তি", "ধর্ম"],
+        "১০ম": ["পদার্থবিজ্ঞান", "রসায়ন", "উচ্চতর গণিত", "জীববিজ্ঞান", "হিসাব বিজ্ঞান", "পৌরনীতি"],
+        "একাদশ": ["পদার্থবিজ্ঞান ১ম", "রসায়ন ১ম", "উচ্চতর গণিত ১ম", "ICT", "বাংলা ১ম"],
+        "দ্বাদশ": ["পদার্থবিজ্ঞান ২য়", "রসায়ন ২য়", "উচ্চতর গণিত ২য়", "জীববিজ্ঞান ২য়", "বাংলা ২য়"]
+    };
+
     let allData = [];
-    let savedIds = JSON.parse(localStorage.getItem('saved_v2')) || [];
+    let savedIds = JSON.parse(localStorage.getItem('saved_v18_pro')) || [];
 
-    // --- AUTHENTICATION ---
-    function openLogin() { document.getElementById('loginOverlay').style.display = 'flex'; }
-    function closeLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
-
-    function handleLogin() {
-        const e = document.getElementById('loginEmail').value;
-        const p = document.getElementById('loginPass').value;
-        auth.signInWithEmailAndPassword(e, p)
-            .then(() => { closeLogin(); alert("লগইন সফল হয়েছে!"); })
-            .catch(() => alert("ইমেইল অথবা পাসওয়ার্ড ভুল!"));
+    // --- Core UI Functions ---
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('hidden');
     }
 
-    function handleLogout() {
-        auth.signOut().then(() => { alert("লগআউট হয়েছে!"); location.reload(); });
+    function tabAction(t) {
+        if(window.innerWidth < 1024) toggleSidebar();
+        showTab(t);
     }
 
-    auth.onAuthStateChanged(user => {
-        document.getElementById('adminBtn').style.display = user ? 'flex' : 'none';
-        document.getElementById('logoutNav').style.display = user ? 'flex' : 'none';
-        document.getElementById('loginNav').style.display = user ? 'none' : 'flex';
-    });
+    function showTab(t) {
+        ['home', 'admin', 'user', 'saved'].forEach(id => {
+            const el = document.getElementById(id+'Tab');
+            const btn = document.getElementById(id+'Btn');
+            if(el) el.classList.toggle('hidden', id !== t);
+            if(btn) btn.classList.toggle('active', id === t);
+        });
+        document.getElementById('footer').style.display = (t === 'user' ? 'flex' : 'none');
+    }
 
-    // --- CORE LOGIC ---
-    function autoLoadSubjects() {
+    function loadSubjects() {
         const cls = document.getElementById('classSelect').value;
-        const subBox = document.getElementById('subjectSelect');
-        subBox.innerHTML = '<option value="">বিষয় নির্বাচন</option>';
-        if(subjectDB[cls]) subjectDB[cls].forEach(s => subBox.innerHTML += `<option value="${s}">${s}</option>`);
+        const box = document.getElementById('subjectSelect');
+        box.innerHTML = '<option value="">বিষয় নির্বাচন করুন</option>';
+        if(subjects[cls]) subjects[cls].forEach(s => box.innerHTML += `<option value="${s}">${s}</option>`);
     }
 
+    // --- Firebase Operations ---
     db.on('value', snap => {
         const data = snap.val();
         allData = data ? Object.entries(data).map(([id, val]) => ({...val, id})) : [];
         updateUI();
     });
-
-    function saveData() {
-        if(!auth.currentUser) return alert("অ্যাডমিন লগইন প্রয়োজন!");
-        const data = {
-            cls: document.getElementById('classSelect').value,
-            sub: document.getElementById('subjectSelect').value,
-            chp: document.getElementById('chapterInput').value,
-            exe: document.getElementById('exerciseInput').value,
-            txt: document.getElementById('mainInput').value,
-            mks: document.getElementById('marks').value,
-            timestamp: Date.now()
-        };
-        if(!data.cls || !data.txt) return alert("শ্রেণি এবং প্রশ্ন অবশ্যই লিখুন!");
-        db.push(data).then(() => { alert("সফলভাবে সেভ হয়েছে!"); resetForm(); });
-    }
 
     function updateUI() {
         document.getElementById('totalQ').innerText = allData.length;
@@ -233,66 +237,143 @@
 
     function renderList(targetId, dataArray) {
         const area = document.getElementById(targetId);
-        if(!dataArray.length) { area.innerHTML = "<p style='color:#94a3b8'>কোনো প্রশ্ন পাওয়া যায়নি।</p>"; return; }
+        if(!dataArray.length) { area.innerHTML = "<div class='text-center py-20 opacity-30'>কোনো প্রশ্ন পাওয়া যায়নি</div>"; return; }
+        
         area.innerHTML = dataArray.map(q => `
             <div class="q-card">
-                <div><span class="badge">${q.cls}</span><span class="badge" style="background:var(--gold); color:#000;">${q.sub}</span></div>
-                <p style="font-size:18px; margin:15px 0; line-height:1.6;">${q.txt}</p>
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <input type="checkbox" class="q-check" value="${q.id}" onchange="updateCount()" style="width:20px; height:20px; cursor:pointer;">
-                    <i class="fa${savedIds.includes(q.id)?'s':'r'} fa-star" onclick="toggleSave('${q.id}')" style="color:var(--gold); cursor:pointer; font-size:22px;"></i>
-                    ${auth.currentUser ? `<i class="fas fa-trash-alt" onclick="deleteItem('${q.id}')" style="color:#f87171; cursor:pointer; margin-left:auto; font-size:18px;"></i>` : ''}
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex gap-2">
+                        <span class="text-[10px] bg-amber-500 text-black px-2 py-0.5 rounded font-black">${q.cls}</span>
+                        <span class="text-[10px] border border-slate-600 px-2 py-0.5 rounded text-slate-400 font-bold">${q.sub}</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <input type="checkbox" class="q-check w-5 h-5 accent-amber-500" value="${q.id}" onchange="updateCount()">
+                        <i class="fa${savedIds.includes(q.id)?'s':'r'} fa-star text-amber-500 cursor-pointer" onclick="toggleSave('${q.id}')"></i>
+                    </div>
                 </div>
-                <small style="color:#94a3b8; display:block; margin-top:10px;">অধ্যায়: ${q.chp} | নম্বর: ${q.mks}</small>
+                <div class="text-[16px] leading-relaxed mb-4 math-render">${q.txt}</div>
+                ${drawSVG(q.geo)}
+                <div class="flex justify-between items-center pt-3 border-t border-slate-800 text-[11px]">
+                    <span class="text-slate-500 uppercase font-bold">${q.chp || 'General'}</span>
+                    <span class="text-amber-500 font-black">মার্কস: ${q.mks || 0}</span>
+                </div>
+                ${auth.currentUser ? `<i class="fas fa-trash absolute bottom-3 right-3 text-red-900/50 hover:text-red-500 cursor-pointer" onclick="deleteItem('${q.id}')"></i>` : ''}
             </div>
         `).join('');
+        renderMathInElement(area, { delimiters: [{left: '$', right: '$', display: false}] });
     }
 
+    function drawSVG(type) {
+        if(!type) return '';
+        const s = 'fill="none" stroke="white" stroke-width="2"';
+        let shape = '';
+        if(type==='triangle') shape = '<polygon points="50,5 95,75 5,75" '+s+'/>';
+        if(type==='circle') shape = '<circle cx="50" cy="40" r="35" '+s+'/>';
+        if(type==='rectangle') shape = '<rect x="10" y="20" width="80" height="40" '+s+'/>';
+        if(type==='square') shape = '<rect x="25" y="15" width="50" height="50" '+s+'/>';
+        if(type==='rhombus') shape = '<polygon points="50,10 85,40 50,70 15,40" '+s+'/>';
+        if(type==='parallelogram') shape = '<polygon points="30,20 90,20 70,60 10,60" '+s+'/>';
+        return `<div class="py-4 flex justify-center"><svg width="100" height="80">${shape}</svg></div>`;
+    }
+
+    function saveData() {
+        if(!auth.currentUser) return alert("অ্যাডমিন লগইন প্রয়োজন!");
+        const data = {
+            cls: document.getElementById('classSelect').value,
+            sub: document.getElementById('subjectSelect').value,
+            chp: document.getElementById('chapterInput').value,
+            geo: document.getElementById('geoSelect').value,
+            mks: document.getElementById('marks').value,
+            txt: document.getElementById('mainInput').value,
+            timestamp: Date.now()
+        };
+        if(!data.cls || !data.txt) return alert("শ্রেণি এবং প্রশ্ন অবশ্যই দিতে হবে");
+        db.push(data).then(() => { 
+            alert("সফলভাবে সেভ হয়েছে!"); 
+            document.getElementById('mainInput').value=''; 
+        });
+    }
+
+    // --- Authentication ---
+    function openLogin() { document.getElementById('loginOverlay').classList.remove('hidden'); }
+    function closeLogin() { document.getElementById('loginOverlay').classList.add('hidden'); }
+    function handleLogin() {
+        const e = document.getElementById('loginEmail').value;
+        const p = document.getElementById('loginPass').value;
+        auth.signInWithEmailAndPassword(e, p).then(() => { closeLogin(); }).catch(err => alert("লগইন ব্যর্থ!"));
+    }
+    function handleLogout() { auth.signOut().then(() => location.reload()); }
+    
+    auth.onAuthStateChanged(user => {
+        document.getElementById('adminBtn').style.display = user ? 'flex' : 'none';
+        document.getElementById('logoutNav').style.display = user ? 'flex' : 'none';
+        document.getElementById('loginNav').style.display = user ? 'none' : 'flex';
+    });
+
+    // --- Utilities ---
     function toggleSave(id) {
         if(savedIds.includes(id)) savedIds = savedIds.filter(i => i !== id);
         else savedIds.push(id);
-        localStorage.setItem('saved_v2', JSON.stringify(savedIds));
+        localStorage.setItem('saved_v18_pro', JSON.stringify(savedIds));
         updateUI();
     }
 
-    function deleteItem(id) { if(confirm("এই প্রশ্নটি ডিলিট করতে চান?")) db.child(id).remove(); }
+    function deleteItem(id) { if(confirm("এই প্রশ্নটি চিরতরে মুছে ফেলবেন?")) db.child(id).remove(); }
+    function updateCount() { document.getElementById('count').innerText = document.querySelectorAll('.q-check:checked').length; }
 
-    function showTab(t) {
-        ['home', 'admin', 'user', 'saved'].forEach(id => {
-            const tab = document.getElementById(id+'Tab');
-            const btn = document.getElementById(id+'Btn');
-            if(tab) tab.style.display = (id === t ? 'block' : 'none');
-            if(btn) btn.classList.toggle('active', id === t);
-        });
-        document.getElementById('footer').style.display = (t === 'user' ? 'block' : 'none');
+    function filterData() {
+        const q = document.getElementById('searchQ').value.toLowerCase();
+        const f = document.getElementById('classFilter').value;
+        const res = allData.filter(i => (i.txt.toLowerCase().includes(q) || i.sub.toLowerCase().includes(q)) && (f==="" || i.cls===f));
+        renderList('listArea', res);
     }
 
-    function updateCount() { document.getElementById('count').innerText = document.querySelectorAll('.q-check:checked').length; }
-    function resetForm() { document.getElementById('mainInput').value = ''; document.getElementById('marks').value = ''; }
-
-    // --- PDF EXPORT (STABLE) ---
+    // --- PDF Generator ---
     function generatePDF() {
         const selected = Array.from(document.querySelectorAll('.q-check:checked')).map(cb => allData.find(q => q.id === cb.value));
-        if(!selected.length) return alert("কমপক্ষে একটি প্রশ্ন সিলেক্ট করুন!");
-
-        const box = document.createElement('div');
-        box.style.padding = '50px'; box.style.background = '#fff'; box.style.color = '#000'; box.style.width = '750px';
-        box.innerHTML = `<h1 style="text-align:center; border-bottom: 2px solid #000; padding-bottom:10px;">Smart QB Pro - Exam Paper</h1>`;
+        if(!selected.length) return alert("অন্তত একটি প্রশ্ন সিলেক্ট করুন");
         
-        selected.forEach((q, i) => {
-            box.innerHTML += `<div style="margin-bottom:25px;"><p style="font-size:20px;"><b>${i+1}. ${q.txt}</b> <span style="float:right;">[${q.mks}]</span></p></div>`;
-        });
+        const template = document.getElementById('pdf-template');
+        template.innerHTML = `
+            <div style="padding:40px; border:2px solid #000;">
+                <div style="text-align:center; border-bottom:2px solid #000; margin-bottom:25px; padding-bottom:10px">
+                    <h1 style="margin:0; font-size:26px">স্মার্ট মডেল স্কুল এন্ড কলেজ</h1>
+                    <p style="margin:5px 0">বার্ষিক মূল্যায়ন পরীক্ষা - ২০২৬</p>
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; margin-top:15px">
+                        <span>শ্রেণি: ${selected[0].cls}</span>
+                        <span>বিষয়: ${selected[0].sub}</span>
+                        <span>পূর্ণমান: ${selected.reduce((a,b)=>a+(parseInt(b.mks)||0),0)}</span>
+                    </div>
+                </div>
+                <div>
+                    ${selected.map((q, i) => `
+                        <div style="margin-bottom:20px; font-size:18px">
+                            <div style="display:flex; justify-content:space-between">
+                                <span><b>${i+1}।</b> ${q.txt}</span>
+                                <b>${q.mks}</b>
+                            </div>
+                            ${q.geo ? `<div style="text-align:center; margin:15px 0"><svg width="100" height="80" style="stroke:black; fill:none">${getSVGPath(q.geo)}</svg></div>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        renderMathInElement(template, { delimiters: [{left: '$', right: '$', display: false}] });
+        setTimeout(() => {
+            html2pdf().from(template).set({ margin:10, filename:'Question_Bank.pdf', html2canvas:{scale:2}, jsPDF:{format:'a4'} }).save();
+        }, 800);
+    }
 
-        document.body.appendChild(box);
-        html2canvas(box, { scale: 2 }).then(canvas => {
-            const img = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-            const width = pdf.internal.pageSize.getWidth();
-            const height = (canvas.height * width) / canvas.width;
-            pdf.addImage(img, 'PNG', 0, 0, width, height);
-            pdf.save("Exam_Paper.pdf");
-            document.body.removeChild(box);
-        });
+    function getSVGPath(type) {
+        const paths = {
+            triangle: '<polygon points="50,5 95,75 5,75"/>',
+            circle: '<circle cx="50" cy="40" r="30"/>',
+            rectangle: '<rect x="10" y="20" width="80" height="40"/>',
+            square: '<rect x="25" y="15" width="50" height="50"/>',
+            rhombus: '<polygon points="50,10 85,40 50,70 15,40"/>',
+            parallelogram: '<polygon points="30,20 90,20 70,60 10,60"/>'
+        };
+        return paths[type] || '';
     }
 </script>
 </body>
