@@ -133,7 +133,65 @@
                 <span id="liveClock">00:00:00</span>
             </div>
         </div>
+    <div class="container mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+    
+    <div class="bg-white p-6 rounded-[30px] shadow-lg flex flex-col items-center justify-center border-b-4 border-purple-500 hover:scale-105 transition-transform">
+        <div class="bg-purple-100 p-4 rounded-2xl mb-3">
+            <i class="fas fa-book-open text-2xl text-purple-600"></i>
+        </div>
+        <span class="font-bold text-gray-800 text-sm">লেকচার শিট</span>
     </div>
+
+    <div class="bg-white p-6 rounded-[30px] shadow-lg flex flex-col items-center justify-center border-b-4 border-blue-500 hover:scale-105 transition-transform">
+        <div class="bg-blue-100 p-4 rounded-2xl mb-3">
+            <i class="fas fa-video text-2xl text-blue-600"></i>
+        </div>
+        <span class="font-bold text-gray-800 text-sm">লাইভ ক্লাস</span>
+    </div>
+
+    <div class="bg-white p-6 rounded-[30px] shadow-lg flex flex-col items-center justify-center border-b-4 border-green-500 hover:scale-105 transition-transform">
+        <div class="bg-green-100 p-4 rounded-2xl mb-3">
+            <i class="fas fa-calendar-alt text-2xl text-green-600"></i>
+        </div>
+        <span class="font-bold text-gray-800 text-sm">ক্লাস রুটিন</span>
+    </div>
+
+    <div class="bg-white p-6 rounded-[30px] shadow-lg flex flex-col items-center justify-center border-b-4 border-red-500 hover:scale-105 transition-transform">
+        <div class="bg-red-100 p-4 rounded-2xl mb-3">
+            <i class="fas fa-comment-dots text-2xl text-red-600"></i>
+        </div>
+        <span class="font-bold text-gray-800 text-sm">ফিডব্যাক</span>
+    </div>
+<div class="container mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+    
+    <div onclick="openFeaturePage('lecture')" class="cursor-pointer bg-white p-6 rounded-[30px] shadow-lg flex flex-col items-center justify-center border-b-4 border-purple-500 hover:scale-105 transition-transform">
+        <div class="bg-purple-100 p-4 rounded-2xl mb-3">
+            <i class="fas fa-book-open text-2xl text-purple-600"></i>
+        </div>
+        <span class="font-bold text-gray-800 text-sm">লেকচার শিট</span>
+    </div>
+
+    <div onclick="openFeaturePage('live')" class="cursor-pointer bg-white p-6 rounded-[30px] shadow-lg flex flex-col items-center justify-center border-b-4 border-blue-500 hover:scale-105 transition-transform">
+        <div class="bg-blue-100 p-4 rounded-2xl mb-3">
+            <i class="fas fa-video text-2xl text-blue-600"></i>
+        </div>
+        <span class="font-bold text-gray-800 text-sm">লাইভ ক্লাস</span>
+    </div>
+
+    </div>
+
+<div id="featureOverlay" class="fixed inset-0 bg-black/80 z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl">
+        <div id="featureHeader" class="p-6 text-white font-bold flex justify-between items-center">
+            <h2 id="featureTitle" class="text-xl"></h2>
+            <button onclick="closeFeaturePage()" class="bg-white/20 hover:bg-white/40 p-2 rounded-full">✕</button>
+        </div>
+        <div id="featureBody" class="p-8 text-center min-h-[200px] flex flex-col items-center justify-center text-gray-600">
+            </div>
+    </div>
+</div>
+
+</div>
 
     <nav class="sticky top-0 z-[60] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-slate-800 no-print">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -1208,6 +1266,39 @@
                 document.getElementById('logoutBtn').classList.remove('hidden');
             }
         };
+// বাটন ক্লিকের কাজ শুরু
+window.openFeaturePage = function(type) {
+    const overlay = document.getElementById('featureOverlay');
+    const title = document.getElementById('featureTitle');
+    const body = document.getElementById('featureBody');
+    const header = document.getElementById('featureHeader');
+
+    overlay.classList.remove('hidden');
+    overlay.classList.add('flex');
+
+    if (type === 'lecture') {
+        header.className = "p-6 text-white font-bold flex justify-between items-center bg-purple-600 rounded-t-3xl";
+        title.innerText = "লেকচার শিট সমূহ";
+        body.innerHTML = `<div class="p-4 text-center">
+                            <i class="fas fa-file-pdf text-5xl mb-4 text-purple-600"></i>
+                            <p class="text-gray-600 font-semibold">বর্তমানে কোনো লেকচার শিট আপলোড করা নেই।</p>
+                          </div>`;
+    } else if (type === 'live') {
+        header.className = "p-6 text-white font-bold flex justify-between items-center bg-blue-600 rounded-t-3xl";
+        title.innerText = "লাইভ ক্লাস লিঙ্ক";
+        body.innerHTML = `<div class="p-4 text-center">
+                            <i class="fas fa-video text-5xl mb-4 text-blue-600"></i>
+                            <p class="text-gray-600 font-semibold mb-4">এখন কোনো লাইভ ক্লাস চলছে না।</p>
+                            <a href="#" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold inline-block">Zoom এ যোগ দিন</a>
+                          </div>`;
+    }
+};
+
+window.closeFeaturePage = function() {
+    const overlay = document.getElementById('featureOverlay');
+    overlay.classList.add('hidden');
+    overlay.classList.remove('flex');
+};
 
     </script>
 </body>
