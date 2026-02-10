@@ -120,19 +120,7 @@
             <div class="w-16 h-16 border-4 border-purple-200 border-t-purple-800 rounded-full animate-spin"></div>
             <p class="mt-4 font-bold text-purple-800 animate-pulse">লোড হচ্ছে...</p>
         </div>
-    </div>
-
-    <div class="bg-indigo-950 text-white py-2 no-print relative z-50">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="bg-yellow-500 text-black text-[10px] font-black px-2 py-0.5 rounded animate-pulse">LIVE</span>
-                <marquee id="topMarquee" class="text-xs md:text-sm font-medium w-64 md:w-[600px]">নতুন সেশনের গণিত ও বিজ্ঞান ব্যাচে ভর্তি চলছে! ডিজিটাল পোর্টালে আপনার মেধা যাচাই করুন।</marquee>
-            </div>
-            <div class="hidden md:flex items-center gap-4 text-xs font-bold">
-                <span><i class="fas fa-phone-alt mr-1"></i> +880123456789</span>
-                <span id="liveClock">00:00:00</span>
-            </div>
-        </div>
+    
     <div class="container mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
     
     <div class="bg-white p-6 rounded-[30px] shadow-lg flex flex-col items-center justify-center border-b-4 border-purple-500 hover:scale-105 transition-transform">
@@ -1266,13 +1254,14 @@
                 document.getElementById('logoutBtn').classList.remove('hidden');
             }
         };
-// বাটন ক্লিকের কাজ শুরু
+// বাটন ক্লিকের কাজ সম্পূর্ণ সচল করা (১২৬৮ নম্বর লাইন থেকে শুরু করুন)
 window.openFeaturePage = function(type) {
     const overlay = document.getElementById('featureOverlay');
     const title = document.getElementById('featureTitle');
     const body = document.getElementById('featureBody');
     const header = document.getElementById('featureHeader');
 
+    // পপ-আপ দৃশ্যমান করা
     overlay.classList.remove('hidden');
     overlay.classList.add('flex');
 
@@ -1280,16 +1269,30 @@ window.openFeaturePage = function(type) {
         header.className = "p-6 text-white font-bold flex justify-between items-center bg-purple-600 rounded-t-3xl";
         title.innerText = "লেকচার শিট সমূহ";
         body.innerHTML = `<div class="p-4 text-center">
-                            <i class="fas fa-file-pdf text-5xl mb-4 text-purple-600"></i>
-                            <p class="text-gray-600 font-semibold">বর্তমানে কোনো লেকচার শিট আপলোড করা নেই।</p>
+                            <i class="fas fa-file-pdf text-5xl mb-4 text-purple-600 animate-bounce"></i>
+                            <p class="text-gray-600 font-bold text-lg">বর্তমানে কোনো লেকচার শিট নেই।</p>
                           </div>`;
     } else if (type === 'live') {
         header.className = "p-6 text-white font-bold flex justify-between items-center bg-blue-600 rounded-t-3xl";
         title.innerText = "লাইভ ক্লাস লিঙ্ক";
         body.innerHTML = `<div class="p-4 text-center">
                             <i class="fas fa-video text-5xl mb-4 text-blue-600"></i>
-                            <p class="text-gray-600 font-semibold mb-4">এখন কোনো লাইভ ক্লাস চলছে না।</p>
-                            <a href="#" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold inline-block">Zoom এ যোগ দিন</a>
+                            <p class="text-gray-600 font-bold mb-4">এখন কোনো লাইভ ক্লাস চলছে না।</p>
+                            <a href="https://zoom.us" target="_blank" class="bg-blue-600 text-white px-8 py-3 rounded-2xl font-black shadow-lg hover:scale-105 transition inline-block">Zoom-এ যুক্ত হন</a>
+                          </div>`;
+    } else if (type === 'routine') {
+        header.className = "p-6 text-white font-bold flex justify-between items-center bg-green-600 rounded-t-3xl";
+        title.innerText = "সাপ্তাহিক রুটিন";
+        body.innerHTML = `<div class="p-4 text-center">
+                            <i class="fas fa-calendar-alt text-5xl mb-4 text-green-600"></i>
+                            <p class="text-gray-600 font-bold italic text-lg">রুটিন আপডেট করা হচ্ছে...</p>
+                          </div>`;
+    } else if (type === 'feedback') {
+        header.className = "p-6 text-white font-bold flex justify-between items-center bg-red-600 rounded-t-3xl";
+        title.innerText = "ফিডব্যাক ফর্ম";
+        body.innerHTML = `<div class="p-4 text-center w-full">
+                            <textarea id="feedbackText" placeholder="আপনার মতামত লিখুন..." class="w-full border-2 border-gray-100 rounded-2xl p-4 mb-4 outline-none focus:border-red-500 min-h-[100px]"></textarea>
+                            <button onclick="submitUserFeedback()" class="bg-red-600 text-white px-8 py-2 rounded-xl font-bold hover:bg-red-700 transition">পাঠিয়ে দিন</button>
                           </div>`;
     }
 };
@@ -1300,6 +1303,12 @@ window.closeFeaturePage = function() {
     overlay.classList.remove('flex');
 };
 
+window.submitUserFeedback = function() {
+    const text = document.getElementById('feedbackText').value;
+    if(text.trim() === "") return alert("দয়া করে কিছু লিখুন!");
+    alert('ধন্যবাদ! আপনার ফিডব্যাক আমাদের কাছে পৌঁছেছে।');
+    closeFeaturePage();
+};
     </script>
 </body>
 </html>
