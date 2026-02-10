@@ -3,330 +3,678 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMIRUL MATH CARE - Ultimate Pro Management</title>
+    <title>AMIRUL MATH CARE - Ultimate Pro Management (v2.0)</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap');
-        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f0f4f8; transition: 0.3s; color: #1e293b; }
-        .dark-mode { background-color: #0f172a; color: #f1f5f9; }
-        .dark-mode .bg-white { background-color: #1e293b; color: white; }
-        .brand-purple { background-color: #4c1d95; }
-        .hidden { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
         
-        /* Slider & Animations */
-        .slider-container { position: relative; width: 100%; height: 350px; overflow: hidden; border-radius: 24px; }
-        .slider-track { display: flex; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
-        .slide { min-width: 100%; height: 100%; position: relative; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+        :root {
+            --primary: #4c1d95;
+            --secondary: #1e1b4b;
+            --accent: #fbbf24;
+            --danger: #ef4444;
+            --success: #10b981;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        body { 
+            font-family: 'Hind Siliguri', sans-serif; 
+            background-color: #f8fafc; 
+            transition: all 0.4s ease; 
+            color: #1e293b; 
+            scroll-behavior: smooth;
+        }
+
+        .dark-mode { 
+            background-color: #020617; 
+            color: #f1f5f9; 
+        }
+
+        .dark-mode .bg-white { 
+            background-color: #0f172a !important; 
+            color: white; 
+            border-color: #1e293b;
+        }
+
+        /* UI Enhancements */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .neo-button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .neo-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(76, 29, 149, 0.4);
+        }
+
+        /* Custom Slider Animation */
+        .slider-container { 
+            position: relative; 
+            width: 100%; 
+            height: 450px; 
+            overflow: hidden; 
+            border-radius: 40px; 
+        }
         
-        /* Exam & UI Elements */
-        .option-card { cursor: pointer; transition: 0.2s; border: 2px solid #e2e8f0; }
-        .option-card:hover { border-color: #4c1d95; background-color: #f5f3ff; }
-        .selected-option { border-color: #4c1d95 !important; background-color: #ede9fe !important; font-weight: bold; }
-        
-        @media print { .no-print { display: none !important; } #displayArea { display: block !important; } }
-        
-        .tab-active { border-bottom: 4px solid #fbbf24; color: #fbbf24; }
+        .slider-track { 
+            display: flex; 
+            transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); 
+            height: 100%; 
+        }
+
+        .slide-overlay {
+            background: linear-gradient(0deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.2) 100%);
+        }
+
+        /* Tab Logic styling */
+        .admin-tab-content { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .tab-active { 
+            background-color: var(--primary); 
+            color: white !important; 
+            border-radius: 12px;
+        }
+
+        /* Online Exam Radio Fix */
+        .exam-option {
+            display: none;
+        }
+        .exam-option:checked + .option-label {
+            background-color: #4c1d95;
+            color: white;
+            border-color: #4c1d95;
+        }
+
+        /* Notification Toast */
+        .toast-active {
+            bottom: 20px !important;
+            opacity: 1 !important;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+        }
     </style>
 </head>
-<body id="body">
+<body id="mainBody">
 
-    <div class="bg-indigo-900 text-white py-2 no-print">
-        <div class="container mx-auto px-4 flex items-center">
-            <span class="bg-yellow-500 text-black text-[10px] font-black px-2 py-1 rounded mr-3 animate-pulse uppercase">Notice</span>
-            <marquee id="mainNotice" class="text-sm font-semibold">আমিরুল ম্যাথ কেয়ারে অনলাইন পরীক্ষা ও ডিজিটাল প্রোফাইল সিস্টেম চালু হয়েছে।</marquee>
+    <div id="loader" class="fixed inset-0 z-[100] bg-white flex items-center justify-center transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-purple-200 border-t-purple-800 rounded-full animate-spin"></div>
+            <p class="mt-4 font-bold text-purple-800 animate-pulse">লোড হচ্ছে...</p>
         </div>
     </div>
 
-    <nav class="brand-purple p-4 text-white sticky top-0 z-50 shadow-2xl no-print">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="location.reload()">
-                <img id="navLogo" src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" class="w-10 h-10 rounded-full border-2 border-white object-cover">
-                <h1 class="text-lg md:text-xl font-black tracking-tighter uppercase">AMIRUL MATH CARE</h1>
+    <div class="bg-indigo-950 text-white py-2 no-print relative z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="bg-yellow-500 text-black text-[10px] font-black px-2 py-0.5 rounded animate-pulse">LIVE</span>
+                <marquee id="topMarquee" class="text-xs md:text-sm font-medium w-64 md:w-[600px]">নতুন সেশনের গণিত ও বিজ্ঞান ব্যাচে ভর্তি চলছে! ডিজিটাল পোর্টালে আপনার মেধা যাচাই করুন।</marquee>
             </div>
-            <div class="flex gap-4 items-center text-sm">
-                <button onclick="toggleDarkMode()" class="p-2"><i class="fas fa-moon"></i></button>
-                <div class="hidden md:flex gap-4 font-bold">
-                    <a href="#" onclick="showSection('studentView')">হোম</a>
-                    <a href="#" onclick="showSection('onlineExamPortal')">অনলাইন পরীক্ষা</a>
-                    <a href="#" onclick="showSection('studentProfile')">প্রোফাইল</a>
+            <div class="hidden md:flex items-center gap-4 text-xs font-bold">
+                <span><i class="fas fa-phone-alt mr-1"></i> +880123456789</span>
+                <span id="liveClock">00:00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sticky top-0 z-[60] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-slate-800 no-print">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="location.reload()">
+                <div class="relative">
+                    <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" class="w-12 h-12 rounded-2xl shadow-lg border-2 border-purple-600 transition group-hover:rotate-12">
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                 </div>
-                <button id="adminLoginBtn" onclick="showSection('loginSection')" class="bg-yellow-400 text-purple-900 px-4 py-1 rounded-full font-bold transition hover:scale-105">অ্যাডমিন</button>
-                <button id="logoutBtn" onclick="logout()" class="hidden bg-red-500 px-4 py-1 rounded-full font-bold">লগ আউট</button>
+                <div>
+                    <h1 class="text-xl font-black text-slate-800 dark:text-white leading-none tracking-tight">AMIRUL <span class="text-purple-700">MATH CARE</span></h1>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-[2px]">Gateway to Excellence</p>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-8">
+                <a href="javascript:void(0)" onclick="showSection('studentView')" class="nav-link font-bold text-sm text-gray-600 hover:text-purple-700 transition">হোম</a>
+                <a href="javascript:void(0)" onclick="showSection('onlineExamPortal')" class="nav-link font-bold text-sm text-gray-600 hover:text-purple-700 transition">অনলাইন পরীক্ষা</a>
+                <a href="javascript:void(0)" onclick="showSection('studentProfile')" class="nav-link font-bold text-sm text-gray-600 hover:text-purple-700 transition">স্টুডেন্ট আইডি</a>
+                <a href="javascript:void(0)" class="nav-link font-bold text-sm text-gray-600 hover:text-purple-700 transition">নোটিশ</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-purple-100 transition">
+                    <i class="fas fa-adjust"></i>
+                </button>
+                <div class="h-6 w-[1px] bg-gray-200 mx-1"></div>
+                <button id="adminBtn" onclick="showSection('loginSection')" class="bg-purple-700 text-white px-5 py-2.5 rounded-xl font-black text-xs neo-button flex items-center gap-2">
+                    <i class="fas fa-user-shield"></i> অ্যাডমিন লগইন
+                </button>
+                <button id="logoutBtn" onclick="handleLogout()" class="hidden bg-red-500 text-white px-5 py-2.5 rounded-xl font-black text-xs neo-button">
+                    লগ আউট
+                </button>
             </div>
         </div>
     </nav>
 
-    <div id="studentView" class="container mx-auto mt-6 p-4 no-print">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="space-y-6">
-                <div class="bg-white p-8 rounded-3xl shadow-xl border-t-8 border-purple-800">
-                    <h3 class="font-bold text-gray-800 text-xl mb-4"><i class="fas fa-poll-h mr-2 text-purple-700"></i> রেজাল্ট ও প্রোফাইল</h3>
-                    <div class="space-y-3">
-                        <select id="searchClass" class="w-full p-3 border rounded-xl bg-gray-50">
-                            <option value="">শ্রেণী নির্বাচন করুন</option>
+    <main class="container mx-auto px-4 py-8">
+
+        <section id="studentView" class="section-content">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl border border-gray-100 dark:border-slate-800 relative overflow-hidden group">
+                        <div class="absolute -right-12 -top-12 w-40 h-40 bg-purple-50 dark:bg-purple-900/20 rounded-full transition-transform group-hover:scale-110"></div>
+                        <h3 class="text-2xl font-black mb-6 flex items-center text-slate-800 dark:text-white">
+                            <span class="w-10 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-search text-purple-700"></i>
+                            </span>
+                            ফলাফল অনুসন্ধান
+                        </h3>
+                        
+                        <div class="space-y-5 relative z-10">
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">শ্রেণী নির্বাচন</label>
+                                <select id="searchClass" class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 p-4 rounded-2xl font-bold outline-none focus:border-purple-500 transition">
+                                    <option value="">নির্বাচন করুন</option>
+                                    <option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option><option>SSC</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">রোল নম্বর</label>
+                                <input type="number" id="searchRoll" placeholder="উদা: ১০১" class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 p-4 rounded-2xl font-bold outline-none focus:border-purple-500 transition">
+                            </div>
+                            <div class="pt-2">
+                                <button onclick="checkStudentResult()" class="w-full bg-purple-700 text-white py-4 rounded-2xl font-black shadow-xl hover:bg-purple-800 transition active:scale-95 flex items-center justify-center gap-2">
+                                    <i class="fas fa-file-invoice"></i> রেজাল্ট দেখুন
+                                </button>
+                                <button onclick="enterStudentProfile()" class="w-full mt-3 bg-white dark:bg-slate-800 text-purple-700 border-2 border-purple-100 dark:border-slate-700 py-4 rounded-2xl font-black hover:bg-purple-50 transition">
+                                    ব্যক্তিগত প্রোফাইল
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-600 via-purple-700 to-fuchsia-700 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Digital Exam</span>
+                            <h2 class="text-3xl font-black mt-3 mb-2">অনলাইন কুইজ</h2>
+                            <p class="text-sm opacity-80 mb-6 leading-relaxed">গণিতের ভয়কে জয় করো আমাদের অনলাইন টেস্ট সিরিজের মাধ্যমে।</p>
+                            <button onclick="showSection('onlineExamPortal')" class="bg-white text-purple-700 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:scale-105 transition">
+                                পরীক্ষা দিন <i class="fas fa-bolt ml-2 text-yellow-500"></i>
+                            </button>
+                        </div>
+                        <i class="fas fa-brain absolute -bottom-6 -right-6 text-9xl opacity-10 transition group-hover:scale-110"></i>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-8">
+                    <div class="slider-container shadow-2xl border-8 border-white dark:border-slate-900">
+                        <div id="heroSlider" class="slider-track">
+                            </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+                        <div class="group bg-white dark:bg-slate-900 p-6 rounded-[2rem] text-center border-b-4 border-purple-600 shadow-xl hover:-translate-y-2 transition cursor-pointer">
+                            <div class="w-16 h-16 mx-auto bg-purple-50 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-4 transition group-hover:bg-purple-600">
+                                <i class="fas fa-book-open text-2xl text-purple-600 group-hover:text-white"></i>
+                            </div>
+                            <p class="font-black text-slate-700 dark:text-gray-200">লেকচার শিট</p>
+                        </div>
+                        <div class="group bg-white dark:bg-slate-900 p-6 rounded-[2rem] text-center border-b-4 border-blue-600 shadow-xl hover:-translate-y-2 transition cursor-pointer">
+                            <div class="w-16 h-16 mx-auto bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4 transition group-hover:bg-blue-600">
+                                <i class="fas fa-video text-2xl text-blue-600 group-hover:text-white"></i>
+                            </div>
+                            <p class="font-black text-slate-700 dark:text-gray-200">লাইভ ক্লাস</p>
+                        </div>
+                        <div class="group bg-white dark:bg-slate-900 p-6 rounded-[2rem] text-center border-b-4 border-emerald-600 shadow-xl hover:-translate-y-2 transition cursor-pointer">
+                            <div class="w-16 h-16 mx-auto bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center mb-4 transition group-hover:bg-emerald-600">
+                                <i class="fas fa-calendar-alt text-2xl text-emerald-600 group-hover:text-white"></i>
+                            </div>
+                            <p class="font-black text-slate-700 dark:text-gray-200">ক্লাস রুটিন</p>
+                        </div>
+                        <div class="group bg-white dark:bg-slate-900 p-6 rounded-[2rem] text-center border-b-4 border-rose-600 shadow-xl hover:-translate-y-2 transition cursor-pointer">
+                            <div class="w-16 h-16 mx-auto bg-rose-50 dark:bg-rose-900/30 rounded-2xl flex items-center justify-center mb-4 transition group-hover:bg-rose-600">
+                                <i class="fas fa-comment-dots text-2xl text-rose-600 group-hover:text-white"></i>
+                            </div>
+                            <p class="font-black text-slate-700 dark:text-gray-200">ফিডব্যাক</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="studentProfile" class="section-content hidden">
+            <div class="max-w-6xl mx-auto">
+                <div class="bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-gray-100 dark:border-slate-800">
+                    <div class="bg-slate-900 p-12 relative overflow-hidden text-white flex flex-col md:flex-row items-center gap-8">
+                        <div class="absolute top-0 right-0 w-96 h-96 bg-purple-600/20 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+                        <div class="relative">
+                            <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=random" class="w-40 h-40 rounded-[2.5rem] border-4 border-white shadow-2xl object-cover">
+                            <label for="avatarInput" class="absolute -bottom-2 -right-2 bg-yellow-400 text-black w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border-4 border-slate-900 hover:scale-110 transition">
+                                <i class="fas fa-camera text-sm"></i>
+                                <input type="file" id="avatarInput" class="hidden" accept="image/*">
+                            </label>
+                        </div>
+                        <div class="text-center md:text-left relative z-10 flex-1">
+                            <h2 id="profName" class="text-4xl font-black mb-2">শিক্ষার্থীর নাম</h2>
+                            <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                                <span id="profClass" class="bg-white/10 px-4 py-1.5 rounded-full text-xs font-bold border border-white/20">শ্রেণী: লোড হচ্ছে</span>
+                                <span id="profRoll" class="bg-white/10 px-4 py-1.5 rounded-full text-xs font-bold border border-white/20">রোল: লোড হচ্ছে</span>
+                                <span class="bg-green-500/20 text-green-400 px-4 py-1.5 rounded-full text-xs font-bold border border-green-500/30">একটিভ মেম্বার</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="downloadIDCard()" class="bg-white text-slate-900 px-6 py-3 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-yellow-400 transition">
+                                <i class="fas fa-id-card"></i> ডিজিটাল আইডি ডাউনলোড
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="space-y-6">
+                            <div class="bg-indigo-50 dark:bg-indigo-900/10 p-6 rounded-3xl border border-indigo-100 dark:border-indigo-900/30">
+                                <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">গড় সাফল্য</p>
+                                <div class="flex items-end gap-2">
+                                    <h3 id="avgPerf" class="text-4xl font-black text-indigo-900 dark:text-indigo-300">০%</h3>
+                                    <span class="text-xs text-green-500 font-bold mb-1">+2.4%</span>
+                                </div>
+                                <div class="w-full bg-indigo-200 dark:bg-indigo-900/40 h-2 rounded-full mt-4">
+                                    <div id="perfBar" class="bg-indigo-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="bg-rose-50 dark:bg-rose-900/10 p-6 rounded-3xl border border-rose-100 dark:border-rose-900/30">
+                                <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest mb-1">মোট পরীক্ষা</p>
+                                <h3 id="totalExams" class="text-4xl font-black text-rose-900 dark:text-rose-300">০</h3>
+                                <p class="text-xs text-gray-400 mt-2 font-medium">সাপ্তাহিক ও অনলাইন মিলিয়ে</p>
+                            </div>
+                            <div class="bg-amber-50 dark:bg-amber-900/10 p-6 rounded-3xl border border-amber-100 dark:border-amber-900/30">
+                                <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">পেমেন্ট স্ট্যাটাস</p>
+                                <h3 class="text-4xl font-black text-emerald-600">Paid</h3>
+                                <p class="text-xs text-gray-400 mt-2 font-medium">ফেব্রুয়ারি ২০২৪ পর্যন্ত</p>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 bg-slate-50 dark:bg-slate-800/50 p-8 rounded-[2rem] border border-gray-100 dark:border-slate-800">
+                            <h4 class="font-black text-lg mb-6 flex justify-between items-center">
+                                সাফল্যের গ্রাফ
+                                <select class="text-xs bg-white dark:bg-slate-800 p-2 rounded-lg outline-none border">
+                                    <option>শেষ ৬ মাস</option>
+                                </select>
+                            </h4>
+                            <canvas id="performanceChart" height="150"></canvas>
+                        </div>
+
+                        <div class="lg:col-span-3 mt-4">
+                            <h4 class="font-black text-2xl mb-6">বিস্তারিত ফলাফল ইতিহাস</h4>
+                            <div class="overflow-x-auto rounded-3xl border border-gray-100 dark:border-slate-800">
+                                <table class="w-full text-left bg-white dark:bg-slate-900">
+                                    <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                        <tr>
+                                            <th class="p-5 text-xs font-black uppercase text-gray-500 tracking-widest">তারিখ</th>
+                                            <th class="p-5 text-xs font-black uppercase text-gray-500 tracking-widest">বিষয়</th>
+                                            <th class="p-5 text-xs font-black uppercase text-gray-500 tracking-widest">নম্বর</th>
+                                            <th class="p-5 text-xs font-black uppercase text-gray-500 tracking-widest">অবস্থান</th>
+                                            <th class="p-5 text-xs font-black uppercase text-gray-500 tracking-widest">গ্রেড</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="profileResultTable" class="divide-y divide-gray-100 dark:divide-slate-800">
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="loginSection" class="section-content hidden py-12">
+            <div class="max-w-md mx-auto">
+                <div class="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-2xl border-t-8 border-purple-700">
+                    <div class="text-center mb-10">
+                        <div class="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-lock text-3xl text-purple-700"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-slate-800 dark:text-white">অ্যাডমিন এক্সেস</h2>
+                        <p class="text-gray-400 text-sm font-bold uppercase tracking-widest mt-2">নিরাপদ লগইন</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">পাসওয়ার্ড</label>
+                            <div class="relative">
+                                <input type="password" id="adminPass" placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl border-2 border-slate-100 dark:border-slate-700 font-black text-center text-2xl tracking-[10px] outline-none focus:border-purple-600 transition">
+                            </div>
+                        </div>
+                        <button onclick="handleAdminLogin()" class="w-full bg-slate-900 dark:bg-purple-700 text-white py-5 rounded-2xl font-black shadow-xl hover:scale-[1.02] active:scale-95 transition">
+                            সিস্টেম এন্ট্রি <i class="fas fa-sign-in-alt ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="adminPanel" class="section-content hidden">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-xl border-b-8 border-indigo-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-users text-indigo-600"></i>
+                        </div>
+                        <span class="text-green-500 text-xs font-black">+12%</span>
+                    </div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">মোট শিক্ষার্থী</p>
+                    <h3 id="statTotalStudents" class="text-4xl font-black mt-1">0</h3>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-xl border-b-8 border-emerald-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-user-check text-emerald-600"></i>
+                        </div>
+                        <span class="text-blue-500 text-xs font-black">LIVE</span>
+                    </div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">আজকের উপস্থিতি</p>
+                    <h3 id="statAttendance" class="text-4xl font-black mt-1">0</h3>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-xl border-b-8 border-purple-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-poll-h text-purple-600"></i>
+                        </div>
+                        <span id="statNewResult" class="text-amber-500 text-xs font-black">NEW</span>
+                    </div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">মোট রেজাল্ট</p>
+                    <h3 id="statTotalResults" class="text-4xl font-black mt-1">0</h3>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-xl border-b-8 border-rose-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 bg-rose-50 dark:bg-rose-900/30 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-wallet text-rose-600"></i>
+                        </div>
+                        <span class="text-rose-500 text-xs font-black">85%</span>
+                    </div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">ফি আদায় (ফেব্রু)</p>
+                    <h3 class="text-4xl font-black mt-1">৳৪৫,৩০০</h3>
+                </div>
+            </div>
+
+            <div class="flex gap-2 p-2 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-8 overflow-x-auto no-scrollbar">
+                <button onclick="switchAdminTab('resultTab')" id="btn-resultTab" class="admin-nav-btn tab-active px-8 py-3.5 font-black text-sm transition-all flex items-center gap-2">
+                    <i class="fas fa-plus-circle"></i> রেজাল্ট এন্ট্রি
+                </button>
+                <button onclick="switchAdminTab('studentTab')" id="btn-studentTab" class="admin-nav-btn px-8 py-3.5 font-black text-sm text-gray-500 transition-all flex items-center gap-2">
+                    <i class="fas fa-user-graduate"></i> স্টুডেন্ট লিস্ট
+                </button>
+                <button onclick="switchAdminTab('questionTab')" id="btn-questionTab" class="admin-nav-btn px-8 py-3.5 font-black text-sm text-gray-500 transition-all flex items-center gap-2">
+                    <i class="fas fa-laptop-code"></i> অনলাইন প্রশ্ন
+                </button>
+                <button onclick="switchAdminTab('paymentTab')" id="btn-paymentTab" class="admin-nav-btn px-8 py-3.5 font-black text-sm text-gray-500 transition-all flex items-center gap-2">
+                    <i class="fas fa-money-check-alt"></i> ফি ম্যানেজমেন্ট
+                </button>
+            </div>
+
+            <div id="resultTab" class="admin-tab-content space-y-8">
+                <div class="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-slate-800">
+                    <h2 class="text-2xl font-black mb-8 flex items-center text-slate-800 dark:text-white">
+                        <span class="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-2xl flex items-center justify-center mr-4">
+                            <i class="fas fa-edit text-purple-700"></i>
+                        </span>
+                        পরীক্ষার নম্বর ইনপুট
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">পরীক্ষার তারিখ</label>
+                            <input type="date" id="examDate" class="w-full bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-700 font-bold outline-none focus:border-purple-600 transition">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">শ্রেণী</label>
+                            <select id="stdClass" onchange="fetchStudentData(); updateSubjectUI();" class="w-full bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-700 font-bold outline-none focus:border-purple-600 transition">
+                                <option value="">সিলেক্ট করুন</option>
+                                <option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option><option>SSC</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">রোল নম্বর</label>
+                            <input type="number" id="stdRoll" oninput="fetchStudentData()" placeholder="রোল লিখুন" class="w-full bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-700 font-bold outline-none focus:border-purple-600 transition">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">শিক্ষার্থীর নাম</label>
+                            <input type="text" id="stdName" readonly placeholder="অটোমেটিক আসবে" class="w-full bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl border-2 border-transparent font-black text-purple-700 dark:text-purple-400 outline-none">
+                        </div>
+                    </div>
+
+                    <div id="dynamicSubjects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8 bg-slate-50 dark:bg-slate-800/30 rounded-[2.5rem] mb-10 min-h-[100px]">
+                        <div class="col-span-full text-center text-gray-400 italic font-medium py-10">প্রথমে শ্রেণী ও রোল নির্বাচন করুন...</div>
+                    </div>
+
+                    <div class="flex justify-end gap-4">
+                        <button onclick="resetResultForm()" class="px-8 py-4 rounded-2xl font-black text-sm text-gray-500 hover:bg-gray-100 transition">রিসেট</button>
+                        <button onclick="saveResultToDatabase()" class="bg-purple-700 text-white px-12 py-4 rounded-2xl font-black shadow-xl hover:bg-purple-800 transform hover:scale-105 transition flex items-center gap-2">
+                            <i class="fas fa-cloud-upload-alt"></i> ডাটাবেজে সেভ করুন
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl overflow-hidden border border-gray-100 dark:border-slate-800">
+                    <div class="p-8 border-b border-gray-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <h3 class="text-xl font-black">রিসেন্ট রেজাল্ট ডাটাবেজ</h3>
+                        <div class="flex gap-2">
+                            <input type="text" id="dbSearch" placeholder="নাম বা রোল দিয়ে সার্চ..." class="bg-slate-50 dark:bg-slate-800 px-4 py-2.5 rounded-xl border border-gray-200 outline-none text-xs font-bold w-64">
+                            <button onclick="generateMeritList()" class="bg-amber-500 text-white px-5 py-2.5 rounded-xl font-black text-xs hover:bg-amber-600 transition">মেধা তালিকা PDF</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 dark:bg-slate-800/50">
+                                <tr>
+                                    <th class="p-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">তারিখ</th>
+                                    <th class="p-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">রোল</th>
+                                    <th class="p-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">নাম</th>
+                                    <th class="p-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">শ্রেণী</th>
+                                    <th class="p-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">প্রাপ্ত নম্বর</th>
+                                    <th class="p-5 text-[10px] font-black uppercase text-gray-400 tracking-widest">অ্যাকশন</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminResultDB" class="divide-y divide-gray-100 dark:divide-slate-800">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="studentTab" class="admin-tab-content hidden space-y-8">
+                <div class="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-slate-800">
+                    <h2 class="text-2xl font-black mb-8 flex items-center">
+                        <span class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl flex items-center justify-center mr-4">
+                            <i class="fas fa-user-plus text-emerald-700"></i>
+                        </span>
+                        নতুন শিক্ষার্থী নিবন্ধন
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <input type="number" id="regRoll" placeholder="রোল" class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-100 outline-none font-bold col-span-1">
+                        <input type="text" id="regName" placeholder="পুরো নাম" class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-100 outline-none font-bold col-span-2">
+                        <select id="regClass" class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-100 outline-none font-bold">
                             <option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option><option>SSC</option>
                         </select>
-                        <input type="text" id="searchRoll" placeholder="রোল নম্বর" class="w-full p-3 border rounded-xl bg-gray-50">
-                        <input type="date" id="searchDate" class="w-full p-3 border rounded-xl bg-gray-50 text-xs">
-                        <button onclick="checkResult()" class="w-full brand-purple text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90">রেজাল্ট দেখুন</button>
-                        <button onclick="enterStudentProfile()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90">আমার প্রোফাইল</button>
+                        <button onclick="registerStudent()" class="bg-emerald-600 text-white font-black rounded-2xl shadow-lg hover:bg-emerald-700 transition">নিবন্ধন করুন</button>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-br from-orange-400 to-red-600 p-6 rounded-3xl text-white shadow-xl">
-                    <h2 class="text-xl font-black mb-2">অনলাইন পরীক্ষা</h2>
-                    <p class="text-xs opacity-90 mb-4">বাড়িতে বসেই তোমার মেধা যাচাই করো।</p>
-                    <button onclick="showSection('onlineExamPortal')" class="bg-white text-orange-600 px-6 py-2 rounded-full font-black text-sm uppercase">স্টার্ট পরীক্ষা</button>
+                <div id="studentListContainer" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    </div>
+            </div>
+
+            <div id="questionTab" class="admin-tab-content hidden">
+                <div class="bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-gray-100 dark:border-slate-800">
+                    <h2 class="text-2xl font-black mb-8 flex items-center">
+                        <span class="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 rounded-2xl flex items-center justify-center mr-4">
+                            <i class="fas fa-plus-square text-amber-700"></i>
+                        </span>
+                        অনলাইন MCQ সেট করুন
+                    </h2>
+                    <div class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">প্রশ্ন টাইটেল</label>
+                            <input type="text" id="qText" placeholder="প্রশ্নটি এখানে লিখুন..." class="w-full bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border-2 border-slate-100 outline-none font-bold">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-purple-700">A</span>
+                                <input type="text" id="optA" placeholder="অপশন ১" class="w-full bg-slate-50 dark:bg-slate-800 p-4 pl-10 rounded-2xl border-2 border-slate-100 outline-none font-bold">
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-purple-700">B</span>
+                                <input type="text" id="optB" placeholder="অপশন ২" class="w-full bg-slate-50 dark:bg-slate-800 p-4 pl-10 rounded-2xl border-2 border-slate-100 outline-none font-bold">
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-purple-700">C</span>
+                                <input type="text" id="optC" placeholder="অপশন ৩" class="w-full bg-slate-50 dark:bg-slate-800 p-4 pl-10 rounded-2xl border-2 border-slate-100 outline-none font-bold">
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-purple-700">D</span>
+                                <input type="text" id="optD" placeholder="অপশন ৪" class="w-full bg-slate-50 dark:bg-slate-800 p-4 pl-10 rounded-2xl border-2 border-slate-100 outline-none font-bold">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="flex-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">সঠিক উত্তর</label>
+                                <select id="qCorrect" class="w-full bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border-2 border-emerald-100 font-black text-emerald-600 outline-none">
+                                    <option value="A">অপশন A</option>
+                                    <option value="B">অপশন B</option>
+                                    <option value="C">অপশন C</option>
+                                    <option value="D">অপশন D</option>
+                                </select>
+                            </div>
+                            <button onclick="saveQuestion()" class="bg-slate-900 text-white px-12 py-4 rounded-2xl font-black mt-6 shadow-xl hover:bg-black transition">প্রশ্ন যুক্ত করুন</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6" id="adminQList">
+                    </div>
+            </div>
+        </section>
+
+        <section id="onlineExamPortal" class="section-content hidden py-6">
+            <div id="examIntro" class="max-w-3xl mx-auto text-center">
+                <div class="bg-white dark:bg-slate-900 p-12 rounded-[3rem] shadow-2xl">
+                    <div class="w-24 h-24 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-bolt text-4xl text-yellow-600"></i>
+                    </div>
+                    <h2 class="text-4xl font-black mb-4">অনলাইন চ্যালেঞ্জ</h2>
+                    <p class="text-gray-500 font-bold mb-10">নির্ধারিত সময়ের মধ্যে সব প্রশ্নের সঠিক উত্তর দিয়ে নিজেকে প্রমাণ করো।</p>
+                    
+                    <div class="space-y-4 max-w-sm mx-auto">
+                        <input type="text" id="exName" placeholder="তোমার নাম লিখুন" class="w-full p-5 bg-slate-50 dark:bg-slate-800 border-2 rounded-2xl font-bold outline-none focus:border-purple-600">
+                        <button onclick="startExamSession()" class="w-full bg-purple-700 text-white py-5 rounded-2xl font-black shadow-xl hover:bg-purple-800 transition">পরীক্ষা শুরু করো</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-2">
-                <div id="heroSlider" class="slider-container mb-6 shadow-2xl">
-                    <div id="sliderTrack" class="slider-track"></div>
+            <div id="examLive" class="hidden max-w-3xl mx-auto">
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl mb-8 sticky top-24 z-50 border-2 border-purple-500">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center text-red-600">
+                                <i class="fas fa-clock animate-pulse"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">বাকি সময়</p>
+                                <h3 id="timer" class="text-2xl font-black text-red-600">10:00</h3>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">অগ্রগতি</p>
+                            <h3 id="progressText" class="text-2xl font-black text-purple-700">0/10</h3>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-100 dark:bg-slate-800 h-2.5 rounded-full mt-6">
+                        <div id="progressBar" class="bg-purple-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-white p-4 rounded-2xl text-center shadow hover:border-purple-500 border-2 border-transparent transition cursor-pointer">
-                        <i class="fas fa-book-reader text-2xl text-purple-600"></i>
-                        <p class="text-xs font-bold mt-2">লেকচার নোট</p>
+
+                <div id="questionContainer" class="space-y-6 mb-12">
                     </div>
-                    <div class="bg-white p-4 rounded-2xl text-center shadow hover:border-blue-500 border-2 border-transparent transition cursor-pointer">
-                        <i class="fas fa-video text-2xl text-blue-600"></i>
-                        <p class="text-xs font-bold mt-2">টিউটোরিয়াল</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl text-center shadow hover:border-green-500 border-2 border-transparent transition cursor-pointer">
-                        <i class="fas fa-calendar-alt text-2xl text-green-600"></i>
-                        <p class="text-xs font-bold mt-2">রুটিন</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl text-center shadow hover:border-red-500 border-2 border-transparent transition cursor-pointer">
-                        <i class="fas fa-headset text-2xl text-red-600"></i>
-                        <p class="text-xs font-bold mt-2">সাপোর্ট</p>
-                    </div>
-                </div>
+
+                <button onclick="submitExam()" class="w-full bg-slate-900 text-white py-6 rounded-3xl font-black shadow-2xl text-xl hover:bg-black transform active:scale-95 transition">
+                    ফাইনাল সাবমিট <i class="fas fa-paper-plane ml-2"></i>
+                </button>
             </div>
-        </div>
+        </section>
+
+    </main>
+
+    <div id="resultModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div id="resultCard" class="relative bg-white dark:bg-slate-900 w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden animate-fadeIn">
+            </div>
     </div>
 
-    <div id="studentProfile" class="container mx-auto mt-6 p-4 hidden no-print">
-        <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
-            <div class="brand-purple p-8 text-white flex flex-col items-center">
-                <div class="relative group">
-                    <img id="userAvatar" src="https://ui-avatars.com/api/?background=random" class="w-24 h-24 rounded-full border-4 border-white shadow-xl object-cover">
-                    <label class="absolute bottom-0 right-0 bg-yellow-400 text-black p-2 rounded-full cursor-pointer text-xs"><i class="fas fa-camera"></i><input type="file" id="avatarInput" class="hidden"></label>
-                </div>
-                <h2 id="profName" class="text-2xl font-black mt-4">নাম লোড হচ্ছে...</h2>
-                <p id="profClassRoll" class="opacity-80">শ্রেণী ও রোল লোড হচ্ছে...</p>
-            </div>
-            <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-purple-50 p-4 rounded-2xl text-center border">
-                    <p class="text-xs text-purple-500 font-bold uppercase">গড় নম্বর</p>
-                    <h3 id="avgScore" class="text-2xl font-black text-purple-800">০%</h3>
-                </div>
-                <div class="bg-green-50 p-4 rounded-2xl text-center border">
-                    <p class="text-xs text-green-500 font-bold uppercase">পেমেন্ট স্ট্যাটাস</p>
-                    <h3 class="text-2xl font-black text-green-800">OK</h3>
-                </div>
-                <div class="bg-orange-50 p-4 rounded-2xl text-center border">
-                    <p class="text-xs text-orange-500 font-bold uppercase">মোট পরীক্ষা</p>
-                    <h3 id="totalExams" class="text-2xl font-black text-orange-800">০</h3>
-                </div>
-                <div class="md:col-span-3">
-                    <h4 class="font-bold text-gray-800 mb-4 border-b pb-2">সর্বশেষ পরীক্ষার ইতিহাস</h4>
-                    <div id="profileResultList" class="space-y-3"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="onlineExamPortal" class="container mx-auto mt-6 p-4 hidden no-print">
-        <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
-            <div id="examStartView" class="p-10 text-center">
-                <i class="fas fa-brain text-5xl text-purple-600 mb-4"></i>
-                <h2 class="text-2xl font-bold mb-6">অনলাইন কুইজ পোর্টাল</h2>
-                <div class="space-y-4">
-                    <input type="text" id="exStudentName" placeholder="তোমার নাম" class="w-full p-4 border rounded-xl bg-gray-50">
-                    <select id="exSubject" class="w-full p-4 border rounded-xl bg-gray-50">
-                        <option value="গণিত">সাধারণ গণিত</option>
-                        <option value="উচ্চতর গণিত">উচ্চতর গণিত</option>
-                    </select>
-                    <button onclick="startExamNow()" class="w-full bg-green-600 text-white py-4 rounded-xl font-black shadow-xl hover:bg-green-700">পরীক্ষা শুরু করো</button>
-                </div>
-            </div>
-            <div id="examLiveView" class="p-8 hidden">
-                <div class="flex justify-between items-center mb-6 bg-yellow-100 p-4 rounded-xl font-bold">
-                    <span id="examTimer" class="text-red-600"><i class="fas fa-clock mr-2"></i>১০:০০</span>
-                    <span class="text-purple-800">প্রশ্ন: <span id="qIndex">১/১০</span></span>
-                </div>
-                <div id="questionContent" class="space-y-6"></div>
-                <button onclick="submitOnlineExam()" class="w-full mt-8 brand-purple text-white py-4 rounded-xl font-black shadow-xl">পরীক্ষা জমা দাও</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="loginSection" class="container mx-auto mt-12 p-6 max-w-md hidden no-print">
-        <div class="bg-white p-10 rounded-2xl shadow-2xl text-center border-t-4 border-purple-700">
-            <h2 class="text-2xl font-bold mb-6">অ্যাডমিন লগইন</h2>
-            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড" class="w-full p-4 border rounded-xl mb-6 text-center text-xl outline-none">
-            <button onclick="adminLogin()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">লগইন</button>
-        </div>
-    </div>
-
-    <div id="adminPanel" class="container mx-auto mt-6 p-4 hidden no-print">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-md border-b-4 border-blue-500">
-                <p class="text-xs text-gray-500 font-bold uppercase">মোট শিক্ষার্থী</p>
-                <h3 id="statTotalStudent" class="text-2xl font-black text-blue-600">0</h3>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-md border-b-4 border-green-500">
-                <p class="text-xs text-gray-500 font-bold uppercase">উপস্থিতি</p>
-                <h3 id="statTodayAtt" class="text-2xl font-black text-green-600">0</h3>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-md border-b-4 border-purple-500">
-                <p class="text-xs text-gray-500 font-bold uppercase">রেজাল্ট সংখ্যা</p>
-                <h3 id="statTotalResult" class="text-2xl font-black text-purple-600">0</h3>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-md border-b-4 border-orange-500">
-                <p class="text-xs text-gray-500 font-bold uppercase">আজকের পরীক্ষা</p>
-                <h3 id="statOnlineCount" class="text-2xl font-black text-orange-600">0</h3>
-            </div>
-        </div>
-
-        <div class="flex gap-4 mb-6 border-b overflow-x-auto no-scrollbar whitespace-nowrap">
-            <button onclick="switchAdminTab('resultTab')" id="btn-resultTab" class="tab-active py-2 px-4 font-bold">রেজাল্ট এন্ট্রি</button>
-            <button onclick="switchAdminTab('studentTab')" id="btn-studentTab" class="py-2 px-4 font-bold text-gray-500">শিক্ষার্থী ডাটাবেজ</button>
-            <button onclick="switchAdminTab('questionTab')" id="btn-questionTab" class="py-2 px-4 font-bold text-gray-500">অনলাইন প্রশ্ন</button>
-            <button onclick="switchAdminTab('noticeTab')" id="btn-noticeTab" class="py-2 px-4 font-bold text-gray-500">নোটিশ ও রুটিন</button>
-        </div>
-
-        <div id="resultTab" class="admin-tab-content space-y-6">
-            <div class="bg-white p-8 rounded-2xl shadow-lg border-l-8 border-purple-600">
-                <h2 class="text-xl font-bold mb-6 text-purple-900">অফলাইন রেজাল্ট এন্ট্রি (MCQ + CQ)</h2>
-                <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
-                    <div><label class="text-xs font-bold">তারিখ</label><input type="date" id="examDate" class="w-full p-2 border rounded-lg bg-gray-50"></div>
-                    <div><label class="text-xs font-bold">শ্রেণী</label><select id="stdClass" onchange="fetchStudentInfo(); updateSubjectInputs();" class="w-full p-2 border rounded-lg font-bold"><option value="">সিলেক্ট</option><option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option><option>SSC</option></select></div>
-                    <div><label class="text-xs font-bold">রোল</label><input type="number" id="stdRoll" oninput="fetchStudentInfo()" class="w-full p-2 border-2 border-indigo-200 rounded-lg outline-none"></div>
-                    <div class="col-span-2"><label class="text-xs font-bold">নাম</label><input type="text" id="stdName" class="w-full p-2 border rounded-lg bg-gray-100" readonly></div>
-                </div>
-                <div id="subjectInputs" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-purple-50 p-6 rounded-2xl mb-6"></div>
-                <button onclick="saveResultData()" class="brand-purple text-white px-8 py-3 rounded-xl font-bold shadow-xl">রেজাল্ট সেভ করুন</button>
-            </div>
-        </div>
-
-        <div id="studentTab" class="admin-tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-xl">
-                <h2 class="font-bold text-xl mb-4">নতুন শিক্ষার্থী যুক্ত করুন</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <input type="number" id="newRoll" placeholder="রোল" class="p-2 border rounded-xl">
-                    <input type="text" id="newName" placeholder="নাম" class="p-2 border rounded-xl">
-                    <select id="newClass" class="p-2 border rounded-xl"><option>৬ষ্ঠ</option><option>৭ম</option><option>৮ম</option><option>৯ম</option><option>১০ম</option><option>SSC</option></select>
-                    <input type="text" id="newWa" placeholder="হোয়াটসঅ্যাপ (8801...)" class="p-2 border rounded-xl">
-                    <button onclick="addStudentToDB()" class="md:col-span-4 bg-green-600 text-white font-bold py-2 rounded-xl">সেভ করুন</button>
-                </div>
-                <div id="dbList" class="mt-6 max-h-80 overflow-y-auto divide-y"></div>
-            </div>
-        </div>
-
-        <div id="questionTab" class="admin-tab-content hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl shadow-xl border-t-8 border-orange-500">
-                <h2 class="font-bold text-xl mb-4">অনলাইন MCQ প্রশ্ন যোগ করুন</h2>
-                <div class="space-y-4">
-                    <input type="text" id="qTitle" placeholder="প্রশ্নটি লিখুন" class="w-full p-3 border rounded-xl">
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="optA" placeholder="অপশন A" class="p-2 border rounded-xl">
-                        <input type="text" id="optB" placeholder="অপশন B" class="p-2 border rounded-xl">
-                        <input type="text" id="optC" placeholder="অপশন C" class="p-2 border rounded-xl">
-                        <input type="text" id="optD" placeholder="অপশন D" class="p-2 border rounded-xl">
-                    </div>
-                    <select id="correctOpt" class="w-full p-3 border rounded-xl font-bold bg-green-50">
-                        <option value="a">সঠিক উত্তর: A</option><option value="b">সঠিক উত্তর: B</option><option value="c">সঠিক উত্তর: C</option><option value="d">সঠিক উত্তর: D</option>
-                    </select>
-                    <button onclick="saveQuestionToFB()" class="bg-orange-600 text-white px-8 py-3 rounded-xl font-bold shadow-xl">প্রশ্নটি ডাটাবেজে পাঠান</button>
-                </div>
-                <div id="adminQuestionList" class="mt-8 space-y-3"></div>
-            </div>
-        </div>
-
-        <div class="mt-8 bg-white rounded-3xl shadow-xl overflow-hidden border">
-            <div class="p-4 brand-purple text-white flex justify-between items-center">
-                <h3 class="font-bold">রেজাল্ট ডাটাবেজ</h3>
-                <div class="flex gap-2">
-                    <input type="date" id="filterDate" onchange="renderResultTable()" class="text-black text-xs p-1 rounded">
-                    <button onclick="downloadMeritPDF()" class="bg-yellow-500 text-black px-3 py-1 rounded text-xs font-bold">মেধা তালিকা PDF</button>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-100 border-b">
-                        <tr><th class="p-4">রোল</th><th class="p-4">নাম</th><th class="p-4">শ্রেণী</th><th class="p-4">মোট নম্বর</th><th class="p-4">মেরিট</th><th class="p-4">অ্যাকশন</th></tr>
-                    </thead>
-                    <tbody id="dataTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="displayArea" class="container mx-auto p-4 hidden flex flex-col items-center">
-        <div id="pdfContent" class="bg-white p-8 rounded-lg shadow-xl border w-full max-w-md"></div>
-        <div class="mt-6 flex gap-4 no-print">
-            <button onclick="window.print()" class="bg-green-600 text-white px-6 py-3 rounded-xl font-bold"><i class="fas fa-print mr-2"></i>প্রিন্ট করুন</button>
-            <button onclick="location.reload()" class="bg-gray-500 text-white px-6 py-3 rounded-xl font-bold">ফিরে যান</button>
-        </div>
+    <div id="toast" class="fixed -bottom-20 left-1/2 -translate-x-1/2 z-[200] bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl transition-all duration-500 opacity-0 flex items-center gap-3">
+        <i class="fas fa-check-circle text-green-400"></i>
+        <span id="toastMsg">Action Successful!</span>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Firebase Configuration (Same as provided)
         const firebaseConfig = {
             apiKey: "AIzaSyC4j1NqdqdYoHlKj_mtX5Kcz_X0M9DhMdI",
             authDomain: "amirul-math-care.firebaseapp.com",
             projectId: "amirul-math-care",
-            storageBucket: "amirul-math-care.firebasestorage.app",
-            messagingSenderId: "1064654064871",
-            appId: "1:1064654064871:web:158df34bedc1d2b528a642",
             databaseURL: "https://amirul-math-care-default-rtdb.firebaseio.com"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Global DB Functions
+        window.dbSet = (path, data) => set(ref(db, path), data);
+        window.dbPush = (path, data) => push(ref(db, path), data);
+        window.dbRemove = (path) => remove(ref(db, path));
+        window.dbUpdate = (path, data) => update(ref(db, path), data);
+
         // Core Listeners
         onValue(ref(db, 'results'), (snap) => {
-            const data = snap.val() ? Object.values(snap.val()) : [];
-            localStorage.setItem('amc_db_final', JSON.stringify(data));
-            if(sessionStorage.getItem('is_admin')) renderResultTable();
+            const data = snap.val() ? Object.entries(snap.val()).map(([key, val]) => ({...val, fid: key})) : [];
+            localStorage.setItem('amc_results', JSON.stringify(data));
+            if(sessionStorage.getItem('is_admin')) renderAdminResultTable(data);
+            updateDashboardStats();
         });
 
         onValue(ref(db, 'students'), (snap) => {
             const data = snap.val() || {};
-            localStorage.setItem('amc_student_db', JSON.stringify(data));
-            if(sessionStorage.getItem('is_admin')) { loadStudentList(); updateAdminStats(); }
+            localStorage.setItem('amc_students', JSON.stringify(data));
+            if(sessionStorage.getItem('is_admin')) renderStudentList(data);
+            updateDashboardStats();
         });
 
-        onValue(ref(db, 'online_questions'), (snap) => {
-            const data = snap.val() ? Object.values(snap.val()) : [];
+        onValue(ref(db, 'questions'), (snap) => {
+            const data = snap.val() ? Object.entries(snap.val()).map(([key, val]) => ({...val, fid: key})) : [];
             localStorage.setItem('amc_questions', JSON.stringify(data));
-            renderAdminQuestions(snap.val());
+            if(sessionStorage.getItem('is_admin')) renderAdminQuestions(data);
         });
 
-        // Global DB Window functions
-        window.saveToFB = (path, data) => set(ref(db, path), data);
-        window.pushToFB = (path, data) => push(ref(db, path), data);
-        window.removeFromFB = (path) => remove(ref(db, path));
     </script>
 
     <script>
-        // --- System Logic & Features ---
-        let currentAnswers = {};
-        let examQuestions = [];
-        let timerInterval;
-
-        const subjectsConfig = {
+        // Global State
+        let performanceChart = null;
+        const subjectsMap = {
             "৬ষ্ঠ": ["গণিত", "বিজ্ঞান", "ইংরেজি"],
             "৭ম": ["গণিত", "বিজ্ঞান", "ইংরেজি"],
             "৮ম": ["গণিত", "বিজ্ঞান", "ইংরেজি"],
@@ -335,257 +683,532 @@
             "SSC": ["সাধারণ গণিত", "উচ্চতর গণিত", "ICT"]
         };
 
-        // 1. Student Profile Navigation
-        function enterStudentProfile() {
-            const roll = document.getElementById('searchRoll').value;
-            const cls = document.getElementById('searchClass').value;
-            if(!roll || !cls) return Swal.fire('Error', 'রোল ও শ্রেণী সিলেক্ট করো!', 'warning');
+        // --- Core Navigation & UI ---
 
-            const studentDB = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            const student = studentDB[`${cls}_${roll}`];
-            if(!student) return Swal.fire('Error', 'কোন শিক্ষার্থী পাওয়া যায়নি!', 'error');
+        function showSection(id) {
+            document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            
+            // Link styling
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('text-purple-700'));
+            // Trigger specific logic
+            if(id === 'studentProfile') initProfile();
+            window.scrollTo(0, 0);
+        }
 
-            document.getElementById('profName').innerText = student.name;
-            document.getElementById('profClassRoll').innerText = `শ্রেণী: ${student.cls} | রোল: ${student.roll}`;
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('dark-mode', isDark);
+        }
+
+        function showToast(msg, type = "success") {
+            const t = document.getElementById('toast');
+            const m = document.getElementById('toastMsg');
+            m.innerText = msg;
+            t.classList.add('toast-active');
+            setTimeout(() => t.classList.remove('toast-active'), 3000);
+        }
+
+        // --- Result Logic ---
+
+        function fetchStudentData() {
+            const r = document.getElementById('stdRoll').value;
+            const c = document.getElementById('stdClass').value;
+            const students = JSON.parse(localStorage.getItem('amc_students') || "{}");
+            const s = students[`${c}_${r}`];
+            document.getElementById('stdName').value = s ? s.name : "";
+        }
+
+        function updateSubjectUI() {
+            const cls = document.getElementById('stdClass').value;
+            const container = document.getElementById('dynamicSubjects');
+            if(!subjectsMap[cls]) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-400 italic py-10">শ্রেণী নির্বাচন করুন...</div>';
+                return;
+            }
+            container.innerHTML = subjectsMap[cls].map(sub => `
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-transparent hover:border-purple-200 transition group">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center text-purple-700 font-bold text-xs">${sub[0]}</div>
+                        <p class="font-black text-xs text-gray-500 uppercase tracking-widest">${sub}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-gray-400 ml-1">MCQ</label>
+                            <input type="number" id="mcq_${sub}" placeholder="0" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-100 font-bold text-center outline-none focus:border-purple-500">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-gray-400 ml-1">CQ</label>
+                            <input type="number" id="cq_${sub}" placeholder="0" class="w-full bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-100 font-bold text-center outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function saveResultToDatabase() {
+            const date = document.getElementById('examDate').value;
+            const cls = document.getElementById('stdClass').value;
+            const roll = document.getElementById('stdRoll').value;
+            const name = document.getElementById('stdName').value;
+
+            if(!date || !cls || !roll || !name) return Swal.fire('Error', 'সবগুলো ঘর পূরণ করুন', 'error');
+
+            let marks = {}, total = 0;
+            subjectsMap[cls].forEach(s => {
+                const m = parseInt(document.getElementById(`mcq_${s}`).value) || 0;
+                const c = parseInt(document.getElementById(`cq_${s}`).value) || 0;
+                marks[s] = { m, c, t: m+c };
+                total += (m+c);
+            });
+
+            const data = { date, cls, roll, name, marks, total, ts: Date.now() };
+            window.dbPush('results', data);
+            showToast('রেজাল্ট সফলভাবে সেভ হয়েছে');
+            resetResultForm();
+        }
+
+        function resetResultForm() {
+            document.getElementById('stdRoll').value = "";
+            document.getElementById('stdName').value = "";
+            document.querySelectorAll('#dynamicSubjects input').forEach(i => i.value = "");
+        }
+
+        // --- Profile & Analytics Logic ---
+
+        function checkStudentResult() {
+            const r = document.getElementById('searchRoll').value;
+            const c = document.getElementById('searchClass').value;
+            if(!r || !c) return Swal.fire('Sorry', 'রোল ও শ্রেণী সিলেক্ট করুন', 'warning');
+
+            const results = JSON.parse(localStorage.getItem('amc_results') || "[]");
+            const myRes = results.filter(x => x.roll == r && x.cls == c).sort((a,b) => b.ts - a.ts)[0];
+
+            if(!myRes) return Swal.fire('No Data', 'এই রোল নম্বরে কোন রেজাল্ট পাওয়া যায়নি', 'error');
+
+            const modal = document.getElementById('resultModal');
+            const card = document.getElementById('resultCard');
             
-            // Load Results for Profile
-            const allResults = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            const myResults = allResults.filter(r => r.roll == roll && r.cls == cls).sort((a,b) => new Date(b.date) - new Date(a.date));
+            card.innerHTML = `
+                <div class="p-8 bg-purple-700 text-white text-center relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center mx-auto mb-4 border border-white/30">
+                            <i class="fas fa-award text-3xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-black">${myRes.name}</h2>
+                        <p class="text-xs opacity-70 font-bold mt-1">শ্রেণী: ${myRes.cls} | রোল: ${myRes.roll}</p>
+                    </div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                </div>
+                <div class="p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">পরীক্ষার তারিখ: ${myRes.date}</p>
+                        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black">PASSED</span>
+                    </div>
+                    <div class="space-y-4 mb-8">
+                        ${Object.entries(myRes.marks).map(([sub, val]) => `
+                            <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <span class="font-bold text-sm text-slate-700">${sub}</span>
+                                <div class="flex gap-4">
+                                    <div class="text-center"><p class="text-[8px] text-gray-400 font-black">MCQ</p><p class="font-bold text-xs">${val.m}</p></div>
+                                    <div class="text-center"><p class="text-[8px] text-gray-400 font-black">CQ</p><p class="font-bold text-xs">${val.c}</p></div>
+                                    <div class="text-center"><p class="text-[8px] text-purple-400 font-black">TOTAL</p><p class="font-black text-xs text-purple-700">${val.t}</p></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="bg-slate-900 text-white p-6 rounded-[2rem] flex justify-between items-center shadow-xl">
+                        <div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">সর্বমোট নম্বর</p>
+                            <h3 class="text-3xl font-black text-yellow-400">${myRes.total}</h3>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">অবস্থান</p>
+                            <h3 class="text-2xl font-black">#${getMeritPosition(myRes)}</h3>
+                        </div>
+                    </div>
+                    <button onclick="closeModal()" class="w-full mt-6 py-4 font-black text-gray-500 hover:text-purple-700 transition">বন্ধ করুন</button>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function getMeritPosition(target) {
+            const results = JSON.parse(localStorage.getItem('amc_results') || "[]");
+            const pool = results.filter(x => x.date === target.date && x.cls === target.cls);
+            pool.sort((a,b) => b.total - a.total);
+            return pool.findIndex(x => x.roll == target.roll) + 1;
+        }
+
+        function initProfile() {
+            // Profile logic needs specific student roll from session/local storage
+            const searchRoll = document.getElementById('searchRoll').value;
+            const searchClass = document.getElementById('searchClass').value;
             
-            document.getElementById('totalExams').innerText = myResults.length;
-            const list = document.getElementById('profileResultList');
-            
-            if(myResults.length > 0) {
-                let totalScore = 0;
-                list.innerHTML = myResults.map(r => {
-                    totalScore += Number(r.grandTotal);
-                    return `<div class="p-3 bg-gray-50 border rounded-xl flex justify-between items-center">
-                        <div><p class="font-bold text-sm">${r.date}</p><p class="text-xs text-gray-500">নম্বর: ${r.grandTotal}</p></div>
-                        <span class="text-xs font-bold bg-indigo-100 p-1 px-3 rounded-full">#${getMerit(r.roll, r.cls, r.date)}</span>
-                    </div>`;
-                }).join('');
-                document.getElementById('avgScore').innerText = Math.round(totalScore / myResults.length) + "%";
-            } else {
-                list.innerHTML = "<p class='text-gray-400 text-sm'>কোন ফলাফল নেই।</p>";
+            if(!searchRoll || !searchClass) {
+                showSection('studentView');
+                return Swal.fire('Notice', 'প্রথমে হোম পেজে রোল ও শ্রেণী ইনপুট দিন', 'info');
             }
 
-            showSection('studentProfile');
+            const students = JSON.parse(localStorage.getItem('amc_students') || "{}");
+            const me = students[`${searchClass}_${searchRoll}`];
+            
+            if(!me) {
+                showSection('studentView');
+                return Swal.fire('Error', 'শিক্ষার্থী পাওয়া যায়নি', 'error');
+            }
+
+            // Update UI
+            document.getElementById('profName').innerText = me.name;
+            document.getElementById('profClass').innerText = `শ্রেণী: ${me.cls}`;
+            document.getElementById('profRoll').innerText = `রোল: ${me.roll}`;
+
+            const results = JSON.parse(localStorage.getItem('amc_results') || "[]");
+            const myHistory = results.filter(x => x.roll == searchRoll && x.cls == searchClass).sort((a,b) => b.ts - a.ts);
+            
+            document.getElementById('totalExams').innerText = myHistory.length;
+            
+            let totalMarks = 0;
+            myHistory.forEach(r => totalMarks += r.total);
+            const avg = myHistory.length > 0 ? Math.round(totalMarks / myHistory.length) : 0;
+            document.getElementById('avgPerf').innerText = `${avg}%`;
+            document.getElementById('perfBar').style.width = `${avg}%`;
+
+            renderHistoryTable(myHistory);
+            initChart(myHistory);
         }
 
-        // 2. Online Exam Logic
-        function startExamNow() {
-            const name = document.getElementById('exStudentName').value;
-            if(!name) return Swal.fire('Error', 'তোমার নাম লিখুন!', 'warning');
-            
-            examQuestions = JSON.parse(localStorage.getItem('amc_questions') || "[]");
-            if(examQuestions.length === 0) return Swal.fire('Oops', 'এখন কোন প্রশ্ন এভেলেবল নেই।', 'info');
-
-            document.getElementById('examStartView').classList.add('hidden');
-            document.getElementById('examLiveView').classList.remove('hidden');
-            
-            renderLiveQuestions();
-            startTimer(600); // 10 Minutes
+        function renderHistoryTable(data) {
+            const body = document.getElementById('profileResultTable');
+            body.innerHTML = data.map(r => `
+                <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td class="p-5 font-bold text-sm">${r.date}</td>
+                    <td class="p-5 font-bold text-xs text-purple-600">${Object.keys(r.marks).join(', ')}</td>
+                    <td class="p-5 font-black text-slate-800 dark:text-gray-200">${r.total}</td>
+                    <td class="p-5"><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-black">#${getMeritPosition(r)}</span></td>
+                    <td class="p-5"><span class="font-black text-sm ${r.total > 50 ? 'text-green-500' : 'text-orange-500'}">A+</span></td>
+                </tr>
+            `).join('');
         }
 
-        function renderLiveQuestions() {
-            const container = document.getElementById('questionContent');
-            container.innerHTML = examQuestions.map((q, i) => `
-                <div class="bg-gray-50 p-6 rounded-2xl border shadow-sm">
-                    <p class="font-bold text-lg mb-4">${i+1}. ${q.qTitle}</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        ${['a','b','c','d'].map(opt => `
-                            <div onclick="selectOpt(${i}, '${opt}')" id="q${i}_${opt}" class="option-card bg-white p-4 rounded-xl text-sm">
-                                ${opt.toUpperCase()}. ${q['opt'+opt.toUpperCase()]}
-                            </div>
+        function initChart(history) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            if(performanceChart) performanceChart.destroy();
+            
+            const labels = history.map(r => r.date).reverse();
+            const data = history.map(r => r.total).reverse();
+
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'প্রাপ্ত নম্বর',
+                        data: data,
+                        borderColor: '#4c1d95',
+                        backgroundColor: 'rgba(76, 29, 149, 0.1)',
+                        borderWidth: 4,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#4c1d95',
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // --- Admin Management ---
+
+        function handleAdminLogin() {
+            const p = document.getElementById('adminPass').value;
+            if(p === "1617798358Ma@1") {
+                sessionStorage.setItem('is_admin', 'true');
+                showSection('adminPanel');
+                document.getElementById('adminBtn').classList.add('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                showToast('অ্যাডমিন প্যানেলে স্বাগতম!');
+            } else {
+                Swal.fire('Access Denied', 'সঠিক পাসওয়ার্ড দিন', 'error');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.clear();
+            location.reload();
+        }
+
+        function switchAdminTab(tid) {
+            document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(tid).classList.remove('hidden');
+            document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById('btn-'+tid).classList.add('tab-active');
+        }
+
+        function updateDashboardStats() {
+            const s = JSON.parse(localStorage.getItem('amc_students') || "{}");
+            const r = JSON.parse(localStorage.getItem('amc_results') || "[]");
+            document.getElementById('statTotalStudents').innerText = Object.keys(s).length;
+            document.getElementById('statTotalResults').innerText = r.length;
+            document.getElementById('statAttendance').innerText = Math.round(Object.keys(s).length * 0.85);
+        }
+
+        function registerStudent() {
+            const r = document.getElementById('regRoll').value;
+            const n = document.getElementById('regName').value;
+            const c = document.getElementById('regClass').value;
+            if(!r || !n) return;
+            
+            const dbPath = `students/${c}_${r}`;
+            window.dbSet(dbPath, { roll: r, name: n, cls: c, enrolled: Date.now() });
+            showToast('শিক্ষার্থী নিবন্ধিত হয়েছে');
+            document.getElementById('regRoll').value = "";
+            document.getElementById('regName').value = "";
+        }
+
+        function renderStudentList(data) {
+            const container = document.getElementById('studentListContainer');
+            container.innerHTML = Object.values(data).map(s => `
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-lg relative group">
+                    <button onclick="deleteStudent('${s.cls}_${s.roll}')" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button>
+                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mb-4 text-purple-600 font-black text-xl">${s.roll}</div>
+                    <h4 class="font-black text-slate-800 dark:text-white">${s.name}</h4>
+                    <p class="text-xs font-bold text-gray-400 mt-1 uppercase tracking-widest">${s.cls}</p>
+                    <div class="mt-4 flex gap-2">
+                        <button class="flex-1 bg-slate-50 dark:bg-slate-800 py-2 rounded-xl text-[10px] font-black hover:bg-purple-100 transition">EDIT</button>
+                        <button class="flex-1 bg-slate-50 dark:bg-slate-800 py-2 rounded-xl text-[10px] font-black hover:bg-emerald-100 transition">CARD</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminResultTable(data) {
+            const body = document.getElementById('adminResultDB');
+            const sorted = data.sort((a,b) => b.ts - a.ts);
+            body.innerHTML = sorted.map(r => `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td class="p-5 font-bold text-sm">${r.date}</td>
+                    <td class="p-5 font-black text-purple-700">${r.roll}</td>
+                    <td class="p-5 font-black text-sm">${r.name}</td>
+                    <td class="p-5 font-bold text-xs text-gray-500">${r.cls}</td>
+                    <td class="p-5 font-black text-lg">${r.total}</td>
+                    <td class="p-5">
+                        <button onclick="deleteResult('${r.fid}')" class="text-gray-300 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // --- Online Exam Logic ---
+
+        let examTimer = null;
+        let examScore = 0;
+        let currentQuestions = [];
+
+        function startExamSession() {
+            const name = document.getElementById('exName').value;
+            if(!name) return Swal.fire('Error', 'তোমার নাম লিখুন', 'warning');
+            
+            const pool = JSON.parse(localStorage.getItem('amc_questions') || "[]");
+            if(pool.length === 0) return Swal.fire('Sorry', 'এই মুহূর্তে কোন প্রশ্ন পাওয়া যায়নি', 'info');
+
+            currentQuestions = pool.sort(() => 0.5 - Math.random()).slice(0, 10);
+            
+            document.getElementById('examIntro').classList.add('hidden');
+            document.getElementById('examLive').classList.remove('hidden');
+            renderExamQuestions();
+            startTimer(600); // 10 minutes
+        }
+
+        function renderExamQuestions() {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = currentQuestions.map((q, i) => `
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-xl border border-transparent hover:border-purple-200 transition">
+                    <div class="flex items-start gap-4 mb-6">
+                        <span class="w-8 h-8 bg-purple-700 text-white rounded-lg flex items-center justify-center font-black shrink-0">${i+1}</span>
+                        <h3 class="text-xl font-black leading-tight">${q.text}</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${['A','B','C','D'].map(opt => `
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="q${i}" value="${opt}" class="exam-option" onchange="updateProgress()">
+                                <div class="option-label p-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-2xl font-bold flex items-center gap-3 transition">
+                                    <span class="w-6 h-6 rounded-full border-2 border-purple-200 flex items-center justify-center text-[10px] font-black">${opt}</span>
+                                    ${q['opt'+opt]}
+                                </div>
+                            </label>
                         `).join('')}
                     </div>
                 </div>
             `).join('');
         }
 
-        function selectOpt(qIdx, opt) {
-            ['a','b','c','d'].forEach(o => document.getElementById(`q${qIdx}_${o}`).classList.remove('selected-option'));
-            document.getElementById(`q${qIdx}_${opt}`).classList.add('selected-option');
-            currentAnswers[qIdx] = opt;
-        }
-
-        function startTimer(duration) {
-            let timer = duration, minutes, seconds;
-            timerInterval = setInterval(() => {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-                document.getElementById('examTimer').innerText = `<i class="fas fa-clock mr-2"></i> ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                if (--timer < 0) submitOnlineExam();
+        function startTimer(sec) {
+            let s = sec;
+            examTimer = setInterval(() => {
+                s--;
+                const min = Math.floor(s / 60);
+                const rem = s % 60;
+                document.getElementById('timer').innerText = `${min}:${rem < 10 ? '0' : ''}${rem}`;
+                if(s <= 0) submitExam();
             }, 1000);
         }
 
-        function submitOnlineExam() {
-            clearInterval(timerInterval);
-            let score = 0;
-            examQuestions.forEach((q, i) => { if(currentAnswers[i] === q.correctOpt) score++; });
+        function updateProgress() {
+            const total = currentQuestions.length;
+            const done = document.querySelectorAll('input[type="radio"]:checked').length;
+            document.getElementById('progressText').innerText = `${done}/${total}`;
+            document.getElementById('progressBar').style.width = `${(done/total)*100}%`;
+        }
+
+        function submitExam() {
+            clearInterval(examTimer);
+            examScore = 0;
+            currentQuestions.forEach((q, i) => {
+                const ans = document.querySelector(`input[name="q${i}"]:checked`)?.value;
+                if(ans === q.correct) examScore++;
+            });
 
             Swal.fire({
                 title: 'পরীক্ষা শেষ!',
-                text: `অভিনন্দন! তোমার স্কোর: ${score}/${examQuestions.length}`,
+                text: `তোমার স্কোর: ${examScore} / ${currentQuestions.length}`,
                 icon: 'success',
-                confirmButtonText: 'ড্যাশবোর্ডে ফিরে যাও'
+                confirmButtonText: 'ফলাফল দেখুন'
             }).then(() => location.reload());
         }
 
-        // 3. Admin & Result Logic
-        function adminLogin() {
-            if(document.getElementById('adminPass').value === "1617798358Ma@1") {
-                sessionStorage.setItem('is_admin', 'true');
-                showSection('adminPanel');
-                document.getElementById('adminLoginBtn').classList.add('hidden');
-                document.getElementById('logoutBtn').classList.remove('hidden');
-                updateAdminStats();
-            } else Swal.fire('Error', 'ভুল পাসওয়ার্ড!', 'error');
+        function saveQuestion() {
+            const text = document.getElementById('qText').value;
+            const optA = document.getElementById('optA').value;
+            const optB = document.getElementById('optB').value;
+            const optC = document.getElementById('optC').value;
+            const optD = document.getElementById('optD').value;
+            const correct = document.getElementById('qCorrect').value;
+
+            if(!text || !optA || !optB) return;
+
+            window.dbPush('questions', { text, optA, optB, optC, optD, correct });
+            showToast('প্রশ্ন যুক্ত হয়েছে');
+            document.getElementById('qText').value = "";
+            document.getElementById('optA').value = "";
+            document.getElementById('optB').value = "";
+            document.getElementById('optC').value = "";
+            document.getElementById('optD').value = "";
         }
 
-        function updateSubjectInputs() {
-            const cls = document.getElementById('stdClass').value;
-            const container = document.getElementById('subjectInputs');
-            if(!subjectsConfig[cls]) return;
-            container.innerHTML = subjectsConfig[cls].map(sub => `
-                <div class="bg-white p-4 rounded-xl shadow-sm border">
-                    <p class="font-bold text-xs mb-2 text-purple-700">${sub}</p>
+        function renderAdminQuestions(data) {
+            const container = document.getElementById('adminQList');
+            container.innerHTML = data.map(q => `
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-lg relative group">
+                    <button onclick="deleteQuestion('${q.fid}')" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100"><i class="fas fa-trash"></i></button>
+                    <h4 class="font-black text-sm mb-4 pr-6">${q.text}</h4>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="mcq_${sub}" placeholder="MCQ" class="p-2 border rounded text-xs">
-                        <input type="number" id="cq_${sub}" placeholder="CQ" class="p-2 border rounded text-xs">
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold ${q.correct === 'A' ? 'border border-green-500 text-green-600' : ''}">A: ${q.optA}</div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold ${q.correct === 'B' ? 'border border-green-500 text-green-600' : ''}">B: ${q.optB}</div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold ${q.correct === 'C' ? 'border border-green-500 text-green-600' : ''}">C: ${q.optC}</div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold ${q.correct === 'D' ? 'border border-green-500 text-green-600' : ''}">D: ${q.optD}</div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function saveResultData() {
-            const date = document.getElementById('examDate').value;
-            const cls = document.getElementById('stdClass').value;
-            const roll = document.getElementById('stdRoll').value;
-            const name = document.getElementById('stdName').value;
-            if(!date || !cls || !roll) return alert("তথ্য পূরণ করো!");
-
-            let scores = {}, grandTotal = 0;
-            subjectsConfig[cls].forEach(sub => {
-                const m = Number(document.getElementById(`mcq_${sub}`).value || 0);
-                const c = Number(document.getElementById(`cq_${sub}`).value || 0);
-                scores[sub] = { m, c, t: m+c };
-                grandTotal += (m+c);
-            });
-
-            const entry = { date, cls, roll, name, grandTotal, scores, examType: "সাপ্তাহিক" };
-            window.pushToFB('results', entry);
-            Swal.fire('Saved', 'রেজাল্ট সেভ হয়েছে!', 'success');
-            document.getElementById('stdRoll').value = "";
+        // --- Utility Delete Functions ---
+        function deleteResult(id) {
+            Swal.fire({
+                title: 'আপনি কি নিশ্চিত?',
+                text: "এই ডাটা চিরতরে মুছে যাবে!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#4c1d95',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'হ্যাঁ, মুছুন!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.dbRemove(`results/${id}`);
+                    showToast('রেজাল্ট মুছে ফেলা হয়েছে');
+                }
+            })
         }
 
-        function saveQuestionToFB() {
-            const q = {
-                qTitle: document.getElementById('qTitle').value,
-                optA: document.getElementById('optA').value,
-                optB: document.getElementById('optB').value,
-                optC: document.getElementById('optC').value,
-                optD: document.getElementById('optD').value,
-                correctOpt: document.getElementById('correctOpt').value
-            };
-            window.pushToFB('online_questions', q);
-            Swal.fire('Added', 'প্রশ্ন যুক্ত হয়েছে!', 'success');
+        function deleteStudent(id) {
+            window.dbRemove(`students/${id}`);
+            showToast('শিক্ষার্থী রিমুভ হয়েছে');
         }
 
-        function addStudentToDB() {
-            const r = document.getElementById('newRoll').value;
-            const n = document.getElementById('newName').value;
-            const c = document.getElementById('newClass').value;
-            const w = document.getElementById('newWa').value;
-            if(!r || !n) return;
-            const db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            db[`${c}_${r}`] = { roll: r, name: n, cls: c, wa: w };
-            window.saveToFB('students', db);
-            Swal.fire('Success', 'শিক্ষার্থী যুক্ত হয়েছে', 'success');
+        function deleteQuestion(id) {
+            window.dbRemove(`questions/${id}`);
+            showToast('প্রশ্ন মুছে ফেলা হয়েছে');
         }
 
-        // --- Helper & Utility Functions ---
-        function showSection(id) {
-            ['studentView', 'studentProfile', 'onlineExamPortal', 'loginSection', 'adminPanel', 'displayArea'].forEach(s => {
-                document.getElementById(s).classList.add('hidden');
-            });
-            document.getElementById(id).classList.remove('hidden');
-            window.scrollTo(0,0);
+        function closeModal() {
+            document.getElementById('resultModal').classList.add('hidden');
         }
 
-        function switchAdminTab(tabId) {
-            document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-            document.querySelectorAll('[id^="btn-"]').forEach(b => {
-                b.classList.remove('tab-active'); b.classList.add('text-gray-500');
-            });
-            document.getElementById('btn-'+tabId).classList.add('tab-active');
-        }
+        // --- Helper: Clock & Slider ---
 
-        function getMerit(roll, cls, date) {
-            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]").filter(s => s.cls === cls && s.date === date);
-            data.sort((a,b) => b.grandTotal - a.grandTotal);
-            return data.findIndex(s => s.roll == roll) + 1;
-        }
-
-        function fetchStudentInfo() {
-            const r = document.getElementById('stdRoll').value;
-            const c = document.getElementById('stdClass').value;
-            const db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            const s = db[`${c}_${r}`];
-            document.getElementById('stdName').value = s ? s.name : "";
-        }
-
-        function updateAdminStats() {
-            const students = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            const results = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            document.getElementById('statTotalStudent').innerText = Object.keys(students).length;
-            document.getElementById('statTotalResult').innerText = results.length;
-        }
-
-        function renderResultTable() {
-            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            const filterDate = document.getElementById('filterDate').value;
-            if(filterDate) data = data.filter(r => r.date === filterDate);
-            
-            document.getElementById('dataTableBody').innerHTML = data.sort((a,b) => b.grandTotal - a.grandTotal).map(r => `
-                <tr class="border-b">
-                    <td class="p-4 font-bold">${r.roll}</td>
-                    <td class="p-4">${r.name}</td>
-                    <td class="p-4">${r.cls}</td>
-                    <td class="p-4 font-black text-indigo-600">${r.grandTotal}</td>
-                    <td class="p-4"><span class="bg-yellow-100 px-2 py-1 rounded">#${getMerit(r.roll, r.cls, r.date)}</span></td>
-                    <td class="p-4"><button onclick="deleteResult('${r.date}', '${r.roll}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
-                </tr>`).join('');
-        }
-
-        function loadStudentList() {
-            const db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            document.getElementById('dbList').innerHTML = Object.values(db).map(s => `
-                <div class="flex justify-between items-center py-2">
-                    <div class="text-sm"><b>[${s.cls}]</b> ${s.roll} - ${s.name}</div>
-                    <button class="text-red-400 text-xs"><i class="fas fa-trash"></i></button>
-                </div>`).join('');
-        }
-
-        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
-        function logout() { sessionStorage.clear(); location.reload(); }
-
-        window.onload = () => {
-            // Hero Slider Initial
-            const track = document.getElementById('sliderTrack');
-            const images = [
-                "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=1000",
-                "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000"
-            ];
-            track.innerHTML = images.map(img => `<div class="slide"><img src="${img}"><div class="absolute inset-0 flex flex-col justify-center items-center text-white p-6"><h2 class="text-4xl font-black mb-2">AMIRUL MATH CARE</h2><p>গণিত হোক আনন্দের মাধ্যম</p></div></div>`).join('');
-            
-            let idx = 0;
+        function initClock() {
             setInterval(() => {
-                idx = (idx + 1) % 2;
-                track.style.transform = `translateX(-${idx * 100}%)`;
-            }, 5000);
+                const now = new Date();
+                document.getElementById('liveClock').innerText = now.toLocaleTimeString();
+            }, 1000);
+        }
+
+        function initHeroSlider() {
+            const track = document.getElementById('heroSlider');
+            const slides = [
+                { img: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2000", title: "গণিত হোক নেশার মতো", sub: "ডিজিটাল ক্লাসরুমে আপনাকে স্বাগতম" },
+                { img: "https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=2000", title: "বিজ্ঞানের বিস্ময় জানুন", sub: "বাস্তব উদাহরণের মাধ্যমে শিক্ষা" },
+                { img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=2000", title: "সফলতার শীর্ষে পৌঁছান", sub: "আমাদের গাইডলাইন আপনার ভবিষ্যৎ" }
+            ];
+
+            track.innerHTML = slides.map(s => `
+                <div class="slide min-width-100 flex-shrink-0 relative w-full h-full" style="min-width: 100%">
+                    <img src="${s.img}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 slide-overlay flex flex-col justify-center items-center text-white p-10 text-center">
+                        <h2 class="text-5xl md:text-7xl font-black mb-6 animate-fadeIn">${s.title}</h2>
+                        <div class="w-24 h-2 bg-yellow-400 rounded-full mb-6"></div>
+                        <p class="text-xl md:text-2xl font-medium opacity-90">${s.sub}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            let current = 0;
+            setInterval(() => {
+                current = (current + 1) % slides.length;
+                track.style.transform = `translateX(-${current * 100}%)`;
+            }, 6000);
+        }
+
+        // Init App
+        window.onload = () => {
+            initClock();
+            initHeroSlider();
+            
+            // Handle dark mode preference
+            if(localStorage.getItem('dark-mode') === 'true') document.body.classList.add('dark-mode');
+            
+            // Hide Loader
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 1000);
+
+            // Restore session
+            if(sessionStorage.getItem('is_admin') === 'true') {
+                document.getElementById('adminBtn').classList.add('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+            }
         };
+
     </script>
 </body>
 </html>
