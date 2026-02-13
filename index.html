@@ -183,6 +183,19 @@
                         </div>
 
                         <div class="space-y-2">
+                            <label class="text-sm font-bold text-indigo-900 dark:text-indigo-300 ml-2">পরীক্ষার ধরন</label>
+                            <div class="relative">
+                                <i class="fas fa-file-signature absolute left-4 top-4 text-indigo-400"></i>
+                                <select id="searchExamType" class="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-700 border-none rounded-2xl focus:ring-4 focus:ring-indigo-200 transition outline-none text-black dark:text-white appearance-none">
+                                    <option value="দৈনিক">দৈনিক পরীক্ষা</option>
+                                    <option value="সাপ্তাহিক" selected>সাপ্তাহিক পরীক্ষা</option>
+                                    <option value="মাসিক">মাসিক পরীক্ষা</option>
+                                    <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
                             <label class="text-sm font-bold text-indigo-900 dark:text-indigo-300 ml-2">শ্রেণী নির্বাচন করুন</label>
                             <div class="relative">
                                 <i class="fas fa-layer-group absolute left-4 top-4 text-indigo-400"></i>
@@ -198,7 +211,7 @@
                             </div>
                         </div>
 
-                        <div class="space-y-2 md:col-span-2">
+                        <div class="space-y-2">
                             <label class="text-sm font-bold text-indigo-900 dark:text-indigo-300 ml-2">শিক্ষার্থীর রোল নম্বর</label>
                             <div class="relative">
                                 <i class="fas fa-id-card absolute left-4 top-4 text-indigo-400"></i>
@@ -307,10 +320,19 @@
                 <div class="bg-white dark:bg-gray-800 p-8 rounded-[35px] shadow-xl border-l-8 border-purple-600">
                     <h3 class="text-xl font-black mb-8 dark:text-white flex items-center gap-3"><i class="fas fa-plus-circle text-purple-600"></i> নতুন রেজাল্ট এন্ট্রি (MCQ + CQ)</h3>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase">তারিখ</label>
                             <input type="date" id="entryDate" class="w-full p-3 bg-gray-50 dark:bg-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-purple-200 dark:text-white">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">পরীক্ষার ধরন</label>
+                            <select id="entryExamType" class="w-full p-3 bg-gray-50 dark:bg-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-purple-200 dark:text-white">
+                                <option value="দৈনিক">দৈনিক</option>
+                                <option value="সাপ্তাহিক" selected>সাপ্তাহিক</option>
+                                <option value="মাসিক">মাসিক</option>
+                                <option value="বার্ষিক">বার্ষিক</option>
+                            </select>
                         </div>
                         <div class="space-y-1">
                             <label class="text-[10px] font-bold text-gray-400 uppercase">শ্রেণী</label>
@@ -477,7 +499,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Firebase Config (Keep same as yours)
         const firebaseConfig = {
             apiKey: "AIzaSyC4j1NqdqdYoHlKj_mtX5Kcz_X0M9DhMdI",
             authDomain: "amirul-math-care.firebaseapp.com",
@@ -491,12 +512,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Global DB Functions
         window.saveDataToFB = (path, data) => set(ref(db, path), data);
         window.updateDataInFB = (path, data) => update(ref(db, path), data);
         window.removeDataFromFB = (path) => remove(ref(db, path));
 
-        // Realtime Listeners
         onValue(ref(db, 'results'), (snapshot) => {
             const data = snapshot.val() ? Object.values(snapshot.val()) : [];
             localStorage.setItem('amc_res_db', JSON.stringify(data));
@@ -519,7 +538,6 @@
     </script>
 
     <script>
-        // --- System Variables ---
         let currentSlide = 0;
         let subjectsByClass = {
             "৬ষ্ঠ": ["গণিত", "বাংলা", "ইংরেজি", "বিজ্ঞান", "সমাজ", "ধর্ম"],
@@ -530,7 +548,6 @@
             "SSC": ["সাধারণ গণিত", "উচ্চতর গণিত", "পদার্থ", "রসায়ন"]
         };
 
-        // --- Core UI Functions ---
         function toggleView(sectionId) {
             ['studentView', 'loginSection', 'adminPanel', 'displayArea'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
@@ -555,12 +572,10 @@
             });
             document.getElementById(`tabBtn-${tabId}`).classList.add('bg-indigo-600', 'text-white');
             document.getElementById(`tabBtn-${tabId}`).classList.remove('bg-white', 'dark:bg-gray-800', 'text-gray-600', 'dark:text-gray-300');
-
             document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.add('hidden'));
             document.getElementById(`tabContent-${tabId}`).classList.remove('hidden');
         }
 
-        // --- Authentication ---
         function attemptLogin() {
             const pass = document.getElementById('adminPass').value;
             if (pass === "1617798358Ma@1") {
@@ -581,7 +596,6 @@
             location.reload();
         }
 
-        // --- Site Configuration (Admin Controls) ---
         function updateWebsiteFeatures() {
             const data = {
                 lecture: document.getElementById('linkLecture').value,
@@ -598,8 +612,6 @@
             if (!data) return;
             document.getElementById('scrollingNotice').innerText = data.notice || "স্বাগতম আমিরুল ম্যাথ কেয়ারে।";
             document.getElementById('floatingWA').href = `https://wa.me/88${data.feedback}`;
-            
-            // Fill inputs in admin panel if logged in
             if(document.getElementById('linkLecture')) {
                 document.getElementById('linkLecture').value = data.lecture || "";
                 document.getElementById('linkLive').value = data.live || "";
@@ -613,7 +625,6 @@
             const config = JSON.parse(localStorage.getItem('amc_site_config') || "{}");
             const target = config[type];
             if (!target) return alert("অ্যাডমিন এখনো কোনো লিংক প্রদান করেনি!");
-
             if (type === 'feedback') {
                 window.open(`https://wa.me/88${target}`, '_blank');
             } else {
@@ -621,20 +632,14 @@
             }
         }
 
-        // --- Student Management ---
-        let currentEditStdId = null;
-
         function saveStudentToDB() {
             const roll = document.getElementById('stdRoll').value;
             const name = document.getElementById('stdName').value;
             const cls = document.getElementById('stdClass').value;
             const wa = document.getElementById('stdWa').value;
-
             if (!roll || !name) return alert("রোল এবং নাম অবশ্যই দিতে হবে!");
-
             const stdId = `${cls}_${roll}`;
             const stdData = { roll, name, cls, wa };
-
             window.saveDataToFB(`students/${stdId}`, stdData);
             alert("শিক্ষার্থী ডাটাবেজে সংরক্ষিত হয়েছে!");
             clearStdForm();
@@ -647,14 +652,12 @@
             document.getElementById('stdFormTitle').innerHTML = '<i class="fas fa-user-plus text-blue-600"></i> নতুন শিক্ষার্থী এনরোলমেন্ট';
             document.getElementById('saveStdBtn').innerText = 'সেভ করুন';
             document.getElementById('cancelStdBtn').classList.add('hidden');
-            currentEditStdId = null;
         }
 
         function refreshStdList() {
             const db = JSON.parse(localStorage.getItem('amc_std_db') || "{}");
             const tbody = document.getElementById('stdListBody');
             const list = Object.values(db).sort((a,b) => a.cls.localeCompare(b.cls) || a.roll - b.roll);
-            
             tbody.innerHTML = list.map(s => `
                 <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                     <td class="p-5 font-bold text-blue-600">${s.cls}</td>
@@ -673,16 +676,13 @@
             const db = JSON.parse(localStorage.getItem('amc_std_db') || "{}");
             const s = db[id];
             if(!s) return;
-
             document.getElementById('stdRoll').value = s.roll;
             document.getElementById('stdName').value = s.name;
             document.getElementById('stdClass').value = s.cls;
             document.getElementById('stdWa').value = s.wa;
-
             document.getElementById('stdFormTitle').innerText = 'শিক্ষার্থী তথ্য আপডেট করুন';
             document.getElementById('saveStdBtn').innerText = 'আপডেট করুন';
             document.getElementById('cancelStdBtn').classList.remove('hidden');
-            currentEditStdId = id;
             window.scrollTo(0, 300);
         }
 
@@ -692,12 +692,10 @@
             }
         }
 
-        // --- Result Processing ---
         function setupSubjectInputs() {
             const cls = document.getElementById('entryClass').value;
             const grid = document.getElementById('subjectsGrid');
             if (!cls) return grid.innerHTML = '<p class="text-center text-gray-400 py-4 italic">শ্রেণী নির্বাচন করলে বিষয়ের ঘরগুলো প্রদর্শিত হবে</p>';
-
             const subjects = subjectsByClass[cls] || ["গণিত"];
             grid.innerHTML = subjects.map(sub => `
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-3 items-center bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm">
@@ -729,7 +727,6 @@
             const roll = document.getElementById('entryRoll').value;
             const cls = document.getElementById('entryClass').value;
             if(!roll || !cls) return;
-
             const db = JSON.parse(localStorage.getItem('amc_std_db') || "{}");
             const s = db[`${cls}_${roll}`];
             document.getElementById('entryName').value = s ? s.name : "পাওয়া যায়নি!";
@@ -737,12 +734,11 @@
 
         function processResultSave() {
             const date = document.getElementById('entryDate').value;
+            const type = document.getElementById('entryExamType').value;
             const cls = document.getElementById('entryClass').value;
             const roll = document.getElementById('entryRoll').value;
             const name = document.getElementById('entryName').value;
-
             if(!date || !cls || !roll || name === "পাওয়া যায়নি!") return alert("দয়া করে সঠিক তথ্য প্রদান করুন!");
-
             let totalMarks = 0;
             let scores = {};
             subjectsByClass[cls].forEach(sub => {
@@ -750,14 +746,11 @@
                 const mcq = Number(document.getElementById(`mcq_${sub}`).value || 0);
                 const cq = Number(document.getElementById(`cq_${sub}`).value || 0);
                 const subTotal = mcq + cq;
-                
                 scores[sub] = { fm, mcq, cq, subTotal };
                 totalMarks += subTotal;
             });
-
-            const resId = `${date}_${cls}_${roll}`;
-            const resData = { id: resId, date, cls, roll, name, scores, totalMarks };
-
+            const resId = `${date}_${type}_${cls}_${roll}`;
+            const resData = { id: resId, date, examType: type, cls, roll, name, scores, totalMarks };
             window.saveDataToFB(`results/${resId}`, resData);
             alert("রেজাল্ট সফলভাবে সংরক্ষিত হয়েছে!");
             clearResultForm();
@@ -772,10 +765,7 @@
         function refreshResTable() {
             const data = JSON.parse(localStorage.getItem('amc_res_db') || "[]");
             const tbody = document.getElementById('resDataTableBody');
-            
-            // Sort by Date (latest) and Total Marks (highest)
             data.sort((a,b) => b.date.localeCompare(a.date) || b.totalMarks - a.totalMarks);
-
             tbody.innerHTML = data.map(r => `
                 <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                     <td class="p-5">${r.date}</td>
@@ -796,21 +786,20 @@
             }
         }
 
-        // --- Result View System (Student Portal) ---
         function executeResultSearch() {
             const date = document.getElementById('searchDate').value;
+            const type = document.getElementById('searchExamType').value;
             const cls = document.getElementById('searchClass').value;
             const roll = document.getElementById('searchRoll').value;
 
             if(!date || !cls || !roll) return alert("দয়া করে সবগুলো ঘর পূরণ করুন!");
 
             const db = JSON.parse(localStorage.getItem('amc_res_db') || "[]");
-            const res = db.find(i => i.date === date && i.cls === cls && i.roll == roll);
+            const res = db.find(i => i.date === date && i.cls === cls && i.roll == roll && (i.examType === type || !i.examType));
 
             if(!res) return alert("দুঃখিত! এই তথ্যের ভিত্তিতে কোনো ফলাফল পাওয়া যায়নি।");
 
-            const meritPosition = calculateMerit(date, cls, roll);
-
+            const meritPosition = calculateMerit(date, cls, roll, type);
             toggleView('displayArea');
             const target = document.getElementById('printTarget');
             
@@ -838,7 +827,8 @@
                 <div style="display: flex; justify-content: space-between; margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 20px;">
                     <div style="font-size: 13px; line-height: 1.8;">
                         নাম: <b style="font-size: 16px;">${res.name}</b><br>
-                        রোল: <b>${res.roll}</b> | শ্রেণী: <b>${res.cls}</b>
+                        রোল: <b>${res.roll}</b> | শ্রেণী: <b>${res.cls}</b><br>
+                        ধরণ: <b>${res.examType || 'সাধারণ'}</b>
                     </div>
                     <div style="text-align: right; font-size: 13px; line-height: 1.8;">
                         তারিখ: <b>${res.date}</b><br>
@@ -866,41 +856,26 @@
                     </div>
                     <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px;">
                         <p style="margin: 0; font-size: 11px; font-weight: bold; text-transform: uppercase; opacity: 0.8;">Remarks</p>
-                        <h4 style="margin: 0; font-size: 18px; font-weight: 900;">${res.totalMarks > 100 ? 'Excellent' : 'Good'}</h4>
-                    </div>
-                </div>
-
-                <div style="margin-top: 40px; display: flex; justify-content: space-between;">
-                    <div style="text-align: center;">
-                        <div style="width: 120px; border-top: 1px dashed #000; margin-bottom: 5px;"></div>
-                        <p style="font-size: 10px; font-weight: bold;">Guardian Signature</p>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="width: 120px; border-top: 1px solid #4c1d95; margin-bottom: 5px;"></div>
-                        <p style="font-size: 10px; font-weight: bold; color: #4c1d95;">Director Signature</p>
+                        <h4 style="margin: 0; font-size: 18px; font-weight: 900;">${res.totalMarks > 60 ? 'Excellent' : 'Good'}</h4>
                     </div>
                 </div>
             `;
         }
 
-        function calculateMerit(date, cls, roll) {
+        function calculateMerit(date, cls, roll, type) {
             const db = JSON.parse(localStorage.getItem('amc_res_db') || "[]");
-            const filtered = db.filter(i => i.date === date && i.cls === cls);
+            const filtered = db.filter(i => i.date === date && i.cls === cls && (i.examType === type || !i.examType));
             filtered.sort((a,b) => b.totalMarks - a.totalMarks);
             return filtered.findIndex(i => i.roll == roll) + 1;
         }
 
-        // --- Attendance Logic ---
         function renderAttendanceSheet() {
             const cls = document.getElementById('attClassSelector').value;
             const grid = document.getElementById('attendanceSheetGrid');
             if(!cls) return grid.innerHTML = '<p class="col-span-full text-center text-gray-400 py-10">শ্রেণী নির্বাচন করলে উপস্থিতির তালিকা আসবে</p>';
-
             const db = JSON.parse(localStorage.getItem('amc_std_db') || "{}");
             const students = Object.values(db).filter(s => s.cls === cls).sort((a,b) => a.roll - b.roll);
-            
             if(students.length === 0) return grid.innerHTML = '<p class="col-span-full text-center text-rose-500 py-10 font-bold">এই শ্রেণীতে কোনো শিক্ষার্থী পাওয়া যায়নি!</p>';
-
             grid.innerHTML = students.map(s => `
                 <label class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl cursor-pointer border-2 border-transparent hover:border-green-200 transition">
                     <input type="checkbox" class="att-check-item w-6 h-6 accent-green-600" onchange="updateAttCounter()">
@@ -924,20 +899,15 @@
             alert(`${date} তারিখের হাজিরা রিপোর্ট সফলভাবে সংরক্ষিত হয়েছে!`);
         }
 
-        // --- Merit List Generator ---
         function generateMeritReport() {
             const date = prompt("কোন তারিখের মেধা তালিকা দেখতে চান? (YYYY-MM-DD)");
             const cls = prompt("কোন শ্রেণীর? (উদা: SSC)");
             if(!date || !cls) return;
-
             const db = JSON.parse(localStorage.getItem('amc_res_db') || "[]");
             const filtered = db.filter(i => i.date === date && i.cls === cls).sort((a,b) => b.totalMarks - a.totalMarks);
-            
             if(filtered.length === 0) return alert("ঐ তারিখে কোনো ডাটা পাওয়া যায়নি!");
-
             toggleView('displayArea');
             const target = document.getElementById('printTarget');
-            
             let rows = filtered.map((r, index) => `
                 <tr style="border-bottom: 1px solid #eee">
                     <td style="padding: 10px;">${index + 1}</td>
@@ -946,7 +916,6 @@
                     <td style="padding: 10px; font-weight: 900; color: #4c1d95;">${r.totalMarks}</td>
                 </tr>
             `).join('');
-
             target.innerHTML = `
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h1 style="color: #4c1d95; margin: 0;">AMIRUL MATH CARE</h1>
@@ -954,20 +923,12 @@
                     <p>শ্রেণী: <b>${cls}</b> | তারিখ: <b>${date}</b></p>
                 </div>
                 <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                    <thead style="background: #f8fafc; border-bottom: 2px solid #4c1d95;">
-                        <tr>
-                            <th style="padding: 10px;">স্থান</th>
-                            <th style="padding: 10px;">রোল</th>
-                            <th style="padding: 10px;">নাম</th>
-                            <th style="padding: 10px;">মোট নম্বর</th>
-                        </tr>
-                    </thead>
+                    <thead><tr style="background: #f8fafc; border-bottom: 2px solid #4c1d95;"><th style="padding: 10px;">স্থান</th><th style="padding: 10px;">রোল</th><th style="padding: 10px;">নাম</th><th style="padding: 10px;">মোট নম্বর</th></tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
             `;
         }
 
-        // --- Miscellaneous ---
         function moveSlide(dir) {
             const track = document.getElementById('sliderTrack');
             const total = track.children.length;
@@ -977,13 +938,7 @@
 
         function downloadAsPDF() {
             const element = document.getElementById('printTarget');
-            const opt = {
-                margin: 0.5,
-                filename: 'Amirul_Math_Care_Result.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
+            const opt = { margin: 0.5, filename: 'AMC_Result.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } };
             html2pdf().set(opt).from(element).save();
         }
 
@@ -996,9 +951,7 @@
             }
         }
 
-        // --- Initialization ---
         window.onload = () => {
-            // Setup Slider Slides
             const sliderTrack = document.getElementById('sliderTrack');
             const slides = [
                 { title: "গণিতের ভয় আর নয়", img: "https://i.ibb.co/Lhy0W0P/1000018420.jpg" },
@@ -1008,22 +961,14 @@
             sliderTrack.innerHTML = slides.map(s => `
                 <div class="slide-item">
                     <img src="${s.img}">
-                    <div class="slide-overlay">
-                        <h2 class="text-3xl font-black">${s.title}</h2>
-                        <p class="text-amber-400 font-bold">Amirul Math Care</p>
-                    </div>
+                    <div class="slide-overlay"><h2 class="text-3xl font-black">${s.title}</h2><p class="text-amber-400 font-bold">Amirul Math Care</p></div>
                 </div>
             `).join('');
-
-            // Auto Slide
             setInterval(() => moveSlide(1), 5000);
-
-            // Theme Check
             if(localStorage.getItem('amc_theme') === 'dark') toggleTheme();
-
-            // Set Current Date
             document.getElementById('attTrackDate').valueAsDate = new Date();
             document.getElementById('entryDate').valueAsDate = new Date();
+            document.getElementById('searchDate').valueAsDate = new Date();
         };
     </script>
 </body>
