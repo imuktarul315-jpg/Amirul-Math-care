@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> মুক্তারুল ই-প্রশ্ন ব্যাংক - আল্টিমেট এডিশন ২০২৬</title>
+    <title>আমিরুল স্মার্ট প্রশ্ন ব্যাংক - আল্টিমেট এডিশন ২০২৬</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,7 +19,7 @@
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root { 
@@ -53,7 +53,6 @@
             transition: background 0.3s, color 0.3s;
         }
         
-        /* Glassmorphism Header */
         .header { 
             background: var(--card-bg); 
             backdrop-filter: blur(12px);
@@ -71,14 +70,16 @@
 
         .logo-area { font-weight: 600; font-size: 20px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
 
-        .nav-tabs { display: flex; gap: 12px; }
+        .nav-tabs { display: flex; gap: 12px; align-items: center; }
         .nav-tabs button { padding: 10px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; background: var(--border); color: var(--text-main); font-size: 14px; display: flex; align-items: center; gap: 8px; }
         .nav-tabs button.active { background: var(--primary); color: white; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); }
+        .nav-tabs button.btn-logout { background: var(--danger); color: white; }
+        .user-status-text { font-size: 13px; font-weight: 600; color: var(--success); }
 
         .container { max-width: 1400px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: var(--sidebar-width) 1fr; gap: 25px; }
+        .container.no-sidebar { grid-template-columns: 1fr; }
         @media (max-width: 992px) { .container { grid-template-columns: 1fr; } }
 
-        /* Sidebar Glassmorphism */
         .sidebar { 
             background: var(--card-bg); 
             backdrop-filter: blur(10px);
@@ -88,14 +89,17 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.02); 
             height: fit-content; 
         }
-        .sidebar h3 { margin: 18px 0 8px 0; color: var(--primary); font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-        .sidebar h3:first-child { margin-top: 0; }
-        .sidebar ul { list-style: none; padding: 0; margin: 0; }
+        
+        /* Dropdown/Accordion Menu Styling */
+        .sidebar-dropdown { margin-bottom: 12px; }
+        .dropdown-btn { width: 100%; text-align: left; background: none; border: none; padding: 12px 14px; border-radius: 12px; color: var(--primary); font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border); }
+        .dropdown-container { display: none; list-style: none; padding: 5px 0 0 10px; margin: 0; }
+        .dropdown-container.show { display: block; }
+
         .sidebar ul li { padding: 12px 14px; cursor: pointer; border-radius: 12px; transition: 0.2s; margin-bottom: 6px; font-size: 15px; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
         .sidebar ul li:hover { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
         .sidebar ul li.active-menu { background: var(--primary); color: white; font-weight: 600; }
 
-        /* Cards and Components */
         .card { 
             background: var(--card-bg); 
             backdrop-filter: blur(10px);
@@ -121,13 +125,12 @@
 
         .preview-box { background: rgba(0,0,0,0.02); border: 2px dashed var(--border); border-radius: 14px; padding: 18px; margin: 15px 0; min-height: 50px; overflow-x: auto; color: var(--text-main); }
 
-        /* Advanced Question Cards */
         .q-card { background: var(--card-bg); border-radius: 18px; padding: 20px; margin-bottom: 15px; display: flex; gap: 15px; border-left: 5px solid var(--primary); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: 0.3s; position: relative; align-items: flex-start; }
         .q-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
         .badge { font-size: 12px; padding: 5px 12px; border-radius: 8px; background: var(--border); font-weight: 600; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px; }
         .badge-type { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .answer-container { margin-top: 10px; padding: 10px 15px; background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--success); border-radius: 8px; font-size: 15px; }
 
-        /* Floating Bar */
         .footer-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 14px 35px; border-radius: 50px; display: flex; gap: 25px; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 1000; border: 1px solid #334155; }
         .btn-action { background: var(--success); color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-weight: bold; font-family: inherit; font-size: 15px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-action:hover { opacity: 0.9; transform: scale(1.02); }
@@ -136,16 +139,58 @@
         .btn-delete { color: var(--danger); cursor: pointer; font-size: 18px; transition: 0.2s; }
         .btn-edit:hover, .btn-delete:hover { transform: scale(1.2); }
 
-        /* Widgets */
         .stat-box { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 20px; border-radius: 16px; text-align: center; }
         .chat-box { height: 200px; overflow-y: auto; background: rgba(0,0,0,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
         .chat-msg { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 14px; }
         
         .theme-toggle { background: transparent; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; transition: 0.3s; }
         .theme-toggle:hover { background: rgba(0,0,0,0.05); }
+
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .auth-card { background: var(--bg); border: 1px solid var(--border); padding: 35px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); width: 100%; max-width: 420px; box-sizing: border-box; }
+        .auth-card h2 { margin-top: 0; display: flex; align-items: center; gap: 12px; color: var(--dark); font-size: 22px; }
+        .auth-toggle-link { text-align: center; margin-top: 15px; font-size: 14px; color: var(--primary); cursor: pointer; font-weight: 600; }
+        
+        #pdf-render-template { display: none; padding: 40px; background: #ffffff; color: #000000; font-family: 'Hind Siliguri', sans-serif; }
+        .pdf-header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
+        .pdf-q-item { margin-bottom: 20px; font-size: 16px; line-height: 1.6; }
+        .pdf-q-meta { font-size: 13px; font-weight: bold; color: #444; margin-bottom: 4px; }
     </style>
 </head>
 <body>
+
+<div id="authOverlay" class="auth-overlay" style="display: none;">
+    <div id="adminAuthCard" class="auth-card" style="display: none;">
+        <h2><i class="fa-solid fa-user-lock" style="color:var(--danger)"></i> এডমিন সিকিউরিটি গেট</h2>
+        <p style="font-size:14px; margin-bottom:20px;">অ্যাডমিন প্যানেলে প্রবেশ করতে পাসওয়ার্ড ভেরিফাই করুন।</p>
+        <div style="margin-bottom:15px;">
+            <label>এডমিন এক্সেস পাসওয়ার্ড</label>
+            <input type="password" id="adminPasswordInput" placeholder="পাসওয়ার্ড দিন...">
+        </div>
+        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+            <button onclick="closeAuth()" class="btn-action" style="background:#64748b;"><i class="fa-solid fa-xmark"></i> বাতিল</button>
+            <button onclick="verifyAdminAuth()" class="btn-action" style="background:var(--danger);"><i class="fa-solid fa-unlock-keyhole"></i> আনলক</button>
+        </div>
+    </div>
+
+    <div id="userAuthCard" class="auth-card" style="display: none;">
+        <h2 id="userAuthTitle"><i class="fa-solid fa-user-plus" style="color:var(--primary)"></i> ইউজার রেজিস্ট্রেশন</h2>
+        <p id="userAuthDesc" style="font-size:14px; margin-bottom:20px;">প্রশ্নপত্র ডাউনলোড করতে মোবাইল নাম্বার দিয়ে রেজিস্টার করুন।</p>
+        
+        <div style="margin-bottom:15px;">
+            <label><i class="fa-solid fa-phone"></i> মোবাইল নম্বর</label>
+            <input type="text" id="userMobileInput" placeholder="017XXXXXXXX">
+        </div>
+        <div style="margin-bottom:15px;">
+            <label><i class="fa-solid fa-key"></i> পাসওয়ার্ড</label>
+            <input type="password" id="userPasswordInput" placeholder="••••••">
+        </div>
+
+        <button onclick="handleUserAuthSubmit()" id="userAuthBtn" class="btn-action" style="background:var(--primary); width:100%; justify-content:center; margin-top:10px;"><i class="fa-solid fa-user-check"></i> অ্যাকাউন্ট তৈরি করুন</button>
+        <div id="userAuthToggle" class="auth-toggle-link" onclick="toggleUserAuthMode()">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন</div>
+        <div style="text-align:center; margin-top:15px;"><button onclick="closeAuth()" style="background:none; border:none; color:var(--text-main); cursor:pointer; font-weight:600;"><i class="fa-solid fa-circle-chevron-left"></i> ফিরে যান</button></div>
+    </div>
+</div>
 
 <div class="header">
     <div class="logo-area">
@@ -153,32 +198,47 @@
         <span>আমিরুল স্মার্ট প্রশ্ন ব্যাংক <span style="font-size:12px; background:var(--primary); color:white; padding:2px 8px; border-radius:20px;">v2026</span></span>
     </div>
     <div class="nav-tabs">
-        <button id="adminBtn" class="active" onclick="toggleMode('admin')"><i class="fa-solid fa-user-shield"></i> অ্যাডমিন প্যানেল</button>
-        <button id="userBtn" onclick="toggleMode('user')"><i class="fa-solid fa-user-graduate"></i> ইউজার ভিউ</button>
+        <span id="userStatusDisplay" class="user-status-text" style="margin-right:10px; display:none;"><i class="fa-solid fa-user-check"></i> ইউজার সেশন রানিং</span>
+        <button id="homeBtn" class="active" onclick="toggleMode('home')"><i class="fa-solid fa-house"></i> হোম পেজ</button>
+        <button id="userBtn" onclick="toggleMode('user')"><i class="fa-solid fa-user-graduate"></i> ইউজার প্যানেল</button>
+        <button id="adminBtn" onclick="toggleMode('admin')"><i class="fa-solid fa-user-shield"></i> এডমিন প্যানেল</button>
+        <button id="logoutBtn" class="btn-logout" onclick="adminLogout()" style="display:none;"><i class="fa-solid fa-right-from-bracket"></i> লগআউট</button>
         <button class="theme-toggle" onclick="toggleTheme()" title="থিম পরিবর্তন"><i class="fa-solid fa-moon"></i></button>
     </div>
 </div>
 
-<div class="container">
-    <div class="sidebar">
-        <h3>📊 প্রধান ড্যাশবোর্ড</h3>
-        <ul>
-            <li class="active-menu" onclick="switchSection('dashboard-sec', this)"><i class="fa-solid fa-chart-pie"></i> ওভারভিউ ও লাইভ চ্যাট</li>
-            <li onclick="switchSection('question-sec', this)"><i class="fa-solid fa-cubes"></i> প্রশ্ন ব্যাংক হাব</li>
-        </ul>
+<div class="container" id="mainContainer">
+    <div class="sidebar" id="appSidebar" style="display:none;">
+        <div class="sidebar-dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('dashDropdown', 'dashIcon')">
+                <span>📊 প্রধান ড্যাশবোর্ড</span> <i id="dashIcon" class="fa-solid fa-chevron-down"></i>
+            </button>
+            <ul id="dashDropdown" class="dropdown-container show">
+                <li class="active-menu" onclick="switchSection('dashboard-sec', this)"><i class="fa-solid fa-chart-pie"></i> ওভারভিউ ও লাইভ চ্যাট</li>
+                <li onclick="switchSection('question-sec', this)"><i class="fa-solid fa-cubes"></i> প্রশ্ন ব্যাংক হাব</li>
+            </ul>
+        </div>
 
-        <h3>⚙️ কাস্টম বিল্ডার অ্যাপস</h3>
-        <ul>
-            <li onclick="switchSection('booklet-sec', this)"><i class="fa-solid fa-book-open"></i> বুকলেট লেআউট ২-কলাম</li>
-            <li onclick="switchSection('custom-q-sec', this)"><i class="fa-solid fa-sliders"></i> কাস্টম ক্যাটাগরি বিল্ডার</li>
-            <li onclick="switchSection('online-exam-sec', this)"><i class="fa-solid fa-globe"></i> টোকেন এক্সাম ব্যবস্থাপনা</li>
-            <li onclick="switchSection('omr-sec', this)"><i class="fa-solid fa-qrcode"></i> OMR তৈরি ও মূল্যায়ন</li>
-        </ul>
+        <div class="sidebar-dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('builderDropdown', 'builderIcon')">
+                <span>⚙️ কাস্টম বিল্ডার অ্যাপস</span> <i id="builderIcon" class="fa-solid fa-chevron-down"></i>
+            </button>
+            <ul id="builderDropdown" class="dropdown-container">
+                <li onclick="switchSection('booklet-sec', this)"><i class="fa-solid fa-book-open"></i> Booklet লেআউট ২-কলাম</li>
+                <li onclick="switchSection('custom-q-sec', this)"><i class="fa-solid fa-sliders"></i> কাস্টম ক্যাটাগরি বিল্ডার</li>
+                <li onclick="switchSection('online-exam-sec', this)"><i class="fa-solid fa-globe"></i> টোকেন এক্সাম ব্যবস্থাপনা</li>
+                <li onclick="switchSection('omr-sec', this)"><i class="fa-solid fa-qrcode"></i> OMR তৈরি ও মূল্যায়ন</li>
+            </ul>
+        </div>
 
-        <h3>🏢 প্রোফাইল ও ক্লাউড</h3>
-        <ul>
-            <li onclick="switchSection('institute-sec', this)"><i class="fa-solid fa-hotel"></i> প্রতিষ্ঠান ও Firebase কনফিগ</li>
-        </ul>
+        <div class="sidebar-dropdown">
+            <button class="dropdown-btn" onclick="toggleDropdown('cloudDropdown', 'cloudIcon')">
+                <span>🏢 প্রোফাইল ও ক্লাউড</span> <i id="cloudIcon" class="fa-solid fa-chevron-down"></i>
+            </button>
+            <ul id="cloudDropdown" class="dropdown-container">
+                <li onclick="switchSection('institute-sec', this)"><i class="fa-solid fa-hotel"></i> প্রতিষ্ঠান ও Firebase কনফিগ</li>
+            </ul>
+        </div>
     </div>
 
     <div class="main-content">
@@ -222,14 +282,14 @@
         </div>
 
         <div id="question-sec" class="section-block" style="display: none;">
-            <div class="card" id="adminFormCard">
-                <h2 id="formTitle"><i class="fa-regular fa-square-plus" style="color:var(--primary)"></i> নতুন প্রশ্নপত্র ডেটা এন্ট্রি ফর্ম</h2>
+            <div class="card" id="adminFormCard" style="display: none;">
+                <h2 id="formTitle"><i class="fa-solid fa-file-signature" style="color:var(--primary)"></i> নতুন প্রশ্নপত্র ডেটা এন্ট্রি হাব (উত্তর সহ এডিটিং)</h2>
                 <input type="hidden" id="editId">
                 
                 <div class="grid-4">
                     <div>
                         <label>ক্যাটাগরি / পর্যায়</label>
-                        <select id="qCategory" onchange="handleCategoryChange()">
+                        <select id="qCategory">
                             <option value="SSC">SSC পর্যায়</option>
                             <option value="HSC">HSC পর্যায়</option>
                             <option value="Admission">বিশ্ববিদ্যালয় ভর্তি (Admission)</option>
@@ -257,7 +317,7 @@
                         <label>প্রশ্নের ধরন</label>
                         <select id="qType">
                             <option value="সৃজনশীল">সৃজনশীল (CQ)</option>
-                            <option value="সংক্ষিপ্ত">সংক্ষিপ্ত প্রশ্ন</option>
+                            <option value="সংक्षिप्त">সংক্ষিপ্ত প্রশ্ন</option>
                             <option value="এমসিকিউ">বহুনির্বাচনী (MCQ)</option>
                         </select>
                     </div>
@@ -266,17 +326,22 @@
                         <input type="number" id="marks" placeholder="যেমন: ১০">
                     </div>
                     <div>
-                        <label>AI অ্যাসিস্ট্যান্ট (টুলস)</label>
-                        <button type="button" class="btn-action" style="background:var(--dark); width:100%; border:1px solid var(--border);" onclick="triggerAIPlaceholder()"><i class="fa-solid fa-wand-magic-sparkles"></i> AI প্রশ্ন জেনারেট করুন</button>
+                        <label>AI অ্যাসিস্ট্যান্ট ইঞ্জিন</label>
+                        <button type="button" class="btn-action" style="background:var(--dark); width:100%; border:1px solid var(--border);" onclick="triggerAIPlaceholder()"><i class="fa-solid fa-wand-magic-sparkles"></i> AI প্রশ্ন ও উত্তর জেনারেট</button>
                     </div>
                 </div>
 
                 <div style="margin-bottom:15px;">
                     <label>মূল প্রশ্ন টেক্সট (ম্যাথ সমীকরণের জন্য $x^2 + y^2 = z^2$ অথবা $\text{cosec}\theta$ লিখুন)</label>
-                    <textarea id="mainInput" rows="5" placeholder="এখানে পূর্ণাঙ্গ প্রশ্নটি টাইপ করুন বা পেস্ট করুন..." onkeyup="doPreview()"></textarea>
+                    <textarea id="mainInput" rows="4" placeholder="এখানে পূর্ণাঙ্গ প্রশ্নটি টাইপ করুন বা পেস্ট করুন..." onkeyup="doPreview()"></textarea>
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    <label><i class="fa-solid fa-square-poll-horizontal" style="color:var(--success)"></i> প্রশ্নের সমাধান / উত্তরপত্র (ঐচ্ছিক)</label>
+                    <textarea id="ansInput" rows="3" placeholder="প্রশ্নটির গাণিতিক সমাধান বা সঠিক উত্তরটি এখানে লিখুন..." onkeyup="doPreview()"></textarea>
                 </div>
                 
-                <label>লাইভ টাইপসেট প্রিভিউ (MathJax)</label>
+                <label>লাইভ টাইপসেট প্রিভিউ (MathJax এডিটর মোড)</label>
                 <div class="preview-box" id="livePreview">প্রিভিউ এখানে রেন্ডার হবে...</div>
 
                 <div style="display: flex; gap: 15px; justify-content: flex-end;">
@@ -310,13 +375,13 @@
                         <select id="filterType" onchange="renderQuestions()">
                             <option value="">সকল টাইপ</option>
                             <option value="সৃজনশীল">সৃজনশীল</option>
-                            <option value="সংক্ষিপ্ত">সংক্ষিপ্ত</option>
+                            <option value="সংक्षिप्त">সংक्षिप्त</option>
                             <option value="এমসিকিউ">এমসিকিউ</option>
                         </select>
                     </div>
                 </div>
                 
-                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px; justify-content:flex-end;">
+                <div id="adminBackupControls" style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:15px; justify-content:flex-end;">
                     <button onclick="exportJSON()" class="btn-action" style="background:#475569; padding:6px 14px; font-size:13px;"><i class="fa-solid fa-file-export"></i> ব্যাকআপ এক্সপোর্ট (JSON)</button>
                     <button onclick="document.getElementById('importFile').click()" class="btn-action" style="background:#475569; padding:6px 14px; font-size:13px;"><i class="fa-solid fa-file-import"></i> ইম্পোর্ট ডাটা</button>
                     <input type="file" id="importFile" style="display:none" onchange="importJSON(event)">
@@ -339,7 +404,7 @@
                         </select>
                     </div>
                     <div style="display:flex; align-items:flex-end;">
-                        <button class="btn-action" style="width:100%" onclick="alert('বুকলেট লেআউট সক্রিয় করা হয়েছে। PDF ডাউনলোড করার সময় এটি অ্যাপ্লাই হবে।')"><i class="fa-solid fa-square-check"></i> সেটিংস নিশ্চিত করুন</button>
+                        <button class="btn-action" style="width:100%" onclick="alert('বুকলেট লেআউট সক্রিয় করা হয়েছে।')"><i class="fa-solid fa-square-check"></i> সেটিংস নিশ্চিত করুন</button>
                     </div>
                 </div>
             </div>
@@ -347,7 +412,7 @@
 
         <div id="custom-q-sec" class="section-block" style="display: none;">
             <div class="card">
-                <h2><i class="fa-solid fa-building-columns" style="color:var(--primary)"></i> উচ্চশিক্ষা ও বিশ্ববিদ্যালয় এডমিশন প্রশ্ন ব্যাংক ব্যাংক হাব</h2>
+                <h2><i class="fa-solid fa-building-columns" style="color:var(--primary)"></i> উচ্চশিক্ষা ও বিশ্ববিদ্যালয় এডমিশন প্রশ্ন ব্যাংক হাব</h2>
                 <p>DU, RU, BUET, এবং গুচ্ছ (GST) ভুক্ত বিগত বছরের প্রশ্নগুলো থেকে মিক্সড কাস্টম প্রশ্ন তৈরি করুন।</p>
                 <div class="grid-3">
                     <div>
@@ -393,7 +458,7 @@
 
         <div id="omr-sec" class="section-block" style="display: none;">
             <div class="card">
-                <h2><i class="fa-solid fa-print" style="color:var(--success)"></i> OMR শিট জেনারেটর এবং অপটিক্যাল মূল্যায়ন ইঞ্জিন</h2>
+                <h2><i class="fa-solid fa-print" style="color:var(--success)"></i> OMR শিট জেনারেটর এবং অপটিক্যাল মূল্যায়ন মূল্যায়ন ইঞ্জিন</h2>
                 <p>১০০ বা ৫০ নম্বরের MCQ পরীক্ষার জন্য অটোমেটিক OMR শিট তৈরি করুন এবং স্ক্যানকৃত ইমেজ মূল্যায়ন করুন।</p>
                 <div class="grid-3">
                     <button class="btn-action" style="background:var(--primary);" onclick="alert('১০০টি প্রশ্নের প্রফেশনাল OMR শিট PDF তৈরি হচ্ছে...')"><i class="fa-solid fa-file-pdf"></i> ওএমআর শিট PDF প্রিন্ট</button>
@@ -432,19 +497,205 @@
 
 <div class="footer-bar" id="footer" style="display:none">
     <span>নির্বাচিত প্রশ্ন সংখ্যা: <span id="count" style="color:var(--success); font-weight:bold; font-size:18px;">0</span> টি</span>
-    <button class="btn-action" onclick="makePDF()"><i class="fa-solid fa-cloud-download"></i> নির্বাচিত প্রশ্নপত্রের PDF ডাউনলোড করুন</button>
+    <button class="btn-action" onclick="makePDF()"><i class="fa-solid fa-file-pdf"></i> নির্বাচিত প্রশ্নপত্রের PDF ডাউনলোড করুন</button>
 </div>
 
+<div id="pdf-render-template"></div>
+
 <script>
-    // Local Database & State Architecture
     let db = JSON.parse(localStorage.getItem('amirul_smart_qb')) || [
-        { id: 1, category: "SSC", className: "১০ম", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", marks: "১০" },
-        { id: 2, category: "SSC", className: "১০ম", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে।", marks: "৪" }
+        { id: 1, category: "SSC", className: "১০ম", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", answer: "দেওয়া আছে, $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$। বামপক্ষ $= m^2 - n^2 = (m+n)(m-n) = (2\\tan A)(2\\sin A) = 4\\tan A\\sin A = 4\\sqrt{\\tan^2 A \\sin^2 A} = 4\\sqrt{mn}$ [প্রমাণিত]", marks: "১০" },
+        { id: 2, category: "SSC", className: "১০ম", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে।", answer: "আমরা জানি, $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ সর্বদা সত্য যখন $\\theta \\neq 0^{\\circ}$।", marks: "৪" }
     ];
     
-    let appMode = 'admin';
+    let usersDb = JSON.parse(localStorage.getItem('qb_registered_users')) || {};
+    let currentSession = {
+        role: 'home', 
+        isAdminAuthenticated: false,
+        isUserAuthenticated: false,
+        userMobile: ''
+    };
 
-    // UI Lists Management
+    let userAuthMode = 'register';
+
+    // ড্রপডাউন টগল ফাংশন
+    function toggleDropdown(dropdownId, iconId) {
+        const dropdown = document.getElementById(dropdownId);
+        const icon = document.getElementById(iconId);
+        const allDropdowns = document.querySelectorAll('.dropdown-container');
+        const allIcons = document.querySelectorAll('.dropdown-btn i');
+
+        allDropdowns.forEach(dd => {
+            if (dd.id !== dropdownId) dd.classList.remove('show');
+        });
+        allIcons.forEach(ic => {
+            if (ic.id !== iconId) { ic.className = "fa-solid fa-chevron-down"; }
+        });
+
+        dropdown.classList.toggle('show');
+        if (dropdown.classList.contains('show')) {
+            icon.className = "fa-solid fa-chevron-up";
+        } else {
+            icon.className = "fa-solid fa-chevron-down";
+        }
+    }
+
+    function toggleMode(targetMode) {
+        if(targetMode === 'admin') {
+            if(!currentSession.isAdminAuthenticated) {
+                openAuth('admin');
+                return;
+            }
+            currentSession.role = 'admin';
+            setupAdminLayout();
+        } else if(targetMode === 'user') {
+            if(!currentSession.isUserAuthenticated) {
+                openAuth('user');
+                return;
+            }
+            currentSession.role = 'user';
+            setupUserLayout();
+        } else {
+            currentSession.role = 'home';
+            setupHomeLayout();
+        }
+        
+        document.getElementById('homeBtn').classList.toggle('active', targetMode === 'home');
+        document.getElementById('userBtn').classList.toggle('active', targetMode === 'user');
+        document.getElementById('adminBtn').classList.toggle('active', targetMode === 'admin');
+        
+        renderQuestions();
+    }
+
+    function setupHomeLayout() {
+        document.getElementById('appSidebar').style.display = 'none';
+        document.getElementById('mainContainer').classList.add('no-sidebar');
+        document.getElementById('adminFormCard').style.display = 'none';
+        document.getElementById('adminBackupControls').style.display = 'none';
+        document.getElementById('footer').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'none';
+        switchSection('dashboard-sec');
+    }
+
+    function setupAdminLayout() {
+        document.getElementById('appSidebar').style.display = 'block';
+        document.getElementById('mainContainer').classList.remove('no-sidebar');
+        document.getElementById('adminFormCard').style.display = 'block';
+        document.getElementById('adminBackupControls').style.display = 'flex';
+        document.getElementById('footer').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+        switchSection('dashboard-sec');
+    }
+
+    function setupUserLayout() {
+        document.getElementById('appSidebar').style.display = 'none';
+        document.getElementById('mainContainer').classList.add('no-sidebar');
+        document.getElementById('adminFormCard').style.display = 'none';
+        document.getElementById('adminBackupControls').style.display = 'none';
+        document.getElementById('footer').style.display = 'flex';
+        document.getElementById('logoutBtn').style.display = 'none';
+        switchSection('question-sec');
+    }
+
+    function adminLogout() {
+        currentSession.isAdminAuthenticated = false;
+        alert("এডমিন প্যানেল থেকে সফলভাবে লগআউট করা হয়েছে।");
+        toggleMode('home');
+    }
+
+    function openAuth(type) {
+        document.getElementById('authOverlay').style.display = 'flex';
+        if(type === 'admin') {
+            document.getElementById('adminAuthCard').style.display = 'block';
+            document.getElementById('userAuthCard').style.display = 'none';
+        } else {
+            document.getElementById('adminAuthCard').style.display = 'none';
+            document.getElementById('userAuthCard').style.display = 'block';
+            userAuthMode = 'register';
+            updateUserAuthUI();
+        }
+    }
+
+    function closeAuth() {
+        document.getElementById('authOverlay').style.display = 'none';
+        const currentActive = currentSession.role;
+        document.getElementById('homeBtn').classList.toggle('active', currentActive === 'home');
+        document.getElementById('userBtn').classList.toggle('active', currentActive === 'user');
+        document.getElementById('adminBtn').classList.toggle('active', currentActive === 'admin');
+    }
+
+    function verifyAdminAuth() {
+        const pass = document.getElementById('adminPasswordInput').value;
+        if(pass === "amirul2026") { 
+            currentSession.isAdminAuthenticated = true;
+            currentSession.role = 'admin';
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('adminPasswordInput').value = '';
+            setupAdminLayout();
+            renderQuestions();
+            alert("অ্যাডমিন প্যানেল সফলভাবে আনলক হয়েছে!");
+        } else {
+            alert("ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড দিন।");
+        }
+    }
+
+    function toggleUserAuthMode() {
+        userAuthMode = (userAuthMode === 'register') ? 'login' : 'register';
+        updateUserAuthUI();
+    }
+
+    function updateUserAuthUI() {
+        if(userAuthMode === 'register') {
+            document.getElementById('userAuthTitle').innerHTML = '<i class="fa-solid fa-user-plus" style="color:var(--primary)"></i> ইউজার রেজিস্ট্রেশন';
+            document.getElementById('userAuthDesc').innerText = 'প্রশ্নপত্র ডাউনলোড করতে মোবাইল নাম্বার দিয়ে রেজিস্টার করুন।';
+            document.getElementById('userAuthBtn').innerHTML = '<i class="fa-solid fa-user-check"></i> অ্যাকাউন্ট তৈরি করুন';
+            document.getElementById('userAuthToggle').innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন';
+        } else {
+            document.getElementById('userAuthTitle').innerHTML = '<i class="fa-solid fa-right-to-bracket" style="color:var(--success)"></i> ইউজার লগইন';
+            document.getElementById('userAuthDesc').innerText = 'আপনার নিবন্ধিত মোবাইল নম্বর ও পাসওয়ার্ড দিয়ে লগইন করুন।';
+            document.getElementById('userAuthBtn').innerHTML = '<i class="fa-solid fa-unlock"></i> লগইন করুন';
+            document.getElementById('userAuthToggle').innerText = 'নতুন অ্যাকাউন্ট প্রয়োজন? রেজিস্ট্রেশন করুন';
+        }
+    }
+
+    function handleUserAuthSubmit() {
+        const mobile = document.getElementById('userMobileInput').value.trim();
+        const pass = document.getElementById('userPasswordInput').value;
+
+        if(!mobile || mobile.length < 11) return alert("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন!");
+        if(pass.length < 4) return alert("পাসওয়ার্ড ন্যূনতম ৪ ডিজিটের হতে হবে!");
+
+        if(userAuthMode === 'register') {
+            if(usersDb[mobile]) {
+                return alert("এই নম্বরটি ইতিমধ্যে নিবন্ধিত! লগইন করার চেষ্টা করুন।");
+            }
+            usersDb[mobile] = pass;
+            localStorage.setItem('qb_registered_users', JSON.stringify(usersDb));
+            alert("রেজিস্ট্রেশন সফল হয়েছে! এখন লগইন করুন।");
+            userAuthMode = 'login';
+            updateUserAuthUI();
+        } else {
+            if(usersDb[mobile] && usersDb[mobile] === pass) {
+                currentSession.isUserAuthenticated = true;
+                currentSession.userMobile = mobile;
+                currentSession.role = 'user';
+                document.getElementById('authOverlay').style.display = 'none';
+                
+                document.getElementById('userStatusDisplay').style.display = 'inline';
+                document.getElementById('userStatusDisplay').innerHTML = `<i class="fa-solid fa-user-check"></i> ${mobile}`;
+                
+                document.getElementById('userMobileInput').value = '';
+                document.getElementById('userPasswordInput').value = '';
+                
+                setupUserLayout();
+                renderQuestions();
+                alert("ইউজার প্যানেলে সফলভাবে লগইন সম্পন্ন হয়েছে!");
+            } else {
+                alert("মোবাইল নম্বর অথবা পাসওয়ার্ড ভুল! আবার চেষ্টা করুন।");
+            }
+        }
+    }
+
     function updateLists() {
         const classes = [...new Set(db.map(q => q.className))];
         const subjects = [...new Set(db.map(q => q.subject))];
@@ -463,52 +714,38 @@
         document.getElementById('totalQCount').innerText = db.length;
     }
 
-    // Live Mathjax Compiler Preview
     function doPreview() {
-        const val = document.getElementById('mainInput').value;
+        const qVal = document.getElementById('mainInput').value;
+        const aVal = document.getElementById('ansInput').value;
         const box = document.getElementById('livePreview');
-        box.innerHTML = val || "প্রিভিউ এখানে রেন্ডার হবে...";
+        
+        let previewContent = `<strong>প্রশ্ন:</strong> ${qVal || "..."}`;
+        if(aVal) {
+            previewContent += `<br><div class="answer-container"><strong>সমাধান:</strong> ${aVal}</div>`;
+        }
+        box.innerHTML = previewContent;
         
         if(window.MathJax && window.MathJax.typesetPromise) {
             MathJax.typesetPromise([box]).catch((err) => console.log(err));
         }
     }
 
-    // AI Placeholder Handler
     function triggerAIPlaceholder() {
-        const topic = document.getElementById('chapterInput').value || "গণিত সাধারণ অধ্যায়";
         const generatedText = `$\\Delta ABC$-এ প্রমাণ কর যে, $\\sin A + \\sin B + \\sin C = 4 \\cos\\frac{A}{2}\\cos\\frac{B}{2}\\cos\\frac{C}{2}$ এবং এর $\\text{cosec}$ এর অনুপাত নির্ণয় কর।`;
+        const generatedAns = `আমরা জানি, ত্রিভুজের তিনটি কোণের সমষ্টি $A+B+C = \\pi$। ত্রিকোণমিতিক রূপান্তর সূত্র প্রয়োগ করে পাই, $\\sin A + \\sin B = 2\\sin\\frac{A+B}{2}\\cos\\frac{A-B}{2}$ এবং $\\sin C = 2\\sin\\frac{C}{2}\\cos\\frac{C}{2}$। মান বসিয়ে সরলীকরণ করলে কাঙ্ক্ষিত প্রমাণটি সম্পন্ন হয়।`;
+        
         document.getElementById('mainInput').value = generatedText;
+        document.getElementById('ansInput').value = generatedAns;
         doPreview();
-        alert("AI ইঞ্জিন দ্বারা চমৎকার একটি প্রশ্ন জেনারেট করে ইনপুট বক্সে দেওয়া হয়েছে!");
+        alert("AI ইঞ্জিন দ্বারা চমৎকার একটি প্রশ্ন ও এর পূর্ণাঙ্গ উত্তর তৈরি করা হয়েছে!");
     }
 
-    // Theme Switcher Engine
     function toggleTheme() {
         document.body.classList.toggle('dark-theme');
         const isDark = document.body.classList.contains('dark-theme');
         document.querySelector('.theme-toggle i').className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
     }
 
-    // Switch Admin versus Student User View Mode
-    function toggleMode(mode) {
-        appMode = mode;
-        document.getElementById('adminBtn').classList.toggle('active', mode === 'admin');
-        document.getElementById('userBtn').classList.toggle('active', mode === 'user');
-        
-        const formCard = document.getElementById('adminFormCard');
-        if(mode === 'user') {
-            formCard.style.display = 'none';
-            document.getElementById('footer').style.display = 'flex';
-            switchSection('question-sec');
-        } else {
-            formCard.style.display = 'block';
-            document.getElementById('footer').style.display = 'none';
-        }
-        renderQuestions();
-    }
-
-    // Layout Switch Panel Routing
     function switchSection(sectionId, element) {
         document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
         document.getElementById(sectionId).style.display = 'block';
@@ -518,15 +755,13 @@
             element.classList.add('active-menu');
         }
         
-        if(sectionId === 'question-sec') {
-            renderQuestions();
-            if(appMode === 'user') document.getElementById('footer').style.display = 'flex';
+        if(sectionId === 'question-sec' && currentSession.role === 'user') {
+            document.getElementById('footer').style.display = 'flex';
         } else {
             document.getElementById('footer').style.display = 'none';
         }
     }
 
-    // Save Data Handler (Without auto-serialization)
     function saveData() {
         const id = document.getElementById('editId').value;
         const category = document.getElementById('qCategory').value;
@@ -535,11 +770,12 @@
         const chapter = document.getElementById('chapterInput').value.trim();
         const type = document.getElementById('qType').value;
         const text = document.getElementById('mainInput').value.trim();
+        const answer = document.getElementById('ansInput').value.trim();
         const marks = document.getElementById('marks').value;
 
         if(!className || !text) return alert("শ্রেণী ও প্রশ্ন ফিল্ড ফাঁকা রাখা যাবে না!");
 
-        const data = { id: id ? parseInt(id) : Date.now(), category, className, subject, chapter, type, text, marks };
+        const data = { id: id ? parseInt(id) : Date.now(), category, className, subject, chapter, type, text, answer, marks };
 
         if(id) {
             const idx = db.findIndex(q => q.id == id);
@@ -560,14 +796,14 @@
     function resetForm() {
         document.getElementById('editId').value = '';
         document.getElementById('mainInput').value = '';
+        document.getElementById('ansInput').value = '';
         document.getElementById('marks').value = '';
         document.getElementById('chapterInput').value = '';
         document.getElementById('livePreview').innerHTML = 'প্রিভিউ এখানে রেন্ডার হবে...';
-        document.getElementById('formTitle').innerHTML = "<i class='fa-regular fa-square-plus' style='color:var(--primary)'></i> নতুন প্রশ্নপত্র ডেটা এন্ট্রি ফর্ম";
+        document.getElementById('formTitle').innerHTML = "<i class='fa-solid fa-file-signature' style='color:var(--primary)'></i> নতুন প্রশ্নপত্র ডেটা এন্ট্রি হাব (উত্তর সহ এডিটিং)";
         document.getElementById('saveBtn').innerText = "ডাটাবেসে সেভ করুন";
     }
 
-    // Render Advanced Question Cards
     function renderQuestions() {
         const area = document.getElementById('listArea');
         const sQuery = document.getElementById('searchQuery').value.toLowerCase();
@@ -584,7 +820,7 @@
         });
 
         if(filtered.length === 0) {
-            area.innerHTML = '<p style="text-align:center; padding:30px; color:#94a3b8;"><i class="fa-solid fa-folder-open" style="font-size:30px;"></i><br>কোনো ডাটা পাওয়া যায়নি। নতুন প্রশ্ন যুক্ত করুন।</p>';
+            area.innerHTML = '<p style="text-align:center; padding:30px; color:#94a3b8;"><i class="fa-solid fa-folder-open" style="font-size:30px;"></i><br>কোনো ডাটা পাওয়া যায়নি।</p>';
             return;
         }
 
@@ -592,15 +828,16 @@
             <div class="q-card">
                 <input type="checkbox" class="sel-q" value="${q.id}" onchange="updateCount()" style="width:22px; height:22px; cursor:pointer;">
                 <div style="flex:1">
-                    <span class="badge" style="background:var(--primary); color:white;">${q.category}</span>
-                    <span class="badge">${q.className}</span>
-                    <span class="badge" style="background:rgba(99,102,241,0.1); color:var(--primary);">${q.subject}</span>
-                    <span class="badge badge-type">${q.type}</span>
-                    ${q.chapter ? `<span class="badge" style="background:#f0fdf4; color:#16a34a;">${q.chapter}</span>` : ''}
+                    <span class="badge" style="background:var(--primary); color:white;"><i class="fa-solid fa-layer-group"></i> ${q.category}</span>
+                    <span class="badge"><i class="fa-solid fa-graduation-cap"></i> ${q.className}</span>
+                    <span class="badge" style="background:rgba(99,102,241,0.1); color:var(--primary);"><i class="fa-solid fa-book"></i> ${q.subject}</span>
+                    <span class="badge badge-type"><i class="fa-solid fa-clipboard-list"></i> ${q.type}</span>
+                    ${q.chapter ? `<span class="badge" style="background:#f0fdf4; color:#16a34a;"><i class="fa-solid fa-folder"></i> ${q.chapter}</span>` : ''}
                     <span class="badge" style="background:rgba(245,158,11,0.15); color:#d97706;">নম্বর: ${q.marks || 0}</span>
                     <div style="margin-top:14px; font-size:16.5px; line-height:1.6;">${q.text}</div>
+                    ${q.answer ? `<div class="answer-container"><strong>সমাধান:</strong> ${q.answer}</div>` : ''}
                 </div>
-                <div style="display:${appMode === 'admin' ? 'flex' : 'none'}; gap:10px;">
+                <div style="display:${currentSession.role === 'admin' ? 'flex' : 'none'}; gap:10px;">
                     <span class="btn-edit" onclick="editQ(${q.id})" title="সম্পাদনা"><i class="fa-solid fa-pen-to-square"></i></span>
                     <span class="btn-delete" onclick="deleteQ(${q.id})" title="মুছে ফেলুন"><i class="fa-solid fa-trash-can"></i></span>
                 </div>
@@ -621,8 +858,9 @@
         document.getElementById('chapterInput').value = q.chapter || '';
         document.getElementById('qType').value = q.type;
         document.getElementById('mainInput').value = q.text;
+        document.getElementById('ansInput').value = q.answer || '';
         document.getElementById('marks').value = q.marks;
-        document.getElementById('formTitle').innerHTML = "<i class='fa-solid fa-rotate' style='color:var(--warning)'></i> প্রশ্নপত্র তথ্য আপডেট মোড";
+        document.getElementById('formTitle').innerHTML = "<i class='fa-solid fa-wrench' style='color:var(--warning)'></i> প্রশ্নপত্র তথ্য আপডেট ও সংশোধন মোড";
         document.getElementById('saveBtn').innerText = "তথ্য আপডেট করুন";
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -630,7 +868,7 @@
     }
 
     function deleteQ(id) {
-        if(confirm("আপনি কি নিশ্চিতভাবে এই প্রশ্নটি ডেটাবেস থেকে মুছে ফেলতে চান?")) {
+        if(confirm("আপনি কি নিশ্চিতভাবে এই প্রশ্নটি মুছে ফেলতে চান?")) {
             db = db.filter(q => q.id != id);
             localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
             updateLists();
@@ -655,7 +893,6 @@
         if(window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise([recentArea]); }
     }
 
-    // Token Generator System Engine
     function generateExamToken() {
         const title = document.getElementById('examTitle').value || "নিয়মিত পরীক্ষা";
         const duration = document.getElementById('examDuration').value || "২০";
@@ -665,7 +902,6 @@
         out.innerHTML = `<strong>পরীক্ষা সেশন রেডি!</strong><br>লিংক: <code>https://amirulmathcare.edu/live-exam?token=${token}</code><br><strong>সুরক্ষা ওটিপি টোকেন:</strong> <span style="color:var(--danger); font-weight:bold;">${token}</span> (সময়কাল: ${duration} মিনিট)`;
     }
 
-    // Support Simulation Desk
     function sendChat() {
         const input = document.getElementById('chatInput');
         if(!input.value.trim()) return;
@@ -675,7 +911,6 @@
         box.scrollTop = box.scrollHeight;
     }
 
-    // JSON Export / Import Engine
     function exportJSON() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
         const downloadAnchor = document.createElement('a');
@@ -705,35 +940,56 @@
         reader.readAsText(file);
     }
 
-    // PDF Generator Core
     function makePDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const selected = Array.from(document.querySelectorAll('.sel-q:checked')).map(cb => db.find(q => q.id == cb.value));
+        const selectedCheckboxes = document.querySelectorAll('.sel-q:checked');
+        if(selectedCheckboxes.length === 0) return alert("অনুগ্রহ করে জেনারেশনের জন্য অন্তত ১টি প্রশ্ন সিলেক্ট করুন!");
 
-        if(selected.length === 0) return alert("অনুগ্রহ করে জেনারেশনের জন্য অন্তত ১টি প্রশ্ন টিক চিহ্ন দিয়ে সিলেক্ট করুন!");
+        const tempContainer = document.getElementById('pdf-render-template');
+        tempContainer.innerHTML = ''; 
 
-        doc.setFont("Helvetica", "bold");
-        doc.text("Amirul Math Care & Exam Center", 105, 18, {align:'center'});
-        doc.setFontSize(11);
-        doc.text("Smart System Question Sheet (Standard Output)", 105, 25, {align:'center'});
-        doc.line(20, 30, 190, 30);
-        
-        let y = 40;
-        doc.setFont("Helvetica", "normal");
-        selected.forEach((q, i) => {
-            // নোট: ম্যাথ সমীকরণসমূহ র-টেক্সট ফর্মে এক্সপোর্ট হবে।
-            const line = `[Q] Sub: ${q.subject} | Chapter: ${q.chapter || 'N/A'} | Type: ${q.type} (Marks: ${q.marks || 0})\nText: ${q.text}\n\n`;
-            const textLines = doc.splitTextToSize(line, 170);
-            doc.text(textLines, 20, y);
-            y += (textLines.length * 6) + 4;
-            if(y > 270) { doc.addPage(); y = 20; }
+        let headerHtml = `
+            <div class="pdf-header">
+                <h1 style="margin: 0; font-size: 26px; color: #111;">আমিরুল ম্যাথ কেয়ার অ্যান্ড এক্সাম সেন্টার</h1>
+                <p style="margin: 5px 0 0 0; font-size: 14px; color: #444; font-weight: bold;">স্মার্ট প্রশ্ন ব্যাংক সিস্টেম শিট (স্ট্যান্ডার্ড আউটপুট)</p>
+                <p style="margin: 2px 0 10px 0; font-size: 12px; color: #666;">তারিখ: ${new Date().toLocaleDateString('bn-BD')}</p>
+            </div>
+        `;
+        tempContainer.innerHTML += headerHtml;
+
+        selectedCheckboxes.forEach((cb) => {
+            const q = db.find(item => item.id == cb.value);
+            let qItemHtml = `
+                <div class="pdf-q-item">
+                    <div class="pdf-q-meta">[বিভাগ: ${q.category} | বিষয়: ${q.subject} | অধ্যায়: ${q.chapter || 'N/A'} | টাইপ: ${q.type} | নম্বর: ${q.marks || 0}]</div>
+                    <div style="font-size: 16px;"><b>প্রশ্ন:</b> ${q.text}</div>
+                    ${q.answer ? `<div style="margin-top: 5px; padding-left: 15px; color: #222; border-left: 2px solid #888; font-size: 15px;"><b>সমাধান:</b> ${q.answer}</div>` : ''}
+                </div>
+            `;
+            tempContainer.innerHTML += qItemHtml;
         });
 
-        doc.save("Amirul_Smart_Question_Paper.pdf");
+        tempContainer.style.display = 'block';
+
+        MathJax.typesetPromise([tempContainer]).then(() => {
+            const opt = {
+                margin:       [15, 15, 20, 15],
+                filename:     `Amirul_Smart_Question_${Date.now()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(tempContainer).save().then(() => {
+                tempContainer.style.display = 'none'; 
+            });
+        }).catch((err) => {
+            console.error("PDF রেন্ডারিং ত্রুটি:", err);
+            tempContainer.style.display = 'none';
+        });
     }
 
     window.onload = () => {
+        setupHomeLayout();
         updateLists();
         renderQuestions();
         renderRecentQuestions();
