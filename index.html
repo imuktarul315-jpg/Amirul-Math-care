@@ -20,6 +20,8 @@
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <style>
         :root { 
@@ -30,7 +32,7 @@
             --warning: #f59e0b;
             --dark: #0f172a;
             --bg: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: rgba(255, 255, 255, 0.95);
             --text-main: #334155;
             --border: #e2e8f0;
             --sidebar-width: 290px;
@@ -38,7 +40,7 @@
 
         .dark-theme {
             --bg: #0b0f19;
-            --card-bg: rgba(30, 41, 59, 0.75);
+            --card-bg: rgba(30, 41, 59, 0.9);
             --text-main: #cbd5e1;
             --border: #334155;
             --dark: #f8fafc;
@@ -90,7 +92,6 @@
             height: fit-content; 
         }
         
-        /* Dropdown/Accordion Menu Styling */
         .sidebar-dropdown { margin-bottom: 12px; }
         .dropdown-btn { width: 100%; text-align: left; background: none; border: none; padding: 12px 14px; border-radius: 12px; color: var(--primary); font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border); }
         .dropdown-container { display: none; list-style: none; padding: 5px 0 0 10px; margin: 0; }
@@ -126,35 +127,43 @@
         .preview-box { background: rgba(0,0,0,0.02); border: 2px dashed var(--border); border-radius: 14px; padding: 18px; margin: 15px 0; min-height: 50px; overflow-x: auto; color: var(--text-main); }
 
         .q-card { background: var(--card-bg); border-radius: 18px; padding: 20px; margin-bottom: 15px; display: flex; gap: 15px; border-left: 5px solid var(--primary); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: 0.3s; position: relative; align-items: flex-start; }
-        .q-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
         .badge { font-size: 12px; padding: 5px 12px; border-radius: 8px; background: var(--border); font-weight: 600; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px; }
         .badge-type { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
         .answer-container { margin-top: 10px; padding: 10px 15px; background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--success); border-radius: 8px; font-size: 15px; }
 
-        .footer-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 14px 35px; border-radius: 50px; display: flex; gap: 25px; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 1000; border: 1px solid #334155; }
+        /* Ticker Slider */
+        .ticker-wrapper { background: var(--dark); color: white; padding: 10px 0; overflow: hidden; white-space: nowrap; border-radius: 12px; margin-bottom: 25px; }
+        .ticker-text { display: inline-block; padding-left: 100%; animation: ticker 25s linear infinite; font-weight: 600; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+
+        /* Pricing Items */
+        .price-card { border: 2px solid var(--border); padding: 25px; border-radius: 20px; text-align: center; transition: 0.3s; background: var(--card-bg); }
+        .price-card.featured { border-color: var(--primary); box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15); position: relative; }
+        .price-card.featured::top { content: 'Best'; position: absolute; top: -10px; left:50%; transform:translateX(-50%); background:var(--primary); color:white; padding:2px 10px; border-radius:10px; font-size:12px; }
+        .price-card:hover { transform: translateY(-5px); }
+
+        /* FAQ System */
+        .faq-item { border-bottom: 1px solid var(--border); padding: 15px 0; cursor: pointer; }
+        .faq-question { font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
+        .faq-answer { display: none; padding-top: 10px; color: var(--text-main); font-size: 15px; line-height: 1.5; }
+        .faq-item.active .faq-answer { display: block; }
+
+        .footer-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 14px 35px; border-radius: 50px; display: flex; gap: 15px; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 1000; border: 1px solid #334155; }
         .btn-action { background: var(--success); color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-weight: bold; font-family: inherit; font-size: 15px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-action:hover { opacity: 0.9; transform: scale(1.02); }
 
-        .btn-edit { color: var(--primary); cursor: pointer; margin-right: 12px; font-size: 18px; transition: 0.2s; }
-        .btn-delete { color: var(--danger); cursor: pointer; font-size: 18px; transition: 0.2s; }
-        .btn-edit:hover, .btn-delete:hover { transform: scale(1.2); }
+        .btn-edit { color: var(--primary); cursor: pointer; margin-right: 12px; font-size: 18px; }
+        .btn-delete { color: var(--danger); cursor: pointer; font-size: 18px; }
 
         .stat-box { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 20px; border-radius: 16px; text-align: center; }
-        .chat-box { height: 200px; overflow-y: auto; background: rgba(0,0,0,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
-        .chat-msg { background: var(--card-bg); border: 1px solid var(--border); padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 14px; }
         
-        .theme-toggle { background: transparent; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; transition: 0.3s; }
-        .theme-toggle:hover { background: rgba(0,0,0,0.05); }
-
+        .theme-toggle { background: transparent; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; }
         .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .auth-card { background: var(--bg); border: 1px solid var(--border); padding: 35px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); width: 100%; max-width: 420px; box-sizing: border-box; }
-        .auth-card h2 { margin-top: 0; display: flex; align-items: center; gap: 12px; color: var(--dark); font-size: 22px; }
-        .auth-toggle-link { text-align: center; margin-top: 15px; font-size: 14px; color: var(--primary); cursor: pointer; font-weight: 600; }
+        .auth-card { background: var(--bg); border: 1px solid var(--border); padding: 35px; border-radius: 24px; width: 100%; max-width: 420px; box-sizing: border-box; }
         
-        #pdf-render-template { display: none; padding: 40px; background: #ffffff; color: #000000; font-family: 'Hind Siliguri', sans-serif; }
+        #pdf-render-template { display: none; padding: 40px; background: #ffffff; color: #000000; }
         .pdf-header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
-        .pdf-q-item { margin-bottom: 20px; font-size: 16px; line-height: 1.6; }
-        .pdf-q-meta { font-size: 13px; font-weight: bold; color: #444; margin-bottom: 4px; }
+        .pdf-q-item { margin-bottom: 20px; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -162,33 +171,28 @@
 <div id="authOverlay" class="auth-overlay" style="display: none;">
     <div id="adminAuthCard" class="auth-card" style="display: none;">
         <h2><i class="fa-solid fa-user-lock" style="color:var(--danger)"></i> এডমিন সিকিউরিটি গেট</h2>
-        <p style="font-size:14px; margin-bottom:20px;">অ্যাডমিন প্যানেলে প্রবেশ করতে পাসওয়ার্ড ভেরিফাই করুন।</p>
         <div style="margin-bottom:15px;">
             <label>এডমিন এক্সেস পাসওয়ার্ড</label>
             <input type="password" id="adminPasswordInput" placeholder="পাসওয়ার্ড দিন...">
         </div>
-        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
-            <button onclick="closeAuth()" class="btn-action" style="background:#64748b;"><i class="fa-solid fa-xmark"></i> বাতিল</button>
-            <button onclick="verifyAdminAuth()" class="btn-action" style="background:var(--danger);"><i class="fa-solid fa-unlock-keyhole"></i> আনলক</button>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button onclick="closeAuth()" class="btn-action" style="background:#64748b;">বাতিল</button>
+            <button onclick="verifyAdminAuth()" class="btn-action" style="background:var(--danger);">আনলক</button>
         </div>
     </div>
 
     <div id="userAuthCard" class="auth-card" style="display: none;">
         <h2 id="userAuthTitle"><i class="fa-solid fa-user-plus" style="color:var(--primary)"></i> ইউজার রেজিস্ট্রেশন</h2>
-        <p id="userAuthDesc" style="font-size:14px; margin-bottom:20px;">প্রশ্নপত্র ডাউনলোড করতে মোবাইল নাম্বার দিয়ে রেজিস্টার করুন।</p>
-        
         <div style="margin-bottom:15px;">
-            <label><i class="fa-solid fa-phone"></i> মোবাইল নম্বর</label>
+            <label>মোবাইল নম্বর</label>
             <input type="text" id="userMobileInput" placeholder="017XXXXXXXX">
         </div>
         <div style="margin-bottom:15px;">
-            <label><i class="fa-solid fa-key"></i> পাসওয়ার্ড</label>
+            <label>পাসওয়ার্ড</label>
             <input type="password" id="userPasswordInput" placeholder="••••••">
         </div>
-
-        <button onclick="handleUserAuthSubmit()" id="userAuthBtn" class="btn-action" style="background:var(--primary); width:100%; justify-content:center; margin-top:10px;"><i class="fa-solid fa-user-check"></i> অ্যাকাউন্ট তৈরি করুন</button>
-        <div id="userAuthToggle" class="auth-toggle-link" onclick="toggleUserAuthMode()">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন</div>
-        <div style="text-align:center; margin-top:15px;"><button onclick="closeAuth()" style="background:none; border:none; color:var(--text-main); cursor:pointer; font-weight:600;"><i class="fa-solid fa-circle-chevron-left"></i> ফিরে যান</button></div>
+        <button onclick="handleUserAuthSubmit()" id="userAuthBtn" class="btn-action" style="background:var(--primary); width:100%; justify-content:center;">নিবন্ধন করুন</button>
+        <div id="userAuthToggle" style="text-align:center; margin-top:15px; cursor:pointer; color:var(--primary);" onclick="toggleUserAuthMode()">ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন</div>
     </div>
 </div>
 
@@ -198,12 +202,12 @@
         <span>আমিরুল স্মার্ট প্রশ্ন ব্যাংক <span style="font-size:12px; background:var(--primary); color:white; padding:2px 8px; border-radius:20px;">v2026</span></span>
     </div>
     <div class="nav-tabs">
-        <span id="userStatusDisplay" class="user-status-text" style="margin-right:10px; display:none;"><i class="fa-solid fa-user-check"></i> ইউজার সেশন রানিং</span>
+        <span id="userStatusDisplay" class="user-status-text" style="display:none;"></span>
         <button id="homeBtn" class="active" onclick="toggleMode('home')"><i class="fa-solid fa-house"></i> হোম পেজ</button>
         <button id="userBtn" onclick="toggleMode('user')"><i class="fa-solid fa-user-graduate"></i> ইউজার প্যানেল</button>
         <button id="adminBtn" onclick="toggleMode('admin')"><i class="fa-solid fa-user-shield"></i> এডমিন প্যানেল</button>
-        <button id="logoutBtn" class="btn-logout" onclick="adminLogout()" style="display:none;"><i class="fa-solid fa-right-from-bracket"></i> লগআউট</button>
-        <button class="theme-toggle" onclick="toggleTheme()" title="থিম পরিবর্তন"><i class="fa-solid fa-moon"></i></button>
+        <button id="logoutBtn" class="btn-logout" onclick="adminLogout()" style="display:none;">লগআউট</button>
+        <button class="theme-toggle" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
     </div>
 </div>
 
@@ -211,396 +215,362 @@
     <div class="sidebar" id="appSidebar" style="display:none;">
         <div class="sidebar-dropdown">
             <button class="dropdown-btn" onclick="toggleDropdown('dashDropdown', 'dashIcon')">
-                <span>📊 প্রধান ড্যাশবোর্ড</span> <i id="dashIcon" class="fa-solid fa-chevron-down"></i>
+                <span>⚙️ কন্ট্রোল ড্যাশবোর্ড</span> <i id="dashIcon" class="fa-solid fa-chevron-down"></i>
             </button>
             <ul id="dashDropdown" class="dropdown-container show">
-                <li class="active-menu" onclick="switchSection('dashboard-sec', this)"><i class="fa-solid fa-chart-pie"></i> ওভারভিউ ও লাইভ চ্যাট</li>
-                <li onclick="switchSection('question-sec', this)"><i class="fa-solid fa-cubes"></i> প্রশ্ন ব্যাংক হাব</li>
-            </ul>
-        </div>
-
-        <div class="sidebar-dropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown('builderDropdown', 'builderIcon')">
-                <span>⚙️ কাস্টম বিল্ডার অ্যাপস</span> <i id="builderIcon" class="fa-solid fa-chevron-down"></i>
-            </button>
-            <ul id="builderDropdown" class="dropdown-container">
-                <li onclick="switchSection('booklet-sec', this)"><i class="fa-solid fa-book-open"></i> Booklet লেআউট ২-কলাম</li>
-                <li onclick="switchSection('custom-q-sec', this)"><i class="fa-solid fa-sliders"></i> কাস্টম ক্যাটাগরি বিল্ডার</li>
-                <li onclick="switchSection('online-exam-sec', this)"><i class="fa-solid fa-globe"></i> টোকেন এক্সাম ব্যবস্থাপনা</li>
-                <li onclick="switchSection('omr-sec', this)"><i class="fa-solid fa-qrcode"></i> OMR তৈরি ও মূল্যায়ন</li>
-            </ul>
-        </div>
-
-        <div class="sidebar-dropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown('cloudDropdown', 'cloudIcon')">
-                <span>🏢 প্রোফাইল ও ক্লাউড</span> <i id="cloudIcon" class="fa-solid fa-chevron-down"></i>
-            </button>
-            <ul id="cloudDropdown" class="dropdown-container">
-                <li onclick="switchSection('institute-sec', this)"><i class="fa-solid fa-hotel"></i> প্রতিষ্ঠান ও Firebase কনফিগ</li>
+                <li class="active-menu" onclick="switchSection('admin-main-sec', this)"><i class="fa-solid fa-plus"></i> প্রশ্ন এন্ট্রি হাব</li>
+                <li onclick="switchSection('admin-slider-sec', this)"><i class="fa-solid fa-images"></i> নোটিশ স্লাইডার</li>
+                <li onclick="switchSection('admin-faq-sec', this)"><i class="fa-solid fa-circle-question"></i> FAQ নিয়ন্ত্রণ</li>
+                <li onclick="switchSection('admin-pricing-sec', this)"><i class="fa-solid fa-tags"></i> প্যাকেজ মূল্য তালিকা</li>
             </ul>
         </div>
     </div>
 
     <div class="main-content">
         
-        <div id="dashboard-sec" class="section-block">
+        <div id="home-view-sec" class="section-block">
+            <div class="ticker-wrapper">
+                <div class="ticker-text" id="liveTickerContainer">লোড হচ্ছে... আমিরুল ম্যাথ কেয়ারে আপনাকে স্বাগতম!</div>
+            </div>
+
             <div class="card">
-                <h2><i class="fa-solid fa-gauge-high" style="color:var(--primary);"></i> রিয়েল-টাইম লাইভ অ্যানালিটিক্স</h2>
-                <div class="grid-3">
-                    <div class="stat-box">
-                        <h4 style="margin:0; color:var(--success);">মোট সংরক্ষিত প্রশ্ন</h4>
-                        <p id="totalQCount" style="font-size: 28px; font-weight: bold; margin: 10px 0 0 0;">0</p>
+                <h2><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> প্রশ্ন ব্যাংক রিয়েল-টাইম লাইভ স্ট্যাটিস্টিক্স</h2>
+                <div class="grid-2">
+                    <div style="background:var(--bg); padding:15px; border-radius:15px;">
+                        <canvas id="categoryDistributionChart"></canvas>
                     </div>
-                    <div class="stat-box" style="background:rgba(99, 102, 241, 0.08); border-color:rgba(99, 102, 241, 0.2);">
-                        <h4 style="margin:0; color:var(--primary);">Firebase ডাটাবেস লিংক</h4>
-                        <p id="storageStatus" style="font-size: 14px; margin: 15px 0 0 0; font-weight:600; color:var(--primary);">স্থানীয় অফলাইন মোড সক্রিয়</p>
-                    </div>
-                    <div class="stat-box" style="background:rgba(245, 158, 11, 0.08); border-color:rgba(245, 158, 11, 0.2);">
-                        <h4 style="margin:0; color:var(--warning);">সাবস্ক্রিপশন স্ট্যাটাস</h4>
-                        <p style="font-size: 14px; margin: 15px 0 0 0; color:var(--warning); font-weight:bold;">প্রিমিয়াম আল্টিমেট প্যাক</p>
+                    <div style="background:var(--bg); padding:15px; border-radius:15px;">
+                        <div id="liveGrowthApexChart"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="grid-2">
-                <div class="card">
-                    <h2><i class="fa-solid fa-headset" style="color:var(--success)"></i> ইনস্ট্যান্ট সাপোর্ট ডেস্ক</h2>
-                    <div class="chat-box" id="chatBox">
-                        <div class="chat-msg"><strong>সিস্টেম:</strong> স্বাগতম! আপনার ডেটা ব্যাকআপ বা ক্লাউড সিঙ্ক করতে সমস্যা হলে লিখুন।</div>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="chatInput" placeholder="এখানে মেসেজ টাইপ করুন...">
-                        <button onclick="sendChat()" class="btn-action" style="background:var(--primary);"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h2><i class="fa-solid fa-clock-rotate-left" style="color:var(--warning)"></i> সাম্প্রতিক সংযোজিত প্রশ্ন</h2>
-                    <div id="recentQuestionsArea" style="display:flex; flex-direction:column; gap:10px;">কোনো প্রশ্ন পাওয়া যায়নি।</div>
+            <div class="card">
+                <h2><i class="fa-solid fa-gem" style="color:var(--warning)"></i> প্রিমিয়াম মেম্বারশিপ প্ল্যান ও সাবস্ক্রিপশন রেট</h2>
+                <div class="grid-3" id="pricingCardsDynamicContainer"></div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-circle-question" style="color:var(--success)"></i> সাধারণ জিজ্ঞাসা (FAQ)</h2>
+                <div id="faqDynamicDisplayContainer"></div>
+            </div>
+
+            <div class="card" style="background: linear-gradient(135deg, #4f46e5, #6366f1); color: white;">
+                <h2><i class="fa-solid fa-address-book" style="color:white"></i> সরাসরি যোগাযোগ ও সাপোর্ট ডেস্ক</h2>
+                <p style="font-size:16px;">যেকোনো টেকনিক্যাল তথ্য বা সাবস্ক্রিপশন সংক্রান্ত সমস্যার জন্য আমাদের সাথে সরাসরি কল অথবা হোয়াটসঅ্যাপে যোগাযোগ করুন।</p>
+                <div style="font-size: 22px; font-weight: bold; margin-top: 15px;">
+                    <a href="https://wa.me/8801774275248" target="_blank" style="color: #25d366; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; background: white; padding: 10px 20px; border-radius: 30px;">
+                        <i class="fa-brands fa-whatsapp"></i> 01774275248 (WhatsApp Active)
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div id="question-sec" class="section-block" style="display: none;">
-            <div class="card" id="adminFormCard" style="display: none;">
-                <h2 id="formTitle"><i class="fa-solid fa-file-signature" style="color:var(--primary)"></i> নতুন প্রশ্নপত্র ডেটা এন্ট্রি হাব (উত্তর সহ এডিটিং)</h2>
-                <input type="hidden" id="editId">
-                
-                <div class="grid-4">
+        <div id="user-view-sec" class="section-block" style="display:none;">
+            <div class="card">
+                <h2><i class="fa-solid fa-magnifying-glass" style="color:var(--primary)"></i> অ্যাডভান্সড স্মার্ট ফিল্টারিং হাব</h2>
+                <div class="grid-3">
                     <div>
-                        <label>ক্যাটাগরি / পর্যায়</label>
-                        <select id="qCategory">
-                            <option value="SSC">SSC পর্যায়</option>
-                            <option value="HSC">HSC পর্যায়</option>
-                            <option value="Admission">বিশ্ববিদ্যালয় ভর্তি (Admission)</option>
-                            <option value="Job">চাকরি প্রস্তুতি</option>
+                        <label>অনুসন্ধান কী-ওয়ার্ড</label>
+                        <input type="text" id="userSmartSearchInput" placeholder="যেকোনো শব্দ লিখুন..." onkeyup="processUserFilteringLogic()">
+                    </div>
+                    <div>
+                        <label>শ্রেণী নির্ধারণ (Class 1 - 10)</label>
+                        <select id="userFilterClassSelect" onchange="processUserFilteringLogic()">
+                            <option value="">সকল শ্রেণী</option>
+                            <option value="১ম">১ম শ্রেণী</option>
+                            <option value="২য়">২য় শ্রেণী</option>
+                            <option value="৩য়">৩য় শ্রেণী</option>
+                            <option value="৪র্থ">৪র্থ শ্রেণী</option>
+                            <option value="৫ম">৫ম শ্রেণী</option>
+                            <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option>
+                            <option value="৭ম">৭ম শ্রেণী</option>
+                            <option value="৮ম">৮ম শ্রেণী</option>
+                            <option value="৯ম">৯ম শ্রেণী</option>
+                            <option value="১০ম">১০ম শ্রেণী</option>
                         </select>
                     </div>
                     <div>
-                        <label>শ্রেণী / বিভাগ</label>
-                        <input type="text" id="classInput" list="classList" placeholder="উদা: ১০ম / DU">
-                        <datalist id="classList"></datalist>
-                    </div>
-                    <div>
-                        <label>বিষয় (Subject)</label>
-                        <input type="text" id="subjectInput" list="subjectList" placeholder="উদা: উচ্চতর গণিত">
-                        <datalist id="subjectList"></datalist>
-                    </div>
-                    <div>
-                        <label>অধ্যায় / টপিক</label>
-                        <input type="text" id="chapterInput" placeholder="উদা: ত্রিকোণমিতি">
+                        <label>বিষয় (Subject Mapping)</label>
+                        <select id="userFilterSubjectSelect" onchange="processUserFilteringLogic()">
+                            <option value="">সকল বিষয়</option>
+                            <option value="সাধারণ গণিত">সাধারণ গণিত</option>
+                            <option value="উচ্চতর গণিত">উচ্চতর গণিত</option>
+                            <option value="পদার্থবিজ্ঞান">পদার্থবিজ্ঞান</option>
+                            <option value="রসায়ন">রসায়ন</option>
+                            <option value="ইংরেজি">ইংরেজি</option>
+                            <option value="বাংলা">বাংলা</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="grid-3">
                     <div>
-                        <label>প্রশ্নের ধরন</label>
-                        <select id="qType">
+                        <label>অধ্যায় / টপিক</label>
+                        <select id="userFilterChapterSelect" onchange="processUserFilteringLogic()">
+                            <option value="">সকল অধ্যায়</option>
+                            <option value="ত্রিকোণমিতি">ত্রিকোণমিতি</option>
+                            <option value="সেট ও ফাংশন">সেট ও ফাংশন</option>
+                            <option value="বীজগাণিতিক রাশি">বীজগাণিতিক রাশি</option>
+                            <option value="পরিমিতি">পরিমিতি</option>
+                            <option value="সূচক ও লগারিদম">সূচক ও লগারিদম</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>প্রশ্নের ক্যাটাগরি ধরন</label>
+                        <select id="userFilterTypeSelect" onchange="processUserFilteringLogic()">
+                            <option value="">সকল ধরন</option>
                             <option value="সৃজনশীল">সৃজনশীল (CQ)</option>
-                            <option value="সংक्षिप्त">সংক্ষিপ্ত প্রশ্ন</option>
+                            <option value="সংक्षिप्त">সংक्षिप्त প্রশ্ন</option>
                             <option value="এমসিকিউ">বহুনির্বাচনী (MCQ)</option>
                         </select>
                     </div>
                     <div>
+                        <label>সর্বোচ্চ আউটপুট সংখ্যা (৫ থেকে ২০০)</label>
+                        <input type="number" id="userMaxLimitInput" value="50" min="5" max="200" onchange="processUserFilteringLogic()">
+                    </div>
+                </div>
+            </div>
+
+            <div id="userFilteredResultsRenderArea"></div>
+        </div>
+
+        <div id="admin-main-sec" class="section-block" style="display:none;">
+            <div class="card">
+                <h2><i class="fa-solid fa-file-signature" style="color:var(--primary)"></i> এডমিন সেন্ট্রাল ডাটা এন্ট্রি এডিটর</h2>
+                <input type="hidden" id="adminEditIdHolder">
+                <div class="grid-4">
+                    <div>
+                        <label>ক্যাটাগরি</label>
+                        <select id="admQCategory"><option value="SSC">SSC পর্যায়</option><option value="HSC">HSC পর্যায়</option></select>
+                    </div>
+                    <div>
+                        <label>শ্রেণী নির্ধারণ</label>
+                        <select id="admQClass">
+                            <option value="১ম">১ম শ্রেণী</option><option value="২য়">২য় শ্রেণী</option><option value="৩য়">৩য় শ্রেণী</option><option value="৪র্থ">৪র্থ শ্রেণী</option><option value="৫ম">৫ম শ্রেণী</option>
+                            <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option><option value="৭ম">৭ম শ্রেণী</option><option value="৮ম">৮ম শ্রেণী</option><option value="৯ম">৯ম শ্রেণী</option><option value="১০ম">১০ম শ্রেণী</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>বিষয়</label>
+                        <input type="text" id="admQSubject" placeholder="উদা: উচ্চতর গণিত">
+                    </div>
+                    <div>
+                        <label>অধ্যায়</label>
+                        <input type="text" id="admQChapter" placeholder="উদা: ত্রিকোণমিতি">
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div>
+                        <label>প্রশ্নের ধরন</label>
+                        <select id="admQType"><option value="সৃজনশীল">সৃজনশীল</option><option value="সংक्षिप्त">সংक्षिप्त</option><option value="এমসিকিউ">এমসিকিউ</option></select>
+                    </div>
+                    <div>
                         <label>নম্বর (Marks)</label>
-                        <input type="number" id="marks" placeholder="যেমন: ১০">
-                    </div>
-                    <div>
-                        <label>AI অ্যাসিস্ট্যান্ট ইঞ্জিন</label>
-                        <button type="button" class="btn-action" style="background:var(--dark); width:100%; border:1px solid var(--border);" onclick="triggerAIPlaceholder()"><i class="fa-solid fa-wand-magic-sparkles"></i> AI প্রশ্ন ও উত্তর জেনারেট</button>
+                        <input type="number" id="admQMarks" placeholder="১০">
                     </div>
                 </div>
-
                 <div style="margin-bottom:15px;">
-                    <label>মূল প্রশ্ন টেক্সট (ম্যাথ সমীকরণের জন্য $x^2 + y^2 = z^2$ অথবা $\text{cosec}\theta$ লিখুন)</label>
-                    <textarea id="mainInput" rows="4" placeholder="এখানে পূর্ণাঙ্গ প্রশ্নটি টাইপ করুন বা পেস্ট করুন..." onkeyup="doPreview()"></textarea>
+                    <label>মূল প্রশ্ন টেক্সট (LaTeX সমীকরণের জন্য $x^2$ অথবা $\text{cosec}\theta$ ব্যবহার করুন)</label>
+                    <textarea id="admQText" rows="4" placeholder="প্রশ্ন টাইপ করুন..." onkeyup="doAdminLivePreview()"></textarea>
                 </div>
-
                 <div style="margin-bottom:15px;">
-                    <label><i class="fa-solid fa-square-poll-horizontal" style="color:var(--success)"></i> প্রশ্নের সমাধান / উত্তরপত্র (ঐচ্ছিক)</label>
-                    <textarea id="ansInput" rows="3" placeholder="প্রশ্নটির গাণিতিক সমাধান বা সঠিক উত্তরটি এখানে লিখুন..." onkeyup="doPreview()"></textarea>
+                    <label>প্রশ্নের সমাধান / উত্তরপত্র</label>
+                    <textarea id="admQAnswer" rows="3" placeholder="উত্তর এখানে লিখুন..." onkeyup="doAdminLivePreview()"></textarea>
                 </div>
-                
-                <label>লাইভ টাইপসেট প্রিভিউ (MathJax এডিটর মোড)</label>
-                <div class="preview-box" id="livePreview">প্রিভিউ এখানে রেন্ডার হবে...</div>
-
+                <div class="preview-box" id="adminLivePreviewBox">প্রিভিউ এখানে রেন্ডার হবে...</div>
                 <div style="display: flex; gap: 15px; justify-content: flex-end;">
-                    <button onclick="resetForm()" class="btn-action" style="background: #64748b;"><i class="fa-solid fa-rotate"></i> রিসেট</button>
-                    <button onclick="saveData()" id="saveBtn" class="btn-action" style="background: var(--primary);"><i class="fa-solid fa-floppy-disk"></i> ডাটাবেসে সেভ করুন</button>
+                    <button onclick="resetAdminForm()" class="btn-action" style="background: #64748b;">রিসেট</button>
+                    <button onclick="saveAdminQuestionData()" id="admSaveBtn" class="btn-action" style="background: var(--primary);">ডাটাবেসে সংরক্ষণ করুন</button>
                 </div>
             </div>
-
+            
             <div class="card">
-                <h2><i class="fa-solid fa-filter" style="color:var(--warning)"></i> অ্যাডভান্সড সার্চ ইঞ্জিন ও ডাটা ফিল্টার</h2>
-                <div class="grid-4" style="margin-bottom: 15px;">
-                    <div>
-                        <label>স্মার্ট সার্চ (যেকোনো শব্দ)</label>
-                        <input type="text" id="searchQuery" placeholder="টাইপ করুন..." onkeyup="renderQuestions()">
-                    </div>
-                    <div>
-                        <label>ধাপ ফিল্টার</label>
-                        <select id="filterCategory" onchange="renderQuestions()">
-                            <option value="">সর্বমোট ক্যাটাগরি</option>
-                            <option value="SSC">SSC পর্যায়</option>
-                            <option value="HSC">HSC পর্যায়</option>
-                            <option value="Admission">বিশ্ববিদ্যালয় ভর্তি</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>শ্রেণী ফিল্টার</label>
-                        <select id="filterClass" onchange="renderQuestions()"><option value="">সকল শ্রেণী</option></select>
-                    </div>
-                    <div>
-                        <label>ধরন ফিল্টার</label>
-                        <select id="filterType" onchange="renderQuestions()">
-                            <option value="">সকল টাইপ</option>
-                            <option value="সৃজনশীল">সৃজনশীল</option>
-                            <option value="সংक्षिप्त">সংक्षिप्त</option>
-                            <option value="এমসিকিউ">এমসিকিউ</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div id="adminBackupControls" style="display:none; gap:10px; flex-wrap:wrap; margin-bottom:15px; justify-content:flex-end;">
-                    <button onclick="exportJSON()" class="btn-action" style="background:#475569; padding:6px 14px; font-size:13px;"><i class="fa-solid fa-file-export"></i> ব্যাকআপ এক্সপোর্ট (JSON)</button>
-                    <button onclick="document.getElementById('importFile').click()" class="btn-action" style="background:#475569; padding:6px 14px; font-size:13px;"><i class="fa-solid fa-file-import"></i> ইম্পোর্ট ডাটা</button>
-                    <input type="file" id="importFile" style="display:none" onchange="importJSON(event)">
-                </div>
-
-                <div id="listArea"></div>
+                <h2><i class="fa-solid fa-database"></i> সংরক্ষিত সকল প্রশ্নপত্র তালিকা</h2>
+                <div id="adminGlobalQuestionsListArea"></div>
             </div>
         </div>
 
-        <div id="booklet-sec" class="section-block" style="display: none;">
+        <div id="admin-slider-sec" class="section-block" style="display:none;">
             <div class="card">
-                <h2><i class="fa-solid fa-columns" style="color:var(--primary)"></i> ২-কলাম বিশিষ্ট ল্যান্ডস্কেপ বুকলেট প্রিন্টিং ম্যানেজার</h2>
-                <p>এই মডিউলের মাধ্যমে নির্বাচিত প্রশ্নসমূহকে পরীক্ষার পাতায় অপচয় রোধে দ্বিপাক্ষিক কলাম আকারে সাজানো যায়।</p>
+                <h2><i class="fa-solid fa-images"></i> হোম পেজ নোটিশ স্লাইডার টেক্সট কন্ট্রোল</h2>
+                <div style="margin-bottom:15px;">
+                    <label>স্ক্রলিং নোটিশ বার্তা</label>
+                    <textarea id="adminSliderTickerTextInput" rows="3" placeholder="হোম পেজে যে নোটিশটি স্ক্রল হবে তা লিখুন..."></textarea>
+                </div>
+                <button onclick="updateSliderTickerTextAction()" class="btn-action"><i class="fa-solid fa-circle-check"></i> নোটিশ আপডেট করুন</button>
+            </div>
+        </div>
+
+        <div id="admin-faq-sec" class="section-block" style="display:none;">
+            <div class="card">
+                <h2><i class="fa-solid fa-circle-question"></i> নতুন FAQ প্রশ্ন-উত্তর যুক্ত করুন</h2>
                 <div class="grid-2">
                     <div>
-                        <label>লেআউট স্টাইল নির্ধারণ</label>
-                        <select id="bookletLayout">
-                            <option value="portrait">স্ট্যান্ডার্ড এক কলাম (Portrait)</option>
-                            <option value="landscape-2col">ল্যান্ডস্কেপ ডুয়াল কলাম (Booklet Style)</option>
-                        </select>
+                        <label>জিজ্ঞাসা / প্রশ্ন</label>
+                        <input type="text" id="adminFaqQuestionInput" placeholder="উদা: কিভাবে প্রশ্নপত্র ডাউনলোড করবো?">
                     </div>
-                    <div style="display:flex; align-items:flex-end;">
-                        <button class="btn-action" style="width:100%" onclick="alert('বুকলেট লেআউট সক্রিয় করা হয়েছে।')"><i class="fa-solid fa-square-check"></i> সেটিংস নিশ্চিত করুন</button>
+                    <div>
+                        <label>উত্তর বার্তা</label>
+                        <input type="text" id="adminFaqAnswerInput" placeholder="উদা: ইউজার প্যানেল থেকে সিলেক্ট করে ডাউনলোড করা যাবে।">
                     </div>
                 </div>
+                <button onclick="addNewFaqItemAction()" class="btn-action" style="margin-top:10px;"><i class="fa-solid fa-plus"></i> FAQ ডাটা যুক্ত করুন</button>
+            </div>
+            <div class="card">
+                <h2>বিদ্যমান FAQ তালিকা</h2>
+                <div id="adminFaqListConfigContainer"></div>
             </div>
         </div>
 
-        <div id="custom-q-sec" class="section-block" style="display: none;">
+        <div id="admin-pricing-sec" class="section-block" style="display:none;">
             <div class="card">
-                <h2><i class="fa-solid fa-building-columns" style="color:var(--primary)"></i> উচ্চশিক্ষা ও বিশ্ববিদ্যালয় এডমিশন প্রশ্ন ব্যাংক হাব</h2>
-                <p>DU, RU, BUET, এবং গুচ্ছ (GST) ভুক্ত বিগত বছরের প্রশ্নগুলো থেকে মিক্সড কাস্টম প্রশ্ন তৈরি করুন।</p>
-                <div class="grid-3">
+                <h2><i class="fa-solid fa-tags"></i> মেম্বারশিপ প্যাকেজ রেট মডিউল</h2>
+                <div class="grid-4">
                     <div>
-                        <label>বিশ্ববিদ্যালয় / বোর্ড নির্বাচন</label>
-                        <select id="varsitySelect">
-                            <option value="DU">ঢাকা বিশ্ববিদ্যালয় (DU)</option>
-                            <option value="RU">রাজশাহী বিশ্ববিদ্যালয় (RU)</option>
-                            <option value="BUET">বুয়েট (BUET)</option>
-                            <option value="GST">GST গুচ্ছ ভুক্ত</option>
-                        </select>
+                        <label>প্যাকেজ নাম</label>
+                        <input type="text" id="pkgNameInput" placeholder="উদা: প্রিমিয়াম গোল্ড">
                     </div>
                     <div>
-                        <label>টপিক / সাব-অধ্যায়</label>
-                        <input type="text" placeholder="উদা: জটিল সংখ্যা / বলবিদ্যা">
+                        <label>মূল্য রেট (টাকা)</label>
+                        <input type="text" id="pkgPriceInput" placeholder="উদা: ৫০০ টাকা">
                     </div>
-                    <div style="display:flex; align-items:flex-end;">
-                        <button class="btn-action" style="background:var(--primary); width:100%;" onclick="alert('সার্ভার থেকে ভর্তি পরীক্ষার প্রশ্ন ডাটাবেস লোড করা হচ্ছে...')"><i class="fa-solid fa-magnifying-glass"></i> প্রশ্ন অনুসন্ধান করুন</button>
+                    <div>
+                        <label>স্থায়িত্ব মেয়াদ</label>
+                        <input type="text" id="pkgDurationInput" placeholder="উদা: ১ বছর">
+                    </div>
+                    <div>
+                        <label>সুযোগ-সুবিধা বিবরণ</label>
+                        <input type="text" id="pkgFeaturesInput" placeholder="কমা দিয়ে লিখুন: আনলিমিটেড ডাউনলোড, ওএমআর সুবিধা">
                     </div>
                 </div>
+                <button onclick="savePricingPackageAction()" class="btn-action"><i class="fa-solid fa-floppy-disk"></i> প্যাকেজ রেট সংরক্ষণ করুন</button>
             </div>
-        </div>
-
-        <div id="online-exam-sec" class="section-block" style="display: none;">
             <div class="card">
-                <h2><i class="fa-solid fa-shield-halved" style="color:var(--danger)"></i> সিকিউর টোকেন বেসড অনলাইন লাইভ এক্সাম</h2>
-                <p>শিক্ষার্থীদের জন্য অননুমোদিত প্রবেশ ঠেকাতে ওয়ান-টাইম সিকিউর টোকেন চালিত পরীক্ষা তৈরি করুন।</p>
-                <div class="grid-3">
-                    <div>
-                        <label>পরীক্ষার নাম / শিরোনাম</label>
-                        <input type="text" id="examTitle" placeholder="যেমন: ম্যাথ উইকলি টেস্ট-১">
-                    </div>
-                    <div>
-                        <label>নির্ধারিত সময়কাল (মিনিট)</label>
-                        <input type="number" id="examDuration" placeholder="যেমন: ৩০ মিনিট">
-                    </div>
-                    <div style="display:flex; align-items:flex-end;">
-                        <button class="btn-action" style="background:var(--danger); width:100%;" onclick="generateExamToken()"><i class="fa-solid fa-key"></i> লাইভ এক্সাম লিংক ও টোকেন তৈরি করুন</button>
-                    </div>
-                </div>
-                <div id="tokenOutput" style="margin-top:15px; display:none; background:rgba(0,0,0,0.03); padding:15px; border-radius:12px; border:1px solid var(--border);"></div>
-            </div>
-        </div>
-
-        <div id="omr-sec" class="section-block" style="display: none;">
-            <div class="card">
-                <h2><i class="fa-solid fa-print" style="color:var(--success)"></i> OMR শিট জেনারেটর এবং অপটিক্যাল মূল্যায়ন মূল্যায়ন ইঞ্জিন</h2>
-                <p>১০০ বা ৫০ নম্বরের MCQ পরীক্ষার জন্য অটোমেটিক OMR শিট তৈরি করুন এবং স্ক্যানকৃত ইমেজ মূল্যায়ন করুন।</p>
-                <div class="grid-3">
-                    <button class="btn-action" style="background:var(--primary);" onclick="alert('১০০টি প্রশ্নের প্রফেশনাল OMR শিট PDF তৈরি হচ্ছে...')"><i class="fa-solid fa-file-pdf"></i> ওএমআর শিট PDF প্রিন্ট</button>
-                    <button class="btn-action" style="background:#8b5cf6;" onclick="alert('মাস্টার অ্যান্সার ওএমআর টোকেন জেনারেট সম্পন্ন!')"><i class="fa-solid fa-fingerprint"></i> মাস্টার ওএমআর টোকেন</button>
-                    <button class="btn-action" style="background:var(--dark); border:1px solid var(--border);">
-                        <label style="color:white; cursor:pointer; margin:0; display:flex; align-items:center; gap:8px;">
-                            <input type="file" style="display:none;" onchange="alert('OMR চিত্র স্ক্যান সম্পন্ন হয়েছে! আর্টিফিশিয়াল ভিশন মূল্যায়ন করছে...')">
-                            <i class="fa-solid fa-camera"></i> ওএমআর স্ক্যান করুন
-                        </label>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="institute-sec" class="section-block" style="display: none;">
-            <div class="card">
-                <h2><i class="fa-solid fa-cloud-arrow-up" style="color:var(--primary)"></i> Firebase রিয়েলটাইম ক্লাউড স্টোরেজ কনফিগারেশন</h2>
-                <div class="grid-2">
-                    <div>
-                        <label>Firebase Realtime Database URL</label>
-                        <input type="text" id="fbUrl" placeholder="https://your-project-id.firebaseio.com/" value="https://amirul-math-care-default-rtdb.firebaseio.com">
-                    </div>
-                    <div>
-                        <label>অথেন্টিকেশন সিক্রেট টোকেন / API Key</label>
-                        <input type="password" id="fbKey" placeholder="AIzaSyA8..." value="••••••••••••••••••••">
-                    </div>
-                </div>
-                <div style="margin-top:15px;">
-                    <button class="btn-action" onclick="alert('Firebase ক্লাউড ইন্টিগ্রেশন সেভ করা হয়েছে (ডেমো মোড)।')"><i class="fa-solid fa-link"></i> ডাটাবেস ক্লাউড কানেক্ট করুন</button>
-                </div>
+                <h2>সিস্টেমের বর্তমান সক্রিয় প্যাকেজসমূহ</h2>
+                <div id="adminPricingListConfigContainer"></div>
             </div>
         </div>
 
     </div>
 </div>
 
-<div class="footer-bar" id="footer" style="display:none">
-    <span>নির্বাচিত প্রশ্ন সংখ্যা: <span id="count" style="color:var(--success); font-weight:bold; font-size:18px;">0</span> টি</span>
-    <button class="btn-action" onclick="makePDF()"><i class="fa-solid fa-file-pdf"></i> নির্বাচিত প্রশ্নপত্রের PDF ডাউনলোড করুন</button>
+<div class="footer-bar" id="userPersistentActionFooter" style="display:none">
+    <span>নির্বাচিত প্রশ্ন: <span id="userSelectedTotalCountBadge" style="color:var(--success); font-weight:bold; font-size:18px;">0</span> টি</span>
+    <button class="btn-action" style="background:var(--primary)" onclick="triggerUserSelectedQuestionsPreview()"><i class="fa-solid fa-eye"></i> View Now</button>
+    <button class="btn-action" style="background:#475569;" onclick="downloadRenderedPDFArtifact('question')"><i class="fa-solid fa-file-pdf"></i> ① প্রশ্ন ডাউনলোড</button>
+    <button class="btn-action" style="background:var(--success);" onclick="downloadRenderedPDFArtifact('answer')"><i class="fa-solid fa-file-invoice"></i> ② উত্তরপত্র ডাউনলোড</button>
 </div>
 
 <div id="pdf-render-template"></div>
 
 <script>
+    // Core Embedded Micro-Database Initializations
     let db = JSON.parse(localStorage.getItem('amirul_smart_qb')) || [
-        { id: 1, category: "SSC", className: "১০ম", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", answer: "দেওয়া আছে, $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$। বামপক্ষ $= m^2 - n^2 = (m+n)(m-n) = (2\\tan A)(2\\sin A) = 4\\tan A\\sin A = 4\\sqrt{\\tan^2 A \\sin^2 A} = 4\\sqrt{mn}$ [প্রমাণিত]", marks: "১০" },
+        { id: 1, category: "SSC", className: "১০ম", subject: "উচ্চতর গণيت", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", answer: "দেওয়া আছে, $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$। বামপক্ষ $= m^2 - n^2 = (m+n)(m-n) = (2\\tan A)(2\\sin A) = 4\\tan A\\sin A = 4\\sqrt{\\tan^2 A \\sin^2 A} = 4\\sqrt{mn}$ [প্রমাণিত]", marks: "১০" },
         { id: 2, category: "SSC", className: "১০ম", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে।", answer: "আমরা জানি, $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ সর্বদা সত্য যখন $\\theta \\neq 0^{\\circ}$।", marks: "৪" }
     ];
     
-    let usersDb = JSON.parse(localStorage.getItem('qb_registered_users')) || {};
-    let currentSession = {
-        role: 'home', 
-        isAdminAuthenticated: false,
-        isUserAuthenticated: false,
-        userMobile: ''
+    let faqDb = JSON.parse(localStorage.getItem('amirul_faq_db')) || [
+        { id: 1, q: "কিভাবে নিজস্ব প্রশ্ন ডাউনলোড করবো?", a: "প্রথমে ইউজার প্যানেলে যান, নির্দিষ্ট সাবজেক্ট বা ক্লাস ফিল্টার করুন। প্রশ্নপত্রগুলোর চেক বক্সে টিক দিয়ে নিচের বাটনে ক্লিক করে প্রশ্ন ও উত্তরপত্রের আলাদা আলাদা PDF নামাতে পারবেন।" }
+    ];
+
+    let pricingDb = JSON.parse(localStorage.getItem('amirul_pricing_db')) || [
+        { id: 1, name: "বেসিক প্যাক", price: "বিনামূল্যে", duration: "১ মাস", features: ["সীমিত প্রশ্ন সার্চ", "স্ট্যান্ডার্ড A4 লেআউট output"] },
+        { id: 2, name: "প্রিমিয়াম আল্টিমেট প্যাক", price: "৯৯৯ টাকা", duration: "আজীবন মেয়াদ", features: ["১ম-১০ম শ্রেণীর সকল প্রশ্ন অ্যাক্সেস", "আলাদা প্রশ্ন ও উত্তর শিট ডাউনলোড", "OMR ও টোকেন জেনারেটর এক্সপার্ট মোড"] }
+    ];
+
+    let tickerTextData = localStorage.getItem('amirul_ticker_text') || "ঘোষণা: এসএসসি ২০২৭ ব্যাচের জন্য নতুন স্পেশাল উচ্চতর গণিত টেস্ট পেপার এডিটিং হাব আপডেট করা হয়েছে। প্রফেশনাল ওএমআর মূল্যায়ন সুবিধা এখন লাইভ!";
+    let userSelectedIdsArray = [];
+    
+    let currentSession = { role: 'home', isAdminAuthenticated: false, isUserAuthenticated: false, userMobile: '' };
+    let userAuthMode = 'register';
+    
+    let chartInstanceRef = null;
+    let apexChartInstanceRef = null;
+
+    window.onload = () => {
+        executeGlobalHomeUIComponents();
+        renderHomeDashCharts();
+        processUserFilteringLogic();
     };
 
-    let userAuthMode = 'register';
-
-    // ড্রপডাউন টগল ফাংশন
     function toggleDropdown(dropdownId, iconId) {
         const dropdown = document.getElementById(dropdownId);
         const icon = document.getElementById(iconId);
-        const allDropdowns = document.querySelectorAll('.dropdown-container');
-        const allIcons = document.querySelectorAll('.dropdown-btn i');
-
-        allDropdowns.forEach(dd => {
-            if (dd.id !== dropdownId) dd.classList.remove('show');
-        });
-        allIcons.forEach(ic => {
-            if (ic.id !== iconId) { ic.className = "fa-solid fa-chevron-down"; }
-        });
-
         dropdown.classList.toggle('show');
-        if (dropdown.classList.contains('show')) {
-            icon.className = "fa-solid fa-chevron-up";
-        } else {
-            icon.className = "fa-solid fa-chevron-down";
-        }
+        icon.className = dropdown.classList.contains('show') ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down";
     }
 
     function toggleMode(targetMode) {
         if(targetMode === 'admin') {
-            if(!currentSession.isAdminAuthenticated) {
-                openAuth('admin');
-                return;
-            }
+            if(!currentSession.isAdminAuthenticated) { openAuth('admin'); return; }
             currentSession.role = 'admin';
-            setupAdminLayout();
+            setupAdminLayoutView();
         } else if(targetMode === 'user') {
-            if(!currentSession.isUserAuthenticated) {
-                openAuth('user');
-                return;
-            }
+            if(!currentSession.isUserAuthenticated) { openAuth('user'); return; }
             currentSession.role = 'user';
-            setupUserLayout();
+            setupUserLayoutView();
         } else {
             currentSession.role = 'home';
-            setupHomeLayout();
+            setupHomeLayoutView();
         }
         
         document.getElementById('homeBtn').classList.toggle('active', targetMode === 'home');
         document.getElementById('userBtn').classList.toggle('active', targetMode === 'user');
         document.getElementById('adminBtn').classList.toggle('active', targetMode === 'admin');
-        
-        renderQuestions();
     }
 
-    function setupHomeLayout() {
+    function setupHomeLayoutView() {
         document.getElementById('appSidebar').style.display = 'none';
         document.getElementById('mainContainer').classList.add('no-sidebar');
-        document.getElementById('adminFormCard').style.display = 'none';
-        document.getElementById('adminBackupControls').style.display = 'none';
-        document.getElementById('footer').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'none';
-        switchSection('dashboard-sec');
+        document.getElementById('home-view-sec').style.display = 'block';
+        document.getElementById('user-view-sec').style.display = 'none';
+        document.getElementById('admin-main-sec').style.display = 'none';
+        document.getElementById('admin-slider-sec').style.display = 'none';
+        document.getElementById('admin-faq-sec').style.display = 'none';
+        document.getElementById('admin-pricing-sec').style.display = 'none';
+        document.getElementById('userPersistentActionFooter').style.display = 'none';
+        executeGlobalHomeUIComponents();
+        setTimeout(renderHomeDashCharts, 150);
     }
 
-    function setupAdminLayout() {
+    function setupAdminLayoutView() {
         document.getElementById('appSidebar').style.display = 'block';
         document.getElementById('mainContainer').classList.remove('no-sidebar');
-        document.getElementById('adminFormCard').style.display = 'block';
-        document.getElementById('adminBackupControls').style.display = 'flex';
-        document.getElementById('footer').style.display = 'none';
+        document.getElementById('home-view-sec').style.display = 'none';
+        document.getElementById('user-view-sec').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'inline-block';
-        switchSection('dashboard-sec');
+        document.getElementById('userPersistentActionFooter').style.display = 'none';
+        switchSection('admin-main-sec');
     }
 
-    function setupUserLayout() {
+    function setupUserLayoutView() {
         document.getElementById('appSidebar').style.display = 'none';
         document.getElementById('mainContainer').classList.add('no-sidebar');
-        document.getElementById('adminFormCard').style.display = 'none';
-        document.getElementById('adminBackupControls').style.display = 'none';
-        document.getElementById('footer').style.display = 'flex';
-        document.getElementById('logoutBtn').style.display = 'none';
-        switchSection('question-sec');
+        document.getElementById('home-view-sec').style.display = 'none';
+        document.getElementById('user-view-sec').style.display = 'block';
+        document.getElementById('admin-main-sec').style.display = 'none';
+        document.getElementById('admin-slider-sec').style.display = 'none';
+        document.getElementById('admin-faq-sec').style.display = 'none';
+        document.getElementById('admin-pricing-sec').style.display = 'none';
+        document.getElementById('userPersistentActionFooter').style.display = 'flex';
+        processUserFilteringLogic();
     }
 
-    function adminLogout() {
-        currentSession.isAdminAuthenticated = false;
-        alert("এডমিন প্যানেল থেকে সফলভাবে লগআউট করা হয়েছে।");
-        toggleMode('home');
+    function switchSection(sectionId, listElement) {
+        document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
+        document.getElementById(sectionId).style.display = 'block';
+        
+        if(listElement) {
+            document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active-menu'));
+            listElement.classList.add('active-menu');
+        }
+        
+        if(sectionId === 'admin-main-sec') renderAdminQuestionsDashboardList();
+        if(sectionId === 'admin-slider-sec') document.getElementById('adminSliderTickerTextInput').value = tickerTextData;
+        if(sectionId === 'admin-faq-sec') renderAdminFaqConfigPanel();
+        if(sectionId === 'admin-pricing-sec') renderAdminPricingConfigPanel();
     }
 
     function openAuth(type) {
@@ -616,27 +586,15 @@
         }
     }
 
-    function closeAuth() {
-        document.getElementById('authOverlay').style.display = 'none';
-        const currentActive = currentSession.role;
-        document.getElementById('homeBtn').classList.toggle('active', currentActive === 'home');
-        document.getElementById('userBtn').classList.toggle('active', currentActive === 'user');
-        document.getElementById('adminBtn').classList.toggle('active', currentActive === 'admin');
-    }
+    function closeAuth() { document.getElementById('authOverlay').style.display = 'none'; toggleMode('home'); }
 
     function verifyAdminAuth() {
-        const pass = document.getElementById('adminPasswordInput').value;
-        if(pass === "amirul2026") { 
+        if(document.getElementById('adminPasswordInput').value === "amirul2026") { 
             currentSession.isAdminAuthenticated = true;
-            currentSession.role = 'admin';
             document.getElementById('authOverlay').style.display = 'none';
             document.getElementById('adminPasswordInput').value = '';
-            setupAdminLayout();
-            renderQuestions();
-            alert("অ্যাডমিন প্যানেল সফলভাবে আনলক হয়েছে!");
-        } else {
-            alert("ভুল পাসওয়ার্ড! অনুগ্রহ করে সঠিক পাসওয়ার্ড দিন।");
-        }
+            toggleMode('admin');
+        } else { alert("ভুল পাসওয়ার্ড!"); }
     }
 
     function toggleUserAuthMode() {
@@ -646,355 +604,383 @@
 
     function updateUserAuthUI() {
         if(userAuthMode === 'register') {
-            document.getElementById('userAuthTitle').innerHTML = '<i class="fa-solid fa-user-plus" style="color:var(--primary)"></i> ইউজার রেজিস্ট্রেশন';
-            document.getElementById('userAuthDesc').innerText = 'প্রশ্নপত্র ডাউনলোড করতে মোবাইল নাম্বার দিয়ে রেজিস্টার করুন।';
-            document.getElementById('userAuthBtn').innerHTML = '<i class="fa-solid fa-user-check"></i> অ্যাকাউন্ট তৈরি করুন';
+            document.getElementById('userAuthTitle').innerHTML = '<i class="fa-solid fa-user-plus"></i> ইউজার রেজিস্ট্রেশন';
+            document.getElementById('userAuthBtn').innerText = 'নিবন্ধন করুন';
             document.getElementById('userAuthToggle').innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন';
         } else {
-            document.getElementById('userAuthTitle').innerHTML = '<i class="fa-solid fa-right-to-bracket" style="color:var(--success)"></i> ইউজার লগইন';
-            document.getElementById('userAuthDesc').innerText = 'আপনার নিবন্ধিত মোবাইল নম্বর ও পাসওয়ার্ড দিয়ে লগইন করুন।';
-            document.getElementById('userAuthBtn').innerHTML = '<i class="fa-solid fa-unlock"></i> লগইন করুন';
+            document.getElementById('userAuthTitle').innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ইউজার লগইন';
+            document.getElementById('userAuthBtn').innerText = 'লগইন করুন';
             document.getElementById('userAuthToggle').innerText = 'নতুন অ্যাকাউন্ট প্রয়োজন? রেজিস্ট্রেশন করুন';
         }
     }
 
     function handleUserAuthSubmit() {
-        const mobile = document.getElementById('userMobileInput').value.trim();
-        const pass = document.getElementById('userPasswordInput').value;
+        let mobile = document.getElementById('userMobileInput').value.trim();
+        let pass = document.getElementById('userPasswordInput').value;
+        if(mobile.length < 11) return alert("সঠিক মোবাইল নম্বর দিন!");
 
-        if(!mobile || mobile.length < 11) return alert("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন!");
-        if(pass.length < 4) return alert("পাসওয়ার্ড ন্যূনতম ৪ ডিজিটের হতে হবে!");
-
+        let users = JSON.parse(localStorage.getItem('qb_registered_users')) || {};
         if(userAuthMode === 'register') {
-            if(usersDb[mobile]) {
-                return alert("এই নম্বরটি ইতিমধ্যে নিবন্ধিত! লগইন করার চেষ্টা করুন।");
-            }
-            usersDb[mobile] = pass;
-            localStorage.setItem('qb_registered_users', JSON.stringify(usersDb));
-            alert("রেজিস্ট্রেশন সফল হয়েছে! এখন লগইন করুন।");
-            userAuthMode = 'login';
-            updateUserAuthUI();
+            users[mobile] = pass;
+            localStorage.setItem('qb_registered_users', JSON.stringify(users));
+            alert("নিবন্ধন সফল! লগইন করুন।");
+            userAuthMode = 'login'; updateUserAuthUI();
         } else {
-            if(usersDb[mobile] && usersDb[mobile] === pass) {
+            if(users[mobile] && users[mobile] === pass) {
                 currentSession.isUserAuthenticated = true;
                 currentSession.userMobile = mobile;
-                currentSession.role = 'user';
                 document.getElementById('authOverlay').style.display = 'none';
-                
                 document.getElementById('userStatusDisplay').style.display = 'inline';
-                document.getElementById('userStatusDisplay').innerHTML = `<i class="fa-solid fa-user-check"></i> ${mobile}`;
-                
-                document.getElementById('userMobileInput').value = '';
-                document.getElementById('userPasswordInput').value = '';
-                
-                setupUserLayout();
-                renderQuestions();
-                alert("ইউজার প্যানেলে সফলভাবে লগইন সম্পন্ন হয়েছে!");
-            } else {
-                alert("মোবাইল নম্বর অথবা পাসওয়ার্ড ভুল! আবার চেষ্টা করুন।");
-            }
+                document.getElementById('userStatusDisplay').innerText = `সেশন: ${mobile}`;
+                toggleMode('user');
+            } else { alert("লগইন ব্যর্থ!"); }
         }
     }
 
-    function updateLists() {
-        const classes = [...new Set(db.map(q => q.className))];
-        const subjects = [...new Set(db.map(q => q.subject))];
-        
-        const cList = document.getElementById('classList');
-        const sList = document.getElementById('subjectList');
-        const fClass = document.getElementById('filterClass');
-
-        if(cList) cList.innerHTML = classes.map(c => `<option value="${c}">`).join('');
-        if(sList) sList.innerHTML = subjects.map(s => `<option value="${s}">`).join('');
-        
-        let filterHtml = '<option value="">সকল শ্রেণী</option>';
-        classes.forEach(c => filterHtml += `<option value="${c}">${c}</option>`);
-        if(fClass) fClass.innerHTML = filterHtml;
-
-        document.getElementById('totalQCount').innerText = db.length;
-    }
-
-    function doPreview() {
-        const qVal = document.getElementById('mainInput').value;
-        const aVal = document.getElementById('ansInput').value;
-        const box = document.getElementById('livePreview');
-        
-        let previewContent = `<strong>প্রশ্ন:</strong> ${qVal || "..."}`;
-        if(aVal) {
-            previewContent += `<br><div class="answer-container"><strong>সমাধান:</strong> ${aVal}</div>`;
-        }
-        box.innerHTML = previewContent;
-        
-        if(window.MathJax && window.MathJax.typesetPromise) {
-            MathJax.typesetPromise([box]).catch((err) => console.log(err));
-        }
-    }
-
-    function triggerAIPlaceholder() {
-        const generatedText = `$\\Delta ABC$-এ প্রমাণ কর যে, $\\sin A + \\sin B + \\sin C = 4 \\cos\\frac{A}{2}\\cos\\frac{B}{2}\\cos\\frac{C}{2}$ এবং এর $\\text{cosec}$ এর অনুপাত নির্ণয় কর।`;
-        const generatedAns = `আমরা জানি, ত্রিভুজের তিনটি কোণের সমষ্টি $A+B+C = \\pi$। ত্রিকোণমিতিক রূপান্তর সূত্র প্রয়োগ করে পাই, $\\sin A + \\sin B = 2\\sin\\frac{A+B}{2}\\cos\\frac{A-B}{2}$ এবং $\\sin C = 2\\sin\\frac{C}{2}\\cos\\frac{C}{2}$। মান বসিয়ে সরলীকরণ করলে কাঙ্ক্ষিত প্রমাণটি সম্পন্ন হয়।`;
-        
-        document.getElementById('mainInput').value = generatedText;
-        document.getElementById('ansInput').value = generatedAns;
-        doPreview();
-        alert("AI ইঞ্জিন দ্বারা চমৎকার একটি প্রশ্ন ও এর পূর্ণাঙ্গ উত্তর তৈরি করা হয়েছে!");
+    function adminLogout() {
+        currentSession.isAdminAuthenticated = false;
+        document.getElementById('logoutBtn').style.display = 'none';
+        toggleMode('home');
     }
 
     function toggleTheme() {
         document.body.classList.toggle('dark-theme');
-        const isDark = document.body.classList.contains('dark-theme');
-        document.querySelector('.theme-toggle i').className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
     }
 
-    function switchSection(sectionId, element) {
-        document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
-        document.getElementById(sectionId).style.display = 'block';
+    // HOME SCREEN GRAPH ARCHITECTURE PIPELINES
+    function executeGlobalHomeUIComponents() {
+        document.getElementById('liveTickerContainer').innerText = tickerTextData;
         
-        if(element) {
-            document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active-menu'));
-            element.classList.add('active-menu');
-        }
-        
-        if(sectionId === 'question-sec' && currentSession.role === 'user') {
-            document.getElementById('footer').style.display = 'flex';
-        } else {
-            document.getElementById('footer').style.display = 'none';
-        }
+        // Render FAQs
+        let faqArea = document.getElementById('faqDynamicDisplayContainer');
+        faqArea.innerHTML = faqDb.map(f => `
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+                <div class="faq-question"><span>❓ ${f.q}</span> <i class="fa-solid fa-chevron-down"></i></div>
+                <div class="faq-answer">${f.a}</div>
+            </div>
+        `).join('');
+
+        // Render Pricing
+        let pricingArea = document.getElementById('pricingCardsDynamicContainer');
+        pricingArea.innerHTML = pricingDb.map((p, idx) => `
+            <div class="price-card ${idx === 1 ? 'featured' : ''}">
+                <h3>${p.name}</h3>
+                <h1 style="color:var(--primary);">${p.price}</h1>
+                <p style="font-weight:bold; color:var(--warning);">মেয়াদ: ${p.duration}</p>
+                <ul style="text-align:left; padding-left:20px; font-size:14px; line-height:1.8;">
+                    ${p.features.map(f => `<li>${f}</li>`).join('')}
+                </ul>
+                <button class="btn-action" style="width:100%; justify-content:center; margin-top:15px;" onclick="alert('অর্ডার রিকোয়েস্ট প্রসেস করতে সাপোর্ট ডেস্কে যোগাযোগ করুন।')">প্যাকেজ কিনুন</button>
+            </div>
+        `).join('');
     }
 
-    function saveData() {
-        const id = document.getElementById('editId').value;
-        const category = document.getElementById('qCategory').value;
-        const className = document.getElementById('classInput').value.trim();
-        const subject = document.getElementById('subjectInput').value.trim();
-        const chapter = document.getElementById('chapterInput').value.trim();
-        const type = document.getElementById('qType').value;
-        const text = document.getElementById('mainInput').value.trim();
-        const answer = document.getElementById('ansInput').value.trim();
-        const marks = document.getElementById('marks').value;
+    function renderHomeDashCharts() {
+        if(chartInstanceRef) chartInstanceRef.destroy();
+        if(apexChartInstanceRef) apexChartInstanceRef.destroy();
 
-        if(!className || !text) return alert("শ্রেণী ও প্রশ্ন ফিল্ড ফাঁকা রাখা যাবে না!");
-
-        const data = { id: id ? parseInt(id) : Date.now(), category, className, subject, chapter, type, text, answer, marks };
-
-        if(id) {
-            const idx = db.findIndex(q => q.id == id);
-            db[idx] = data;
-        } else {
-            db.push(data);
-        }
-
-        localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
+        // Canvas Distribution Logic
+        let sscCount = db.filter(q => q.category === 'SSC').length;
+        let hscCount = db.filter(q => q.category === 'HSC').length;
+        let context = document.getElementById('categoryDistributionChart').getContext('2d');
         
-        resetForm();
-        updateLists();
-        renderQuestions();
-        renderRecentQuestions();
-        alert("প্রশ্নটি ডেটাবেসে সফলভাবে সংরক্ষিত হয়েছে!");
-    }
-
-    function resetForm() {
-        document.getElementById('editId').value = '';
-        document.getElementById('mainInput').value = '';
-        document.getElementById('ansInput').value = '';
-        document.getElementById('marks').value = '';
-        document.getElementById('chapterInput').value = '';
-        document.getElementById('livePreview').innerHTML = 'প্রিভিউ এখানে রেন্ডার হবে...';
-        document.getElementById('formTitle').innerHTML = "<i class='fa-solid fa-file-signature' style='color:var(--primary)'></i> নতুন প্রশ্নপত্র ডেটা এন্ট্রি হাব (উত্তর সহ এডিটিং)";
-        document.getElementById('saveBtn').innerText = "ডাটাবেসে সেভ করুন";
-    }
-
-    function renderQuestions() {
-        const area = document.getElementById('listArea');
-        const sQuery = document.getElementById('searchQuery').value.toLowerCase();
-        const fCat = document.getElementById('filterCategory').value;
-        const fClass = document.getElementById('filterClass').value;
-        const fType = document.getElementById('filterType').value;
-        
-        let filtered = db.filter(q => {
-            const matchesSearch = q.text.toLowerCase().includes(sQuery) || q.subject.toLowerCase().includes(sQuery);
-            const matchesCat = fCat === '' || q.category === fCat;
-            const matchesClass = fClass === '' || q.className === fClass;
-            const matchesType = fType === '' || q.type === fType;
-            return matchesSearch && matchesCat && matchesClass && matchesType;
+        chartInstanceRef = new Chart(context, {
+            type: 'pie',
+            data: {
+                labels: ['SSC প্রশ্নসমূহ', 'HSC ও অন্যান্য'],
+                datasets: [{
+                    data: [sscCount, hscCount === 0 ? 1 : hscCount],
+                    backgroundColor: ['#6366f1', '#10b981']
+                }]
+            },
+            options: { responsive: true, plugins: { title: { display: true, text: 'সংরক্ষিত ক্যাটাগরি গ্রাফ চার্ট' } } }
         });
 
+        // Apex Live Growth Graph
+        let options = {
+            chart: { type: 'area', height: 180, sparkline: { enabled: false } },
+            stroke: { curve: 'smooth', width: 2 },
+            series: [{ name: 'সংযোজিত প্রশ্ন', data: [db.length, db.length + 2, db.length + 5, db.length + 9] }],
+            xaxis: { categories: ['মে', 'জুন', 'জুলাই', 'আগস্ট'] },
+            title: { text: 'লাইভ প্রশ্ন যোগ করার প্রবৃদ্ধি চার্ট', align: 'left' },
+            colors: ['#ef4444']
+        };
+        apexChartInstanceRef = new ApexCharts(document.querySelector("#liveGrowthApexChart"), options);
+        apexChartInstanceRef.render();
+    }
+
+    // USER INTERACTIVE FILTERING ENGINE (Class 1-10 Scale Framework)
+    function processUserFilteringLogic() {
+        let area = document.getElementById('userFilteredResultsRenderArea');
+        let query = document.getElementById('userSmartSearchInput').value.toLowerCase();
+        let fClass = document.getElementById('userFilterClassSelect').value;
+        let fSubject = document.getElementById('userFilterSubjectSelect').value;
+        let fChapter = document.getElementById('userFilterChapterSelect').value;
+        let fType = document.getElementById('userFilterTypeSelect').value;
+        let maxLimit = parseInt(document.getElementById('userMaxLimitInput').value) || 50;
+
+        let filtered = db.filter(q => {
+            let mSearch = q.text.toLowerCase().includes(query) || q.subject.toLowerCase().includes(query);
+            let mClass = fClass === '' || q.className === fClass;
+            let mSubject = fSubject === '' || q.subject === fSubject;
+            let mChapter = fChapter === '' || q.chapter === fChapter;
+            let mType = fType === '' || q.type === fType;
+            return mSearch && mClass && mSubject && mChapter && mType;
+        }).slice(0, maxLimit);
+
         if(filtered.length === 0) {
-            area.innerHTML = '<p style="text-align:center; padding:30px; color:#94a3b8;"><i class="fa-solid fa-folder-open" style="font-size:30px;"></i><br>কোনো ডাটা পাওয়া যায়নি।</p>';
+            area.innerHTML = '<p style="text-align:center; padding:30px; color:#94a3b8;">কোনো মিল পাওয়া যায়নি।</p>';
             return;
         }
 
         area.innerHTML = filtered.map(q => `
             <div class="q-card">
-                <input type="checkbox" class="sel-q" value="${q.id}" onchange="updateCount()" style="width:22px; height:22px; cursor:pointer;">
+                <input type="checkbox" class="user-sel-q-check" value="${q.id}" ${userSelectedIdsArray.includes(q.id) ? 'checked' : ''} onchange="processUserSelectionChangeAction(this)" style="width:24px; height:24px; cursor:pointer; margin-right:10px;">
                 <div style="flex:1">
-                    <span class="badge" style="background:var(--primary); color:white;"><i class="fa-solid fa-layer-group"></i> ${q.category}</span>
-                    <span class="badge"><i class="fa-solid fa-graduation-cap"></i> ${q.className}</span>
-                    <span class="badge" style="background:rgba(99,102,241,0.1); color:var(--primary);"><i class="fa-solid fa-book"></i> ${q.subject}</span>
-                    <span class="badge badge-type"><i class="fa-solid fa-clipboard-list"></i> ${q.type}</span>
-                    ${q.chapter ? `<span class="badge" style="background:#f0fdf4; color:#16a34a;"><i class="fa-solid fa-folder"></i> ${q.chapter}</span>` : ''}
-                    <span class="badge" style="background:rgba(245,158,11,0.15); color:#d97706;">নম্বর: ${q.marks || 0}</span>
-                    <div style="margin-top:14px; font-size:16.5px; line-height:1.6;">${q.text}</div>
-                    ${q.answer ? `<div class="answer-container"><strong>সমাধান:</strong> ${q.answer}</div>` : ''}
-                </div>
-                <div style="display:${currentSession.role === 'admin' ? 'flex' : 'none'}; gap:10px;">
-                    <span class="btn-edit" onclick="editQ(${q.id})" title="সম্পাদনা"><i class="fa-solid fa-pen-to-square"></i></span>
-                    <span class="btn-delete" onclick="deleteQ(${q.id})" title="মুছে ফেলুন"><i class="fa-solid fa-trash-can"></i></span>
+                    <span class="badge" style="background:var(--primary); color:white;">${q.className}</span>
+                    <span class="badge">${q.subject}</span>
+                    <span class="badge badge-type">${q.type}</span>
+                    ${q.chapter ? `<span class="badge" style="background:#f0fdf4; color:#16a34a;">${q.chapter}</span>` : ''}
+                    <div style="margin-top:12px; font-size:16px;">${q.text}</div>
                 </div>
             </div>
         `).join('');
 
         if(window.MathJax && window.MathJax.typesetPromise) {
-            MathJax.typesetPromise([area]).catch((err) => console.log(err));
+            MathJax.typesetPromise([area]).catch(() => {});
         }
     }
 
-    function editQ(id) {
-        const q = db.find(item => item.id == id);
-        document.getElementById('editId').value = q.id;
-        document.getElementById('qCategory').value = q.category;
-        document.getElementById('classInput').value = q.className;
-        document.getElementById('subjectInput').value = q.subject;
-        document.getElementById('chapterInput').value = q.chapter || '';
-        document.getElementById('qType').value = q.type;
-        document.getElementById('mainInput').value = q.text;
-        document.getElementById('ansInput').value = q.answer || '';
-        document.getElementById('marks').value = q.marks;
-        document.getElementById('formTitle').innerHTML = "<i class='fa-solid fa-wrench' style='color:var(--warning)'></i> প্রশ্নপত্র তথ্য আপডেট ও সংশোধন মোড";
-        document.getElementById('saveBtn').innerText = "তথ্য আপডেট করুন";
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(doPreview, 100);
-    }
-
-    function deleteQ(id) {
-        if(confirm("আপনি কি নিশ্চিতভাবে এই প্রশ্নটি মুছে ফেলতে চান?")) {
-            db = db.filter(q => q.id != id);
-            localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
-            updateLists();
-            renderQuestions();
-            renderRecentQuestions();
+    function processUserSelectionChangeAction(checkboxRef) {
+        let targetId = parseInt(checkboxRef.value);
+        if(checkboxRef.checked) {
+            if(!userSelectedIdsArray.includes(targetId)) userSelectedIdsArray.push(targetId);
+        } else {
+            userSelectedIdsArray = userSelectedIdsArray.filter(id => id !== targetId);
         }
+        document.getElementById('userSelectedTotalCountBadge').innerText = userSelectedIdsArray.length;
     }
 
-    function updateCount() {
-        document.getElementById('count').innerText = document.querySelectorAll('.sel-q:checked').length;
+    function triggerUserSelectedQuestionsPreview() {
+        if(userSelectedIdsArray.length === 0) return alert("কোনো প্রশ্ন সিলেক্ট করা নেই!");
+        let outputText = userSelectedIdsArray.map((id, index) => {
+            let q = db.find(item => item.id === id);
+            return `${index + 1}. ${q.text}`;
+        }).join('\n\n');
+        alert("--- নির্বাচিত প্রশ্নাবলি প্রিভিউ ---\n\n" + outputText);
     }
 
-    function renderRecentQuestions() {
-        const recentArea = document.getElementById('recentQuestionsArea');
-        let sorted = [...db].reverse().slice(0, 2);
-        if(sorted.length === 0) { recentArea.innerHTML = 'কোনো তথ্য নেই।'; return; }
-        recentArea.innerHTML = sorted.map(q => `
-            <div style="padding:10px; border:1px solid var(--border); border-radius:12px; font-size:14px; background:rgba(0,0,0,0.01)">
-                <strong>[${q.className} - ${q.type}]</strong> ${q.text.substring(0, 70)}...
-            </div>
-        `).join('');
-        if(window.MathJax && window.MathJax.typesetPromise) { MathJax.typesetPromise([recentArea]); }
-    }
+    // PDF GENERATION STRATEGY MANIFESTO (Isolated Scope Layouts)
+    function downloadRenderedPDFArtifact(mode) {
+        if(userSelectedIdsArray.length === 0) return alert("অনুগ্রহ করে জেনারেশনের জন্য অন্তত ১টি প্রশ্ন সিলেক্ট করুন!");
 
-    function generateExamToken() {
-        const title = document.getElementById('examTitle').value || "নিয়মিত পরীক্ষা";
-        const duration = document.getElementById('examDuration').value || "২০";
-        const token = "EXAM-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-        const out = document.getElementById('tokenOutput');
-        out.style.display = "block";
-        out.innerHTML = `<strong>পরীক্ষা সেশন রেডি!</strong><br>লিংক: <code>https://amirulmathcare.edu/live-exam?token=${token}</code><br><strong>সুরক্ষা ওটিপি টোকেন:</strong> <span style="color:var(--danger); font-weight:bold;">${token}</span> (সময়কাল: ${duration} মিনিট)`;
-    }
+        let targetRenderZone = document.getElementById('pdf-render-template');
+        targetRenderZone.innerHTML = ''; 
 
-    function sendChat() {
-        const input = document.getElementById('chatInput');
-        if(!input.value.trim()) return;
-        const box = document.getElementById('chatBox');
-        box.innerHTML += `<div class="chat-msg" style="background:rgba(99,102,241,0.08); text-align:right;"><strong>আমি:</strong> ${input.value}</div>`;
-        input.value = '';
-        box.scrollTop = box.scrollHeight;
-    }
-
-    function exportJSON() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `Amirul_QB_Backup_${Date.now()}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function importJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if(Array.isArray(importedData)) {
-                    db = [...db, ...importedData];
-                    localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
-                    updateLists();
-                    renderQuestions();
-                    alert("ডাটাবেস ফাইল সফলভাবে মার্জ ও ইম্পোর্ট করা হয়েছে!");
-                }
-            } catch(err) { alert("ভুল ফাইল ফরম্যাট! সঠিক JSON ব্যাকআপ ফাইল নির্বাচন করুন।"); }
-        };
-        reader.readAsText(file);
-    }
-
-    function makePDF() {
-        const selectedCheckboxes = document.querySelectorAll('.sel-q:checked');
-        if(selectedCheckboxes.length === 0) return alert("অনুগ্রহ করে জেনারেশনের জন্য অন্তত ১টি প্রশ্ন সিলেক্ট করুন!");
-
-        const tempContainer = document.getElementById('pdf-render-template');
-        tempContainer.innerHTML = ''; 
-
+        let titleString = mode === 'question' ? "পরীক্ষার প্রশ্নপত্র শিট" : "সংশোধিত অফিসিয়াল উত্তরপত্র";
         let headerHtml = `
             <div class="pdf-header">
-                <h1 style="margin: 0; font-size: 26px; color: #111;">আমিরুল ম্যাথ কেয়ার অ্যান্ড এক্সাম সেন্টার</h1>
-                <p style="margin: 5px 0 0 0; font-size: 14px; color: #444; font-weight: bold;">স্মার্ট প্রশ্ন ব্যাংক সিস্টেম শিট (স্ট্যান্ডার্ড আউটপুট)</p>
-                <p style="margin: 2px 0 10px 0; font-size: 12px; color: #666;">তারিখ: ${new Date().toLocaleDateString('bn-BD')}</p>
+                <h1 style="margin: 0; font-size: 24px; color: #111;">আমিরুল ম্যাথ কেয়ার অ্যান্ড এক্সাম সেন্টার</h1>
+                <p style="margin: 5px 0 0 0; font-size: 14px; color: #333; font-weight: bold;">${titleString}</p>
+                <p style="margin: 2px 0 10px 0; font-size: 11px; color: #666;">তারিখ: ${new Date().toLocaleDateString('bn-BD')}</p>
             </div>
         `;
-        tempContainer.innerHTML += headerHtml;
+        targetRenderZone.innerHTML += headerHtml;
 
-        selectedCheckboxes.forEach((cb) => {
-            const q = db.find(item => item.id == cb.value);
+        userSelectedIdsArray.forEach((id, idx) => {
+            let q = db.find(item => item.id == id);
+            let bodyContent = '';
+            
+            if(mode === 'question') {
+                bodyContent = `<div style="font-size: 16px;"><b>প্রশ্ন নং ${idx+1}:</b> ${q.text}</div>`;
+            } else {
+                bodyContent = `
+                    <div style="font-size: 15px; margin-bottom: 5px;"><b>প্রশ্ন নং ${idx+1}:</b> ${q.text}</div>
+                    <div style="padding-left: 15px; color: #111; border-left: 3px solid #10b981; font-size: 14px; background:#f0fdf4; padding:8px;"><b>সঠিক সমাধান:</b> ${q.answer || 'কোনো সমাধান অন্তর্ভুক্ত নেই।'}</div>
+                `;
+            }
+
             let qItemHtml = `
-                <div class="pdf-q-item">
-                    <div class="pdf-q-meta">[বিভাগ: ${q.category} | বিষয়: ${q.subject} | অধ্যায়: ${q.chapter || 'N/A'} | টাইপ: ${q.type} | নম্বর: ${q.marks || 0}]</div>
-                    <div style="font-size: 16px;"><b>প্রশ্ন:</b> ${q.text}</div>
-                    ${q.answer ? `<div style="margin-top: 5px; padding-left: 15px; color: #222; border-left: 2px solid #888; font-size: 15px;"><b>সমাধান:</b> ${q.answer}</div>` : ''}
+                <div class="pdf-q-item" style="margin-bottom:25px; border-bottom:1px dashed #eee; padding-bottom:10px;">
+                    <div style="font-size:12px; font-weight:bold; color:#555; margin-bottom:5px;">[শ্রেণী: ${q.className} | বিষয়: ${q.subject} | নম্বর: ${q.marks || 'N/A'}]</div>
+                    ${bodyContent}
                 </div>
             `;
-            tempContainer.innerHTML += qItemHtml;
+            targetRenderZone.innerHTML += qItemHtml;
         });
 
-        tempContainer.style.display = 'block';
+        targetRenderZone.style.display = 'block';
 
-        MathJax.typesetPromise([tempContainer]).then(() => {
-            const opt = {
+        MathJax.typesetPromise([targetRenderZone]).then(() => {
+            let opt = {
                 margin:       [15, 15, 20, 15],
-                filename:     `Amirul_Smart_Question_${Date.now()}.pdf`,
+                filename:     `Amirul_${mode === 'question' ? 'QPaper' : 'AnsSheet'}_v2026.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+                html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(tempContainer).save().then(() => {
-                tempContainer.style.display = 'none'; 
+            html2pdf().set(opt).from(targetRenderZone).save().then(() => {
+                targetRenderZone.style.display = 'none'; 
             });
         }).catch((err) => {
-            console.error("PDF রেন্ডারিং ত্রুটি:", err);
-            tempContainer.style.display = 'none';
+            console.error(err);
+            targetRenderZone.style.display = 'none';
         });
     }
 
-    window.onload = () => {
-        setupHomeLayout();
-        updateLists();
-        renderQuestions();
-        renderRecentQuestions();
-    };
-</script>
+    // CENTRAL ADMIN OPERATIONS ENGINE
+    function doAdminLivePreview() {
+        let qVal = document.getElementById('admQText').value;
+        let aVal = document.getElementById('admQAnswer').value;
+        let box = document.getElementById('adminLivePreviewBox');
+        box.innerHTML = `<strong>প্রশ্ন:</strong> ${qVal || "..."}` + (aVal ? `<br><div class="answer-container"><strong>উত্তর:</strong> ${aVal}</div>` : '');
+        if(window.MathJax && window.MathJax.typesetPromise) MathJax.typesetPromise([box]);
+    }
 
+    function saveAdminQuestionData() {
+        let id = document.getElementById('adminEditIdHolder').value;
+        let className = document.getElementById('admQClass').value;
+        let subject = document.getElementById('admQSubject').value.trim();
+        let chapter = document.getElementById('admQChapter').value.trim();
+        let type = document.getElementById('admQType').value;
+        let text = document.getElementById('admQText').value.trim();
+        let answer = document.getElementById('admQAnswer').value.trim();
+        let marks = document.getElementById('admQMarks').value;
+
+        if(!subject || !text) return alert("বিষয় ও প্রশ্ন ফাঁকা রাখা যাবে হন!");
+
+        let packet = { id: id ? parseInt(id) : Date.now(), category: document.getElementById('admQCategory').value, className, subject, chapter, type, text, answer, marks };
+
+        if(id) {
+            let idx = db.findIndex(q => q.id == id); db[idx] = packet;
+        } else {
+            db.push(packet);
+        }
+
+        localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
+        resetAdminForm();
+        renderAdminQuestionsDashboardList();
+        alert("প্রশ্ন সফলভাবে সংরক্ষিত হয়েছে!");
+    }
+
+    function resetAdminForm() {
+        document.getElementById('adminEditIdHolder').value = '';
+        document.getElementById('admQText').value = '';
+        document.getElementById('admQAnswer').value = '';
+        document.getElementById('admQMarks').value = '';
+        document.getElementById('adminLivePreviewBox').innerText = 'প্রিভিউ এখানে রেন্ডার হবে...';
+        document.getElementById('admSaveBtn').innerText = "ডাটাবেসে সংরক্ষণ করুন";
+    }
+
+    function renderAdminQuestionsDashboardList() {
+        let container = document.getElementById('adminGlobalQuestionsListArea');
+        container.innerHTML = db.map(q => `
+            <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:between; align-items:center;">
+                <div style="flex:1;"><strong>[${q.className} - ${q.subject}]</strong> ${q.text.substring(0,60)}...</div>
+                <div>
+                    <span class="btn-edit" onclick="triggerAdminQuestionEditSession(${q.id})"><i class="fa-solid fa-pen"></i></span>
+                    <span class="btn-delete" onclick="executeAdminDeleteQuestionAction(${q.id})"><i class="fa-solid fa-trash"></i></span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function triggerAdminQuestionEditSession(id) {
+        let q = db.find(item => item.id == id);
+        document.getElementById('adminEditIdHolder').value = q.id;
+        document.getElementById('admQCategory').value = q.category;
+        document.getElementById('admQClass').value = q.className;
+        document.getElementById('admQSubject').value = q.subject;
+        document.getElementById('admQChapter').value = q.chapter || '';
+        document.getElementById('admQType').value = q.type;
+        document.getElementById('admQText').value = q.text;
+        document.getElementById('admQAnswer').value = q.answer || '';
+        document.getElementById('admQMarks').value = q.marks || '';
+        document.getElementById('admSaveBtn').innerText = "তথ্য আপডেট করুন";
+        switchSection('admin-main-sec');
+        setTimeout(doAdminLivePreview, 50);
+    }
+
+    function executeAdminDeleteQuestionAction(id) {
+        if(confirm("প্রশ্নটি মুছে ফেলবেন?")) {
+            db = db.filter(q => q.id != id);
+            localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
+            renderAdminQuestionsDashboardList();
+        }
+    }
+
+    // SLIDER TICKER ACTIONS
+    function updateSliderTickerTextAction() {
+        let txt = document.getElementById('adminSliderTickerTextInput').value.trim();
+        if(!txt) return alert("টেক্সট দিন");
+        tickerTextData = txt;
+        localStorage.setItem('amirul_ticker_text', tickerTextData);
+        alert("হোম নোটিশ স্লাইডার টেক্সট আপডেট হয়েছে!");
+    }
+
+    // FAQ MANAGEMENTS
+    function renderAdminFaqConfigPanel() {
+        let target = document.getElementById('adminFaqListConfigContainer');
+        target.innerHTML = faqDb.map(f => `
+            <div style="padding:10px; border-bottom:1px solid var(--border)">
+                <strong>Q: ${f.q}</strong><br><span>A: ${f.a}</span>
+                <button onclick="removeFaqItem(${f.id})" style="background:var(--danger); color:white; border:none; padding:2px 8px; border-radius:5px; margin-top:5px; cursor:pointer;">মুছে ফেলুন</button>
+            </div>
+        `).join('');
+    }
+
+    function addNewFaqItemAction() {
+        let q = document.getElementById('adminFaqQuestionInput').value.trim();
+        let a = document.getElementById('adminFaqAnswerInput').value.trim();
+        if(!q || !a) return alert("তথ্য পূরণ করুন");
+        faqDb.push({ id: Date.now(), q, a });
+        localStorage.setItem('amirul_faq_db', JSON.stringify(faqDb));
+        document.getElementById('adminFaqQuestionInput').value = '';
+        document.getElementById('adminFaqAnswerInput').value = '';
+        renderAdminFaqConfigPanel();
+    }
+
+    function removeFaqItem(id) {
+        faqDb = faqDb.filter(f => f.id !== id);
+        localStorage.setItem('amirul_faq_db', JSON.stringify(faqDb));
+        renderAdminFaqConfigPanel();
+    }
+
+    // PRICING MANAGEMENT MECHANISMS
+    function renderAdminPricingConfigPanel() {
+        let container = document.getElementById('adminPricingListConfigContainer');
+        container.innerHTML = pricingDb.map(p => `
+            <div style="padding:10px; border-bottom:1px solid var(--border)">
+                <strong>${p.name} - ${p.price}</strong> (${p.duration})
+                <button onclick="removePricingPackage(${p.id})" style="background:var(--danger); color:white; border:none; padding:2px 8px; border-radius:5px; float:right; cursor:pointer;">মুছুন</button>
+            </div>
+        `).join('');
+    }
+
+    function savePricingPackageAction() {
+        let name = document.getElementById('pkgNameInput').value.trim();
+        let price = document.getElementById('pkgPriceInput').value.trim();
+        let duration = document.getElementById('pkgDurationInput').value.trim();
+        let features = document.getElementById('pkgFeaturesInput').value.split(',');
+        if(!name || !price) return alert("তথ্য দিন");
+
+        pricingDb.push({ id: Date.now(), name, price, duration, features });
+        localStorage.setItem('amirul_pricing_db', JSON.stringify(pricingDb));
+        
+        document.getElementById('pkgNameInput').value = '';
+        document.getElementById('pkgPriceInput').value = '';
+        document.getElementById('pkgDurationInput').value = '';
+        document.getElementById('pkgFeaturesInput').value = '';
+        
+        renderAdminPricingConfigPanel();
+    }
+
+    function removePricingPackage(id) {
+        pricingDb = pricingDb.filter(p => p.id !== id);
+        localStorage.setItem('amirul_pricing_db', JSON.stringify(pricingDb));
+        renderAdminPricingConfigPanel();
+    }
+</script>
 </body>
 </html>
