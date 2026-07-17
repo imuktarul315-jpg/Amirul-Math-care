@@ -131,18 +131,15 @@
         .badge-type { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
         .answer-container { margin-top: 10px; padding: 10px 15px; background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--success); border-radius: 8px; font-size: 15px; }
 
-        /* Ticker Slider */
         .ticker-wrapper { background: var(--dark); color: white; padding: 10px 0; overflow: hidden; white-space: nowrap; border-radius: 12px; margin-bottom: 25px; }
         .ticker-text { display: inline-block; padding-left: 100%; animation: ticker 25s linear infinite; font-weight: 600; }
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
-        /* Pricing Items */
         .price-card { border: 2px solid var(--border); padding: 25px; border-radius: 20px; text-align: center; transition: 0.3s; background: var(--card-bg); }
         .price-card.featured { border-color: var(--primary); box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15); position: relative; }
         .price-card.featured::top { content: 'Best'; position: absolute; top: -10px; left:50%; transform:translateX(-50%); background:var(--primary); color:white; padding:2px 10px; border-radius:10px; font-size:12px; }
         .price-card:hover { transform: translateY(-5px); }
 
-        /* FAQ System */
         .faq-item { border-bottom: 1px solid var(--border); padding: 15px 0; cursor: pointer; }
         .faq-question { font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
         .faq-answer { display: none; padding-top: 10px; color: var(--text-main); font-size: 15px; line-height: 1.5; }
@@ -275,45 +272,33 @@
                         <input type="text" id="userSmartSearchInput" placeholder="যেকোনো শব্দ লিখুন..." onkeyup="processUserFilteringLogic()">
                     </div>
                     <div>
-                        <label>শ্রেণী নির্ধারণ (Class 1 - 10)</label>
-                        <select id="userFilterClassSelect" onchange="processUserFilteringLogic()">
-                            <option value="">সকল শ্রেণী</option>
-                            <option value="১ম">১ম শ্রেণী</option>
-                            <option value="২য়">২য় শ্রেণী</option>
-                            <option value="৩য়">৩য় শ্রেণী</option>
-                            <option value="৪র্থ">৪র্থ শ্রেণী</option>
-                            <option value="৫ম">৫ম শ্রেণী</option>
-                            <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option>
-                            <option value="৭ম">৭ম শ্রেণী</option>
-                            <option value="৮ম">৮ম শ্রেণী</option>
-                            <option value="৯ম">৯ম শ্রেণী</option>
-                            <option value="১০ম">১০ম শ্রেণী</option>
+                        <label>ক্যাটাগরি</label>
+                        <select id="userFilterCategorySelect" onchange="updateUserClassDropdown(); processUserFilteringLogic();">
+                            <option value="">সকল ক্যাটাগরি</option>
+                            <option value="মাধ্যমিক">মাধ্যমিক</option>
+                            <option value="উচ্চমাধ্যমিক">উচ্চমাধ্যমিক</option>
+                            <option value="বিশ্ববিদ্যালয়">বিশ্ববিদ্যালয়</option>
                         </select>
                     </div>
                     <div>
-                        <label>বিষয় (Subject Mapping)</label>
-                        <select id="userFilterSubjectSelect" onchange="processUserFilteringLogic()">
-                            <option value="">সকল বিষয়</option>
-                            <option value="সাধারণ গণিত">সাধারণ গণিত</option>
-                            <option value="উচ্চতর গণিত">উচ্চতর গণিত</option>
-                            <option value="পদার্থবিজ্ঞান">পদার্থবিজ্ঞান</option>
-                            <option value="রসায়ন">রসায়ন</option>
-                            <option value="ইংরেজি">ইংরেজি</option>
-                            <option value="বাংলা">বাংলা</option>
+                        <label>শ্রেণী নির্ধারণ</label>
+                        <select id="userFilterClassSelect" onchange="updateUserSubjectDropdown(); processUserFilteringLogic();">
+                            <option value="">প্রথমে ক্যাটাগরি সিলেক্ট করুন</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="grid-3">
                     <div>
+                        <label>বিষয় (Subject Mapping)</label>
+                        <select id="userFilterSubjectSelect" onchange="updateUserChapterDropdown(); processUserFilteringLogic();">
+                            <option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>
+                        </select>
+                    </div>
+                    <div>
                         <label>অধ্যায় / টপিক</label>
                         <select id="userFilterChapterSelect" onchange="processUserFilteringLogic()">
-                            <option value="">সকল অধ্যায়</option>
-                            <option value="ত্রিকোণমিতি">ত্রিকোণমিতি</option>
-                            <option value="সেট ও ফাংশন">সেট ও ফাংশন</option>
-                            <option value="বীজগাণিতিক রাশি">বীজগাণিতিক রাশি</option>
-                            <option value="পরিমিতি">পরিমিতি</option>
-                            <option value="সূচক ও লগারিদম">সূচক ও লগারিদম</option>
+                            <option value="">প্রথমে বিষয় সিলেক্ট করুন</option>
                         </select>
                     </div>
                     <div>
@@ -325,10 +310,25 @@
                             <option value="এমসিকিউ">বহুনির্বাচনী (MCQ)</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="grid-3">
+                    <div>
+                        <label>নির্দিষ্ট সাল (Year)</label>
+                        <select id="userFilterYearSelect" onchange="processUserFilteringLogic()">
+                            <option value="">সকল সাল</option>
+                            <option value="২০২৬">২০২৬</option>
+                            <option value="২০২৫">২০২৫</option>
+                            <option value="২০২৪">২০২৪</option>
+                            <option value="২০২৩">২০২৩</option>
+                            <option value="২০২২">২০২২</option>
+                        </select>
+                    </div>
                     <div>
                         <label>সর্বোচ্চ আউটপুট সংখ্যা (৫ থেকে ২০০)</label>
                         <input type="number" id="userMaxLimitInput" value="50" min="5" max="200" onchange="processUserFilteringLogic()">
                     </div>
+                    <div></div>
                 </div>
             </div>
 
@@ -342,28 +342,46 @@
                 <div class="grid-4">
                     <div>
                         <label>ক্যাটাগরি</label>
-                        <select id="admQCategory"><option value="SSC">SSC পর্যায়</option><option value="HSC">HSC পর্যায়</option></select>
+                        <select id="admQCategory" onchange="updateAdminClassDropdown()">
+                            <option value="">-- ক্যাটাগরি সিলেক্ট করুন --</option>
+                            <option value="মাধ্যমিক">মাধ্যমিক</option>
+                            <option value="উচ্চমাধ্যমিক">উচ্চমাধ্যমিক</option>
+                            <option value="বিশ্ববিদ্যালয়">বিশ্ববিদ্যালয়</option>
+                        </select>
                     </div>
                     <div>
                         <label>শ্রেণী নির্ধারণ</label>
-                        <select id="admQClass">
-                            <option value="১ম">১ম শ্রেণী</option><option value="২য়">২য় শ্রেণী</option><option value="৩য়">৩য় শ্রেণী</option><option value="৪র্থ">৪র্থ শ্রেণী</option><option value="৫ম">৫ম শ্রেণী</option>
-                            <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option><option value="৭ম">৭ম শ্রেণী</option><option value="৮ম">৮ম শ্রেণী</option><option value="৯ম">৯ম শ্রেণী</option><option value="১০ম">১০ম শ্রেণী</option>
+                        <select id="admQClass" onchange="updateAdminSubjectDropdown()">
+                            <option value="">প্রথমে ক্যাটাগরি সিলেক্ট করুন</option>
                         </select>
                     </div>
                     <div>
                         <label>বিষয়</label>
-                        <input type="text" id="admQSubject" placeholder="উদা: উচ্চতর গণিত">
+                        <select id="admQSubject" onchange="updateAdminChapterDropdown()">
+                            <option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>
+                        </select>
                     </div>
                     <div>
                         <label>অধ্যায়</label>
-                        <input type="text" id="admQChapter" placeholder="উদা: ত্রিকোণমিতি">
+                        <select id="admQChapter">
+                            <option value="">প্রথমে বিষয় সিলেক্ট করুন</option>
+                        </select>
                     </div>
                 </div>
                 <div class="grid-3">
                     <div>
                         <label>প্রশ্নের ধরন</label>
                         <select id="admQType"><option value="সৃজনশীল">সৃজনশীল</option><option value="সংक्षिप्त">সংक्षिप्त</option><option value="এমসিকিউ">এমসিকিউ</option></select>
+                    </div>
+                    <div>
+                        <label>প্রশ্ন তৈরির সাল (Year)</label>
+                        <select id="admQYear">
+                            <option value="২০২৬">২০২৬</option>
+                            <option value="২০২৫">২০২৫</option>
+                            <option value="২০২৪">২০২৪</option>
+                            <option value="২০২৩">২০২৩</option>
+                            <option value="২০২২">২০২২</option>
+                        </select>
                     </div>
                     <div>
                         <label>নম্বর (Marks)</label>
@@ -380,7 +398,7 @@
                 </div>
                 <div class="preview-box" id="adminLivePreviewBox">প্রিভিউ এখানে রেন্ডার হবে...</div>
                 <div style="display: flex; gap: 15px; justify-content: flex-end;">
-                    <button onclick="resetAdminForm()" class="btn-action" style="background: #64748b;">রিসেট</button>
+                    <button onclick="resetAdminForm(true)" class="btn-action" style="background: #64748b;">সব রিসেট</button>
                     <button onclick="saveAdminQuestionData()" id="admSaveBtn" class="btn-action" style="background: var(--primary);">ডাটাবেসে সংরক্ষণ করুন</button>
                 </div>
             </div>
@@ -393,7 +411,7 @@
 
         <div id="admin-slider-sec" class="section-block" style="display:none;">
             <div class="card">
-                <h2><i class="fa-solid fa-images"></i> হোম পেজ নোটিশ স্লাইডার টেক্সট কন্ট্রোল</h2>
+                <h2><i class="fa-solid fa-images"></i> হোম পেজ নোটিশ স্লাইডার টেক্সট稳কন্ট্রোল</h2>
                 <div style="margin-bottom:15px;">
                     <label>স্ক্রলিং নোটিশ বার্তা</label>
                     <textarea id="adminSliderTickerTextInput" rows="3" placeholder="হোম পেজে যে নোটিশটি স্ক্রল হবে তা লিখুন..."></textarea>
@@ -465,10 +483,28 @@
 <div id="pdf-render-template"></div>
 
 <script>
+    // ডাইনামিক ক্যাটাগরি, শ্রেণী, বিষয় এবং অধ্যায়ের রিলেশনাল ম্যাপিং ডাটা আর্কিটেকচার
+    const academicMappingData = {
+        "মাধ্যমিক": {
+            "৬ষ্ঠ শ্রেণী": { "গণিত": ["পরিমিতি", "বীজগাণিতিক রাশি", "সাধারণ ভগ্নাংশ"], "বিজ্ঞান": ["জীবজগৎ", "পদার্থের অবস্থা"] },
+            "৭ম শ্রেণী": { "গণিত": ["বীজগাণিতিক সূত্রাবলী", "অনুপাত ও শতাংশ"], "বিজ্ঞান": ["কোষীয় গঠন"] },
+            "৮ম শ্রেণী": { "গণিত": ["প্যাটার্ন", "মুনাফা", "বৃত্ত"], "বিজ্ঞান": ["পরমাণুর গঠন"] },
+            "৯ম শ্রেণী": { "সাধারণ গণিত": ["সেট ও ফাংশন", "ত্রিকোণমিতি", "সূচক ও লগারিদম"], "উচ্চতর গণিত": ["স্থানাঙ্ক জ্যামিতি", "অসীম ধারা", "ভেক্টর"] },
+            "১০ম শ্রেণী": { "সাধারণ গণিত": ["বীজগাণিতিক রাশি", "পরিমিতি", "পরিসংখ্যান"], "উচ্চতর গণিত": ["ত্রিকোণমিতি", "দ্বিপদী বিস্তৃতি", "সম্ভাবনা"] }
+        },
+        "উচ্চমাধ্যমিক": {
+            "১১শ শ্রেণী": { "উচ্চতর গণিত ১ম": ["ম্যাট্রিক্স ও নির্ণায়ক", "সরলরেখা", "ত্রিকোণমিতি"], "পদার্থবিজ্ঞান ১ম": ["ভেটের", "গতিবিদ্যা", "মহাকর্ষ"] },
+            "১২শ শ্রেণী": { "উচ্চতর গণিত ২য়": ["জটিল সংখ্যা", "বহুপদী", "কনিক"], "পদার্থবিজ্ঞান ২য়": ["তাপগতিবিদ্যা", "স্থির তড়িৎ"] }
+        },
+        "বিশ্ববিদ্যালয়": {
+            "ভর্তি পরীক্ষা": { "পদার্থবিজ্ঞান হাব": ["মেকানিক্স", "ইলেকট্রোস্ট্যাটিক্স"], "গণিত কোর": ["ক্যালকুলাস", "লিনিয়ার অ্যালজেব্রা"], "রসায়ন জোন": ["জৈব রসায়ন", "তড়িৎ রসায়ন"] }
+        }
+    };
+
     // Core Embedded Micro-Database Initializations
     let db = JSON.parse(localStorage.getItem('amirul_smart_qb')) || [
-        { id: 1, category: "SSC", className: "১০ম", subject: "উচ্চতর গণيت", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", answer: "দেওয়া আছে, $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$। বামপক্ষ $= m^2 - n^2 = (m+n)(m-n) = (2\\tan A)(2\\sin A) = 4\\tan A\\sin A = 4\\sqrt{\\tan^2 A \\sin^2 A} = 4\\sqrt{mn}$ [প্রমাণিত]", marks: "১০" },
-        { id: 2, category: "SSC", className: "১০ম", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে।", answer: "আমরা জানি, $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ সর্বদা সত্য যখন $\\theta \\neq 0^{\\circ}$।", marks: "৪" }
+        { id: 1, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", answer: "দেওয়া আছে, $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$। বামপক্ষ $= m^2 - n^2 = (m+n)(m-n) = (2\\tan A)(2\\sin A) = 4\\tan A\\sin A = 4\\sqrt{\\tan^2 A \\sin^2 A} = 4\\sqrt{mn}$ [প্রমাণিত]", marks: "১০", year: "২০২৬" },
+        { id: 2, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে।", answer: "আমরা জানি, $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ সর্বদা সত্য যখন $\\theta \\neq 0^{\\circ}$।", marks: "৪", year: "২০২৫" }
     ];
     
     let faqDb = JSON.parse(localStorage.getItem('amirul_faq_db')) || [
@@ -494,6 +530,92 @@
         renderHomeDashCharts();
         processUserFilteringLogic();
     };
+
+    // ADMIN DROPDOWN ENGINE AUTO CORE
+    function updateAdminClassDropdown() {
+        const cat = document.getElementById('admQCategory').value;
+        const classSelect = document.getElementById('admQClass');
+        classSelect.innerHTML = '<option value="">-- শ্রেণী নির্ধারণ করুন --</option>';
+        document.getElementById('admQSubject').innerHTML = '<option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>';
+        document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয় সিলেক্ট করুন</option>';
+        
+        if (cat && academicMappingData[cat]) {
+            Object.keys(academicMappingData[cat]).forEach(cls => {
+                classSelect.innerHTML += `<option value="${cls}">${cls}</option>`;
+            });
+        }
+    }
+
+    function updateAdminSubjectDropdown() {
+        const cat = document.getElementById('admQCategory').value;
+        const cls = document.getElementById('admQClass').value;
+        const subSelect = document.getElementById('admQSubject');
+        subSelect.innerHTML = '<option value="">-- বিষয় নির্ধারণ করুন --</option>';
+        document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয় সিলেক্ট করুন</option>';
+
+        if (cat && cls && academicMappingData[cat][cls]) {
+            Object.keys(academicMappingData[cat][cls]).forEach(sub => {
+                subSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+            });
+        }
+    }
+
+    function updateAdminChapterDropdown() {
+        const cat = document.getElementById('admQCategory').value;
+        const cls = document.getElementById('admQClass').value;
+        const sub = document.getElementById('admQSubject').value;
+        const chpSelect = document.getElementById('admQChapter');
+        chpSelect.innerHTML = '<option value="">-- অধ্যায় নির্ধারণ করুন --</option>';
+
+        if (cat && cls && sub && academicMappingData[cat][cls][sub]) {
+            academicMappingData[cat][cls][sub].forEach(chp => {
+                chpSelect.innerHTML += `<option value="${chp}">${chp}</option>`;
+            });
+        }
+    }
+
+    // USER DROPDOWN ENGINE AUTO CORE
+    function updateUserClassDropdown() {
+        const cat = document.getElementById('userFilterCategorySelect').value;
+        const classSelect = document.getElementById('userFilterClassSelect');
+        classSelect.innerHTML = '<option value="">সকল শ্রেণী</option>';
+        document.getElementById('userFilterSubjectSelect').innerHTML = '<option value="">সকল বিষয়</option>';
+        document.getElementById('userFilterChapterSelect').innerHTML = '<option value="">সকল অধ্যায়</option>';
+
+        if (cat && academicMappingData[cat]) {
+            Object.keys(academicMappingData[cat]).forEach(cls => {
+                classSelect.innerHTML += `<option value="${cls}">${cls}</option>`;
+            });
+        }
+    }
+
+    function updateUserSubjectDropdown() {
+        const cat = document.getElementById('userFilterCategorySelect').value;
+        const cls = document.getElementById('userFilterClassSelect').value;
+        const subSelect = document.getElementById('userFilterSubjectSelect');
+        subSelect.innerHTML = '<option value="">সকল বিষয়</option>';
+        document.getElementById('userFilterChapterSelect').innerHTML = '<option value="">সকল অধ্যায়</option>';
+
+        if (cat && cls && academicMappingData[cat][cls]) {
+            Object.keys(academicMappingData[cat][cls]).forEach(sub => {
+                subSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+            });
+        }
+    }
+
+    function updateUserChapterDropdown() {
+        const cat = document.getElementById('userFilterCategorySelect').value;
+        const cls = document.getElementById('userFilterClassSelect').value;
+        const sub = document.getElementById('userFilterSubjectSelect').value;
+        const chpSelect = document.getElementById('userFilterChapterSelect');
+        chpSelect.innerHTML = '<option value="">সকল অধ্যায়</option>';
+
+        if (cat && cls && sub && academicMappingData[cat][cls][sub]) {
+            academicMappingData[cat][cls][sub].forEach(chp => {
+                chpSelect.innerHTML += `<option value="${chp}">${chp}</option>`;
+            });
+        }
+    }
 
     function toggleDropdown(dropdownId, iconId) {
         const dropdown = document.getElementById(dropdownId);
@@ -647,11 +769,9 @@
         document.body.classList.toggle('dark-theme');
     }
 
-    // HOME SCREEN GRAPH ARCHITECTURE PIPELINES
     function executeGlobalHomeUIComponents() {
         document.getElementById('liveTickerContainer').innerText = tickerTextData;
         
-        // Render FAQs
         let faqArea = document.getElementById('faqDynamicDisplayContainer');
         faqArea.innerHTML = faqDb.map(f => `
             <div class="faq-item" onclick="this.classList.toggle('active')">
@@ -660,7 +780,6 @@
             </div>
         `).join('');
 
-        // Render Pricing
         let pricingArea = document.getElementById('pricingCardsDynamicContainer');
         pricingArea.innerHTML = pricingDb.map((p, idx) => `
             <div class="price-card ${idx === 1 ? 'featured' : ''}">
@@ -679,15 +798,14 @@
         if(chartInstanceRef) chartInstanceRef.destroy();
         if(apexChartInstanceRef) apexChartInstanceRef.destroy();
 
-        // Canvas Distribution Logic
-        let sscCount = db.filter(q => q.category === 'SSC').length;
-        let hscCount = db.filter(q => q.category === 'HSC').length;
+        let sscCount = db.filter(q => q.category === 'মাধ্যমিক').length;
+        let hscCount = db.filter(q => q.category === 'উচ্চমাধ্যমিক' || q.category === 'বিশ্ববিদ্যালয়').length;
         let context = document.getElementById('categoryDistributionChart').getContext('2d');
         
         chartInstanceRef = new Chart(context, {
             type: 'pie',
             data: {
-                labels: ['SSC প্রশ্নসমূহ', 'HSC ও অন্যান্য'],
+                labels: ['মাধ্যমিক', 'উচ্চমাধ্যমিক ও উচ্চশিক্ষা'],
                 datasets: [{
                     data: [sscCount, hscCount === 0 ? 1 : hscCount],
                     backgroundColor: ['#6366f1', '#10b981']
@@ -696,7 +814,6 @@
             options: { responsive: true, plugins: { title: { display: true, text: 'সংরক্ষিত ক্যাটাগরি গ্রাফ চার্ট' } } }
         });
 
-        // Apex Live Growth Graph
         let options = {
             chart: { type: 'area', height: 180, sparkline: { enabled: false } },
             stroke: { curve: 'smooth', width: 2 },
@@ -709,23 +826,27 @@
         apexChartInstanceRef.render();
     }
 
-    // USER INTERACTIVE FILTERING ENGINE (Class 1-10 Scale Framework)
+    // USER INTERACTIVE FILTERING ENGINE (সাল ফিল্টারিং সিস্টেম সহ)
     function processUserFilteringLogic() {
         let area = document.getElementById('userFilteredResultsRenderArea');
         let query = document.getElementById('userSmartSearchInput').value.toLowerCase();
+        let fCat = document.getElementById('userFilterCategorySelect').value;
         let fClass = document.getElementById('userFilterClassSelect').value;
         let fSubject = document.getElementById('userFilterSubjectSelect').value;
         let fChapter = document.getElementById('userFilterChapterSelect').value;
         let fType = document.getElementById('userFilterTypeSelect').value;
+        let fYear = document.getElementById('userFilterYearSelect').value;
         let maxLimit = parseInt(document.getElementById('userMaxLimitInput').value) || 50;
 
         let filtered = db.filter(q => {
-            let mSearch = q.text.toLowerCase().includes(query) || q.subject.toLowerCase().includes(query);
+            let mSearch = q.text.toLowerCase().includes(query) || (q.subject && q.subject.toLowerCase().includes(query));
+            let mCat = fCat === '' || q.category === fCat;
             let mClass = fClass === '' || q.className === fClass;
             let mSubject = fSubject === '' || q.subject === fSubject;
             let mChapter = fChapter === '' || q.chapter === fChapter;
             let mType = fType === '' || q.type === fType;
-            return mSearch && mClass && mSubject && mChapter && mType;
+            let mYear = fYear === '' || q.year === fYear;
+            return mSearch && mCat && mClass && mSubject && mChapter && mType && mYear;
         }).slice(0, maxLimit);
 
         if(filtered.length === 0) {
@@ -737,10 +858,12 @@
             <div class="q-card">
                 <input type="checkbox" class="user-sel-q-check" value="${q.id}" ${userSelectedIdsArray.includes(q.id) ? 'checked' : ''} onchange="processUserSelectionChangeAction(this)" style="width:24px; height:24px; cursor:pointer; margin-right:10px;">
                 <div style="flex:1">
-                    <span class="badge" style="background:var(--primary); color:white;">${q.className}</span>
+                    <span class="badge" style="background:var(--primary); color:white;">${q.category}</span>
+                    <span class="badge" style="background:#f1f5f9; color:#475569;">${q.className}</span>
                     <span class="badge">${q.subject}</span>
                     <span class="badge badge-type">${q.type}</span>
                     ${q.chapter ? `<span class="badge" style="background:#f0fdf4; color:#16a34a;">${q.chapter}</span>` : ''}
+                    ${q.year ? `<span class="badge" style="background:#fff7ed; color:#c2410c;"><i class="fa-solid fa-calendar-days"></i> ${q.year}</span>` : ''}
                     <div style="margin-top:12px; font-size:16px;">${q.text}</div>
                 </div>
             </div>
@@ -765,12 +888,12 @@
         if(userSelectedIdsArray.length === 0) return alert("কোনো প্রশ্ন সিলেক্ট করা নেই!");
         let outputText = userSelectedIdsArray.map((id, index) => {
             let q = db.find(item => item.id === id);
-            return `${index + 1}. ${q.text}`;
+            return `${index + 1}. [${q.year || 'N/A'}] ${q.text}`;
         }).join('\n\n');
         alert("--- নির্বাচিত প্রশ্নাবলি প্রিভিউ ---\n\n" + outputText);
     }
 
-    // PDF GENERATION STRATEGY MANIFESTO (Isolated Scope Layouts)
+    // PDF GENERATION STRATEGY MANIFESTO
     function downloadRenderedPDFArtifact(mode) {
         if(userSelectedIdsArray.length === 0) return alert("অনুগ্রহ করে জেনারেশনের জন্য অন্তত ১টি প্রশ্ন সিলেক্ট করুন!");
 
@@ -802,7 +925,7 @@
 
             let qItemHtml = `
                 <div class="pdf-q-item" style="margin-bottom:25px; border-bottom:1px dashed #eee; padding-bottom:10px;">
-                    <div style="font-size:12px; font-weight:bold; color:#555; margin-bottom:5px;">[শ্রেণী: ${q.className} | বিষয়: ${q.subject} | নম্বর: ${q.marks || 'N/A'}]</div>
+                    <div style="font-size:12px; font-weight:bold; color:#555; margin-bottom:5px;">[ক্যাটাগরি: ${q.category} | শ্রেণী: ${q.className} | বিষয়: ${q.subject} | সাল: ${q.year || 'N/A'} | নম্বর: ${q.marks || 'N/A'}]</div>
                     ${bodyContent}
                 </div>
             `;
@@ -840,31 +963,44 @@
 
     function saveAdminQuestionData() {
         let id = document.getElementById('adminEditIdHolder').value;
+        let category = document.getElementById('admQCategory').value;
         let className = document.getElementById('admQClass').value;
-        let subject = document.getElementById('admQSubject').value.trim();
-        let chapter = document.getElementById('admQChapter').value.trim();
+        let subject = document.getElementById('admQSubject').value;
+        let chapter = document.getElementById('admQChapter').value;
         let type = document.getElementById('admQType').value;
+        let year = document.getElementById('admQYear').value;
         let text = document.getElementById('admQText').value.trim();
         let answer = document.getElementById('admQAnswer').value.trim();
         let marks = document.getElementById('admQMarks').value;
 
-        if(!subject || !text) return alert("বিষয় ও প্রশ্ন ফাঁকা রাখা যাবে হন!");
+        if(!category || !className || !subject || !text) {
+            return alert("ক্যাটাগরি, শ্রেণী, বিষয় ও মূল প্রশ্ন টেক্সট অবশ্যই পূরণ করতে হবে!");
+        }
 
-        let packet = { id: id ? parseInt(id) : Date.now(), category: document.getElementById('admQCategory').value, className, subject, chapter, type, text, answer, marks };
+        let packet = { id: id ? parseInt(id) : Date.now(), category, className, subject, chapter, type, year, text, answer, marks };
 
         if(id) {
             let idx = db.findIndex(q => q.id == id); db[idx] = packet;
+            resetAdminForm(true); // এডিট মুড শেষ হলে সম্পূর্ণ রিসেট হবে
         } else {
             db.push(packet);
+            resetAdminForm(false); // একই অধ্যায়ের অধীনে মাল্টিপল প্রশ্ন দ্রুত যুক্ত করতে ড্রপডাউন ডেটা লকড রাখা হলো
         }
 
         localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
-        resetAdminForm();
         renderAdminQuestionsDashboardList();
+        processUserFilteringLogic(); // ইউজার ডাটা সিঙ্ক
         alert("প্রশ্ন সফলভাবে সংরক্ষিত হয়েছে!");
     }
 
-    function resetAdminForm() {
+    // রিসেট কন্ট্রোলার (সব রিসেট বনাম আংশিক ডাটা প্রিজারভেশন লক)
+    function resetAdminForm(forceAllClear = false) {
+        if(forceAllClear) {
+            document.getElementById('admQCategory').value = '';
+            document.getElementById('admQClass').innerHTML = '<option value="">প্রথমে ক্যাটাগরি সিলেক্ট করুন</option>';
+            document.getElementById('admQSubject').innerHTML = '<option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>';
+            document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয় সিলেক্ট করুন</option>';
+        }
         document.getElementById('adminEditIdHolder').value = '';
         document.getElementById('admQText').value = '';
         document.getElementById('admQAnswer').value = '';
@@ -876,8 +1012,8 @@
     function renderAdminQuestionsDashboardList() {
         let container = document.getElementById('adminGlobalQuestionsListArea');
         container.innerHTML = db.map(q => `
-            <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:between; align-items:center;">
-                <div style="flex:1;"><strong>[${q.className} - ${q.subject}]</strong> ${q.text.substring(0,60)}...</div>
+            <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                <div style="flex:1;"><strong>[${q.className || 'N/A'} - ${q.subject || 'N/A'} | ${q.year || 'N/A'}]</strong> ${q.text.substring(0,60)}...</div>
                 <div>
                     <span class="btn-edit" onclick="triggerAdminQuestionEditSession(${q.id})"><i class="fa-solid fa-pen"></i></span>
                     <span class="btn-delete" onclick="executeAdminDeleteQuestionAction(${q.id})"><i class="fa-solid fa-trash"></i></span>
@@ -890,10 +1026,18 @@
         let q = db.find(item => item.id == id);
         document.getElementById('adminEditIdHolder').value = q.id;
         document.getElementById('admQCategory').value = q.category;
+        
+        updateAdminClassDropdown();
         document.getElementById('admQClass').value = q.className;
+        
+        updateAdminSubjectDropdown();
         document.getElementById('admQSubject').value = q.subject;
+        
+        updateAdminChapterDropdown();
         document.getElementById('admQChapter').value = q.chapter || '';
+        
         document.getElementById('admQType').value = q.type;
+        document.getElementById('admQYear').value = q.year || '২০২৬';
         document.getElementById('admQText').value = q.text;
         document.getElementById('admQAnswer').value = q.answer || '';
         document.getElementById('admQMarks').value = q.marks || '';
@@ -910,7 +1054,6 @@
         }
     }
 
-    // SLIDER TICKER ACTIONS
     function updateSliderTickerTextAction() {
         let txt = document.getElementById('adminSliderTickerTextInput').value.trim();
         if(!txt) return alert("টেক্সট দিন");
@@ -919,7 +1062,6 @@
         alert("হোম নোটিশ স্লাইডার টেক্সট আপডেট হয়েছে!");
     }
 
-    // FAQ MANAGEMENTS
     function renderAdminFaqConfigPanel() {
         let target = document.getElementById('adminFaqListConfigContainer');
         target.innerHTML = faqDb.map(f => `
@@ -947,7 +1089,6 @@
         renderAdminFaqConfigPanel();
     }
 
-    // PRICING MANAGEMENT MECHANISMS
     function renderAdminPricingConfigPanel() {
         let container = document.getElementById('adminPricingListConfigContainer');
         container.innerHTML = pricingDb.map(p => `
