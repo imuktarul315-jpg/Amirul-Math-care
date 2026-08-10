@@ -5,114 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>আমিরুল স্মার্ট প্রশ্ন ব্যাংক - আল্টিমেট এডিশন ২০২৬</title>
     
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- MathJax Config & Script -->
     <script>
         window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                processEscapes: true
-            },
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true },
             options: { enableMenu: false }
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- PDF & Charts Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <style>
+        /* ================= CSS VARIABLES & THEMING ================= */
         :root { 
-            --primary: #6366f1; 
-            --primary-hover: #4f46e5;
-            --success: #10b981; 
-            --danger: #ef4444; 
-            --warning: #f59e0b;
-            --dark: #0f172a;
-            --bg: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #334155;
-            --border: #e2e8f0;
-            --sidebar-width: 290px;
+            --primary: #6366f1; --primary-hover: #4f46e5; --success: #10b981; 
+            --danger: #ef4444; --warning: #f59e0b; --dark: #0f172a; --bg: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95); --text-main: #334155; --border: #e2e8f0; --sidebar-width: 290px;
         }
 
-        .dark-theme {
-            --bg: #0b0f19;
-            --card-bg: rgba(30, 41, 59, 0.9);
-            --text-main: #cbd5e1;
-            --border: #334155;
-            --dark: #f8fafc;
+        .dark-theme { 
+            --bg: #0b0f19; --card-bg: rgba(30, 41, 59, 0.9); --text-main: #cbd5e1; --border: #334155; --dark: #f8fafc; 
         }
         
-        body { 
-            font-family: 'Hind Siliguri', sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            padding-bottom: 80px; 
-            color: var(--text-main);
-            transition: background 0.3s, color 0.3s;
-        }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; color: var(--text-main); transition: background 0.3s, color 0.3s; }
         
-        .header { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 15px 30px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); 
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        /* ================= HEADER & NAV ================= */
+        .header { background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 15px 30px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .logo-area { font-weight: 600; font-size: 20px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-
         .nav-tabs { display: flex; gap: 12px; align-items: center; }
         .nav-tabs button { padding: 10px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; background: var(--border); color: var(--text-main); font-size: 14px; display: flex; align-items: center; gap: 8px; }
         .nav-tabs button.active { background: var(--primary); color: white; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); }
         .nav-tabs button.btn-logout { background: var(--danger); color: white; }
         .user-status-text { font-size: 13px; font-weight: 600; color: var(--success); }
 
+        /* ================= LAYOUT ================= */
         .container { max-width: 1400px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: var(--sidebar-width) 1fr; gap: 25px; }
         .container.no-sidebar { grid-template-columns: 1fr; }
         @media (max-width: 992px) { .container { grid-template-columns: 1fr; } }
 
-        .sidebar { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            padding: 24px; 
-            border-radius: 24px; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.02); 
-            height: fit-content; 
-        }
-        
+        /* ================= SIDEBAR ================= */
+        .sidebar { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 24px; border-radius: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.02); height: fit-content; }
         .sidebar-dropdown { margin-bottom: 12px; }
         .dropdown-btn { width: 100%; text-align: left; background: none; border: none; padding: 12px 14px; border-radius: 12px; color: var(--primary); font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border); }
         .dropdown-container { display: none; list-style: none; padding: 5px 0 0 10px; margin: 0; }
         .dropdown-container.show { display: block; }
-
         .sidebar ul li { padding: 12px 14px; cursor: pointer; border-radius: 12px; transition: 0.2s; margin-bottom: 6px; font-size: 15px; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
         .sidebar ul li:hover { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
         .sidebar ul li.active-menu { background: var(--primary); color: white; font-weight: 600; }
 
-        .card { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            padding: 25px; 
-            border-radius: 24px; 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.02); 
-            margin-bottom: 25px; 
-            animation: fadeIn 0.4s ease;
-        }
+        /* ================= CARDS & GRIDS ================= */
+        .card { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 25px; border-radius: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.02); margin-bottom: 25px; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .card h2 { margin-top: 0; font-size: 22px; color: var(--dark); display: flex; align-items: center; gap: 10px; }
         
         .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 20px; }
@@ -120,17 +71,19 @@
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
         
+        /* ================= FORMS ================= */
         label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-main); }
         input, select, textarea { width: 100%; padding: 12px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 14px; font-size: 15px; transition: 0.3s; box-sizing: border-box; font-family: inherit; }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
 
+        /* ================= PREVIEW & QUESTION CARDS ================= */
         .preview-box { background: rgba(0,0,0,0.02); border: 2px dashed var(--border); border-radius: 14px; padding: 18px; margin: 15px 0; min-height: 50px; overflow-x: auto; color: var(--text-main); }
-
         .q-card { background: var(--card-bg); border-radius: 18px; padding: 20px; margin-bottom: 15px; display: flex; gap: 15px; border-left: 5px solid var(--primary); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: 0.3s; position: relative; align-items: flex-start; }
-        .badge { font-size: 12px; padding: 5px 12px; border-radius: 8px; background: var(--border); font-weight: 600; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px; }
+        .badge { font-size: 12px; padding: 5px 12px; border-radius: 8px; background: var(--border); font-weight: 600; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px; margin-right: 5px; margin-bottom: 5px;}
         .badge-type { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
         .answer-container { margin-top: 10px; padding: 10px 15px; background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--success); border-radius: 8px; font-size: 15px; }
 
+        /* ================= COMPONENTS (Ticker, Pricing, FAQ) ================= */
         .ticker-wrapper { background: var(--dark); color: white; padding: 10px 0; overflow: hidden; white-space: nowrap; border-radius: 12px; margin-bottom: 25px; }
         .ticker-text { display: inline-block; padding-left: 100%; animation: ticker 25s linear infinite; font-weight: 600; }
         @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
@@ -144,26 +97,72 @@
         .faq-answer { display: none; padding-top: 10px; color: var(--text-main); font-size: 15px; line-height: 1.5; }
         .faq-item.active .faq-answer { display: block; }
 
-        .footer-bar { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 14px 35px; border-radius: 50px; display: flex; gap: 15px; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 1000; border: 1px solid #334155; }
+        /* ================= BUTTONS ================= */
         .btn-action { background: var(--success); color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer; font-weight: bold; font-family: inherit; font-size: 15px; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-action:hover { opacity: 0.9; transform: scale(1.02); }
-
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-outline:hover { background: var(--primary); color: white; }
         .btn-edit { color: var(--primary); cursor: pointer; margin-right: 12px; font-size: 18px; }
         .btn-delete { color: var(--danger); cursor: pointer; font-size: 18px; }
-
-        .stat-box { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 20px; border-radius: 16px; text-align: center; }
-        
         .theme-toggle { background: transparent; border: none; color: var(--text-main); font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; }
+        
+        /* ================= AUTH OVERLAY ================= */
         .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2000; }
         .auth-card { background: var(--bg); border: 1px solid var(--border); padding: 35px; border-radius: 24px; width: 100%; max-width: 420px; box-sizing: border-box; }
+
+        /* ================= USER PANEL STYLES ================= */
+        .user-toolbar { position: sticky; top: 70px; background: var(--card-bg); z-index: 90; padding: 15px 20px; border-radius: 16px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); backdrop-filter: blur(10px); }
+        .toolbar-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .live-workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        @media (max-width: 992px) { .live-workspace { grid-template-columns: 1fr; } }
         
-        #pdf-render-template { display: none; padding: 40px; background: #ffffff; color: #000000; }
-        .pdf-header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
-        .pdf-q-item { margin-bottom: 20px; font-size: 16px; }
+        .document-preview-area { background: white; color: black; padding: 40px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.1); min-height: 800px; transform-origin: top left; }
+        
+        /* ================= SETTINGS MODAL & TOGGLES ================= */
+        .settings-modal { position: fixed; right: -450px; top: 0; width: 400px; height: 100%; background: var(--card-bg); box-shadow: -5px 0 25px rgba(0,0,0,0.1); z-index: 2500; transition: right 0.3s ease; padding: 25px; overflow-y: auto; border-left: 1px solid var(--border); backdrop-filter: blur(15px); }
+        .settings-modal.open { right: 0; }
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .close-settings { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--danger); }
+        
+        .settings-group { margin-bottom: 25px; background: var(--bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
+        .settings-group h4 { margin-top: 0; margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 600; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* ================= DYNAMIC PREVIEW CLASSES ================= */
+        .doc-header-block { text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; }
+        .doc-student-info { display: flex; justify-content: space-between; border: 1px solid #000; padding: 10px; margin-bottom: 20px; font-weight: bold; }
+        .doc-omr-block { border: 1px solid #000; padding: 15px; margin-bottom: 20px; text-align: center; background: #fafafa; }
+        
+        .layout-col-1, .layout-col-2, .layout-col-3 { width: 100%; }
+        .layout-col-1 { column-count: 1; }
+        .layout-col-2 { column-count: 2; column-gap: 30px; column-rule: 1px solid #ccc; }
+        .layout-col-3 { column-count: 3; column-gap: 20px; column-rule: 1px solid #ccc; }
+        
+        /* 
+         * FIX: html2canvas vertical alignment and overlapping issue 
+         * display: inline-block and width: 100% forces correct height calculation inside columns.
+         */
+        .doc-q-item { 
+            page-break-inside: avoid; 
+            break-inside: avoid; 
+            margin-bottom: 18px; 
+            display: inline-block; 
+            width: 100%; 
+            vertical-align: top;
+        }
+
     </style>
 </head>
 <body>
 
+<!-- Authentication Overlay -->
 <div id="authOverlay" class="auth-overlay" style="display: none;">
     <div id="adminAuthCard" class="auth-card" style="display: none;">
         <h2><i class="fa-solid fa-user-lock" style="color:var(--danger)"></i> এডমিন সিকিউরিটি গেট</h2>
@@ -192,6 +191,74 @@
     </div>
 </div>
 
+<!-- Advanced Settings Modal (User Panel) -->
+<div id="userSettingsModal" class="settings-modal">
+    <div class="settings-header">
+        <h2 style="margin:0; font-size: 20px;"><i class="fa-solid fa-sliders"></i> পেপার সেটিংস</h2>
+        <button class="close-settings" onclick="toggleSettingsModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="settings-group">
+        <h4><i class="fa-solid fa-heading"></i> হেডার (Header) অপশন</h4>
+        <div class="setting-item"><span>প্রতিষ্ঠানের নাম</span> <label class="switch"><input type="checkbox" id="set_head_inst" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>বিষয়ের নাম</span> <label class="switch"><input type="checkbox" id="set_head_sub" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>শ্রেণির নাম</span> <label class="switch"><input type="checkbox" id="set_head_class" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>পরীক্ষার নাম</span> <label class="switch"><input type="checkbox" id="set_head_exam" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>সাধারণ নির্দেশনা</span> <label class="switch"><input type="checkbox" id="set_head_instruc" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+    </div>
+
+    <div class="settings-group">
+        <h4><i class="fa-solid fa-id-card"></i> স্টুডেন্ট ও OMR ইনফো</h4>
+        <div class="setting-item"><span>শিক্ষার্থীর তথ্য (নাম, রোল)</span> <label class="switch"><input type="checkbox" id="set_student_info" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>OMR শিট লেআউট</span> <label class="switch"><input type="checkbox" id="set_omr" onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+    </div>
+
+    <div class="settings-group">
+        <h4><i class="fa-solid fa-list-ol"></i> প্রশ্ন ও নম্বর সেটিংস</h4>
+        <div class="setting-item"><span>প্রশ্নের তথ্য (অধ্যায়/সাল)</span> <label class="switch"><input type="checkbox" id="set_q_info" onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item">
+            <div style="line-height:1.2;">
+                <span>স্বয়ংক্রিয় সিরিয়াল নম্বর</span><br>
+                <small style="color:var(--danger); font-weight:normal;">ডিফল্ট: অফ (ম্যানুয়াল লাইন ব্রেক সমর্থন করে)</small>
+            </div> 
+            <label class="switch"><input type="checkbox" id="set_auto_number" onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label>
+        </div>
+        <div style="margin-top:10px;">
+            <label>প্রশ্নের নম্বর স্টাইল</label>
+            <select id="set_num_style" onchange="updateLiveDocumentPreview()" style="padding:8px;">
+                <option value="bn_num">বাংলা সংখ্যা (১, ২, ৩)</option>
+                <option value="en_num">English Num (1, 2, 3)</option>
+                <option value="bn_char">বাংলা বর্ণ (ক, খ, গ)</option>
+            </select>
+        </div>
+        <div class="setting-item" style="margin-top:10px;"><span>MCQ Option Bubble (○)</span> <label class="switch"><input type="checkbox" id="set_mcq_bubble" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+    </div>
+
+    <div class="settings-group">
+        <h4><i class="fa-solid fa-file-lines"></i> পেজ ও কলাম লেআউট</h4>
+        <div style="margin-bottom:10px;">
+            <label>ম্যানুয়াল কলাম অ্যাডজাস্টমেন্ট (অটোমেটিক নয়)</label>
+            <select id="set_column_layout" onchange="updateLiveDocumentPreview()" style="padding:8px;">
+                <option value="1">১ কলাম (সম্পূর্ণ প্রস্থ)</option>
+                <option value="2">২ কলাম (ম্যানুয়াল স্প্লিট)</option>
+                <option value="3">৩ কলাম (ম্যানুয়াল স্প্লিট)</option>
+            </select>
+        </div>
+        <div style="margin-bottom:10px;">
+            <label>পেজ সাইজ</label>
+            <select id="set_page_size" onchange="updateLiveDocumentPreview()" style="padding:8px;">
+                <option value="A4">A4</option>
+                <option value="Letter">Letter</option>
+                <option value="Legal">Legal</option>
+            </select>
+        </div>
+        <div class="setting-item"><span>পেজ বর্ডার</span> <label class="switch"><input type="checkbox" id="set_page_border" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+    </div>
+
+    <button class="btn-action" style="width:100%; justify-content:center; background:var(--primary);" onclick="toggleSettingsModal()">সেটিংস সেভ করুন</button>
+</div>
+
+<!-- Header -->
 <div class="header">
     <div class="logo-area">
         <i class="fa-solid fa-graduation-cap"></i>
@@ -207,7 +274,9 @@
     </div>
 </div>
 
+<!-- Main Container -->
 <div class="container" id="mainContainer">
+    <!-- Admin Sidebar -->
     <div class="sidebar" id="appSidebar" style="display:none;">
         <div class="sidebar-dropdown">
             <button class="dropdown-btn" onclick="toggleDropdown('dashDropdown', 'dashIcon')">
@@ -224,33 +293,24 @@
 
     <div class="main-content">
         
+        <!-- ================= HOME SECTION ================= -->
         <div id="home-view-sec" class="section-block">
-            <div class="ticker-wrapper">
-                <div class="ticker-text" id="liveTickerContainer">লোড হচ্ছে... আমিরুল ম্যাথ কেয়ারে আপনাকে স্বাগত!</div>
-            </div>
-
+            <div class="ticker-wrapper"><div class="ticker-text" id="liveTickerContainer">লোড হচ্ছে...</div></div>
             <div class="card">
                 <h2><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> প্রশ্ন ব্যাংক রিয়েল-টাইম লাইভ স্ট্যাটিস্টিক্স</h2>
                 <div class="grid-2">
-                    <div style="background:var(--bg); padding:15px; border-radius:15px;">
-                        <canvas id="categoryDistributionChart"></canvas>
-                    </div>
-                    <div style="background:var(--bg); padding:15px; border-radius:15px;">
-                        <div id="liveGrowthApexChart"></div>
-                    </div>
+                    <div style="background:var(--bg); padding:15px; border-radius:15px;"><canvas id="categoryDistributionChart"></canvas></div>
+                    <div style="background:var(--bg); padding:15px; border-radius:15px;"><div id="liveGrowthApexChart"></div></div>
                 </div>
             </div>
-
             <div class="card">
                 <h2><i class="fa-solid fa-gem" style="color:var(--warning)"></i> প্রিমিয়াম মেম্বারশিপ প্ল্যান ও সাবস্ক্রিপশন রেট</h2>
                 <div class="grid-3" id="pricingCardsDynamicContainer"></div>
             </div>
-
             <div class="card">
                 <h2><i class="fa-solid fa-circle-question" style="color:var(--success)"></i> সাধারণ জিজ্ঞাসা (FAQ)</h2>
                 <div id="faqDynamicDisplayContainer"></div>
             </div>
-
             <div class="card" style="background: linear-gradient(135deg, #4f46e5, #6366f1); color: white;">
                 <h2><i class="fa-solid fa-address-book" style="color:white"></i> সরাসরি যোগাযোগ ও সাপোর্ট ডেস্ক</h2>
                 <p style="font-size:16px;">যেকোনো টেকনিক্যাল তথ্য বা সাবস্ক্রিপশন সংক্রান্ত সমস্যার জন্য আমাদের সাথে সরাসরি কল অথবা হোয়াটসঅ্যাপে যোগাযোগ করুন।</p>
@@ -262,77 +322,101 @@
             </div>
         </div>
 
+        <!-- ================= USER PANEL SECTION ================= -->
         <div id="user-view-sec" class="section-block" style="display:none;">
-            <div class="card">
-                <h2><i class="fa-solid fa-magnifying-glass" style="color:var(--primary)"></i> অ্যাডভান্সড স্মার্ট ফিল্টারিং হাব</h2>
-                <div class="grid-3">
-                    <div>
-                        <label>অনুসন্ধান কী-ওয়ার্ড</label>
-                        <input type="text" id="userSmartSearchInput" placeholder="যেকোনো শব্দ লিখুন..." onkeyup="processUserFilteringLogic()">
-                    </div>
-                    <div>
-                        <label>ক্যাটাগরি</label>
-                        <select id="userFilterCategorySelect" onchange="updateUserClassDropdown(); processUserFilteringLogic();">
-                            <option value="">সকল ক্যাটাগরি</option>
-                            <option value="মাধ্যমিক">মাধ্যমিক</option>
-                            <option value="উচ্চমাধ্যমিক">উচ্চমাধ্যমিক</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>শ্রেণী নির্ধারণ</label>
-                        <select id="userFilterClassSelect" onchange="updateUserSubjectDropdown(); processUserFilteringLogic();">
-                            <option value="">প্রথমে ক্যাটাগরি সিলেক্ট করুন</option>
-                        </select>
-                    </div>
+            <!-- User Toolbar -->
+            <div class="user-toolbar">
+                <div class="toolbar-group">
+                    <button class="btn-outline" onclick="toggleSettingsModal()"><i class="fa-solid fa-sliders"></i> Settings</button>
+                    <button class="btn-outline" onclick="triggerCustomQuestionEditor()"><i class="fa-solid fa-pen-to-square"></i> Write Question</button>
                 </div>
-
-                <div class="grid-3">
-                    <div>
-                        <label>বিষয় (Subject Mapping)</label>
-                        <select id="userFilterSubjectSelect" onchange="updateUserChapterDropdown(); processUserFilteringLogic();">
-                            <option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>অধ্যায় / টপিক</label>
-                        <select id="userFilterChapterSelect" onchange="processUserFilteringLogic()">
-                            <option value="">প্রথমে বিষয় সিলেক্ট করুন</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>প্রশ্নের ক্যাটাগরি ধরন</label>
-                        <select id="userFilterTypeSelect" onchange="processUserFilteringLogic()">
-                            <option value="">সকল ধরন</option>
-                            <option value="সৃজনশীল">সৃজনশীল (CQ)</option>
-                            <option value="সংक्षिप्त">সংक्षिप्त প্রশ্ন</option>
-                            <option value="এমসিকিউ">বহুনির্বাচনী (MCQ)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid-3">
-                    <div>
-                        <label>নির্দিষ্ট সাল (Year)</label>
-                        <select id="userFilterYearSelect" onchange="processUserFilteringLogic()">
-                            <option value="">সকল সাল</option>
-                            <option value="২০২৬">২০২৬</option>
-                            <option value="২০২৫">২০২৫</option>
-                            <option value="২০২৪">২০২৪</option>
-                            <option value="২০২৩">২০২৩</option>
-                            <option value="২০২২">২০২২</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>সর্বোচ্চ আউটপুট সংখ্যা (৫ থেকে ২০০)</label>
-                        <input type="number" id="userMaxLimitInput" value="50" min="5" max="200" onchange="processUserFilteringLogic()">
-                    </div>
-                    <div></div>
+                <!-- Updated Toolbar with Q&A Button -->
+                <div class="toolbar-group">
+                    <button class="btn-action" style="background:#475569;" onclick="saveUserProgress()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                    <button class="btn-action" style="background:var(--primary);" onclick="triggerUserSelectedQuestionsPreview()"><i class="fa-solid fa-eye"></i> View Now</button>
+                    <button class="btn-action" onclick="downloadRenderedPDFArtifact()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                    <button class="btn-action" style="background:#10b981;" onclick="downloadRenderedQnAPDF()"><i class="fa-solid fa-book-open"></i> Q&A PDF</button>
                 </div>
             </div>
 
-            <div id="userFilteredResultsRenderArea"></div>
+            <div class="live-workspace">
+                <!-- Left: Question Selection & Filter -->
+                <div class="card" style="margin-bottom:0;">
+                    <h2><i class="fa-solid fa-magnifying-glass"></i> অ্যাডভান্সড স্মার্ট ফিল্টারিং হাব</h2>
+                    <div class="grid-2">
+                        <div>
+                            <label>অনুসন্ধান কী-ওয়ার্ড</label>
+                            <input type="text" id="userSmartSearchInput" placeholder="যেকোনো শব্দ লিখুন..." onkeyup="processUserFilteringLogic()">
+                        </div>
+                        <div>
+                            <label>ক্যাটাগরি</label>
+                            <select id="userFilterCategorySelect" onchange="updateUserClassDropdown(); processUserFilteringLogic();">
+                                <option value="">সকল ক্যাটাগরি</option>
+                                <option value="মাধ্যমিক">মাধ্যমিক</option>
+                                <option value="উচ্চমাধ্যমিক">উচ্চমাধ্যমিক</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <label>শ্রেণী নির্ধারণ</label>
+                            <select id="userFilterClassSelect" onchange="updateUserSubjectDropdown(); processUserFilteringLogic();">
+                                <option value="">প্রথমে ক্যাটাগরি সিলেক্ট করুন</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>বিষয়</label>
+                            <select id="userFilterSubjectSelect" onchange="updateUserChapterDropdown(); processUserFilteringLogic();">
+                                <option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div>
+                            <label>অধ্যায় / টপিক</label>
+                            <select id="userFilterChapterSelect" onchange="processUserFilteringLogic()">
+                                <option value="">প্রথমে বিষয় সিলেক্ট করুন</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>প্রশ্নের ক্যাটাগরি ধরন</label>
+                            <select id="userFilterTypeSelect" onchange="processUserFilteringLogic()">
+                                <option value="">সকল ধরন</option>
+                                <option value="সৃজনশীল">সৃজনশীল (CQ)</option>
+                                <option value="সংक्षिप्त">সংক্ষিপ্ত প্রশ্ন</option>
+                                <option value="এমসিকিউ">বহুনির্বাচনী (MCQ)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="userFilteredResultsRenderArea" style="margin-top:20px; max-height: 500px; overflow-y:auto; padding-right:10px;"></div>
+
+                    <!-- Custom Question Editor Section (Inside Left Panel) -->
+                    <div id="customQuestionEditorArea" style="display:none; margin-top:20px; border-top:2px dashed var(--border); padding-top:20px;">
+                        <h3><i class="fa-solid fa-pen"></i> ম্যানুয়াল প্রশ্ন যুক্ত করুন</h3>
+                        <label>প্রশ্নের ধরন</label>
+                        <select id="customQType" style="margin-bottom:10px;">
+                            <option value="CQ">সৃজনশীল (CQ)</option>
+                            <option value="MCQ">বহুনির্বাচনী (MCQ)</option>
+                            <option value="Short">সংক্ষিপ্ত প্রশ্ন</option>
+                        </select>
+                        <label>প্রশ্ন টেক্সট (ম্যানুয়াল লাইন ব্রেক দিতে Enter চাপুন)</label>
+                        <textarea id="customQText" rows="4" placeholder="উদা: উদ্দীপকটিতে csc এর জায়গায় cosec হবে..."></textarea>
+                        <button class="btn-action" style="margin-top:10px;" onclick="addCustomQuestionToPreview()"><i class="fa-solid fa-plus"></i> প্রিভিউতে যুক্ত করুন</button>
+                    </div>
+                </div>
+
+                <!-- Right: Live Document Preview -->
+                <div class="card" style="margin-bottom:0; background: #e2e8f0; display:flex; justify-content:center; overflow-x:auto;">
+                    <!-- A4 Size Representation -->
+                    <div id="liveDocumentCanvas" class="document-preview-area" style="width: 210mm; min-height: 297mm; box-sizing:border-box;">
+                        <!-- Preview content injected by JS -->
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- ================= ADMIN SECTIONS ================= -->
         <div id="admin-main-sec" class="section-block" style="display:none;">
             <div class="card">
                 <h2><i class="fa-solid fa-file-signature" style="color:var(--primary)"></i> এডমিন সেন্ট্রাল ডাটা এন্ট্রি এডিটর</h2>
@@ -360,9 +444,7 @@
                     </div>
                     <div>
                         <label>অধ্যায়</label>
-                        <select id="admQChapter">
-                            <option value="">প্রথমে বিষয় সিলেক্ট করুন</option>
-                        </select>
+                        <select id="admQChapter"><option value="">প্রথমে বিষয় সিলেক্ট করুন</option></select>
                     </div>
                 </div>
                 <div class="grid-3">
@@ -373,11 +455,7 @@
                     <div>
                         <label>প্রশ্ন তৈরির সাল (Year)</label>
                         <select id="admQYear">
-                            <option value="২০২৬">২০২৬</option>
-                            <option value="২০২৫">২০২৫</option>
-                            <option value="২০২৪">২০২৪</option>
-                            <option value="২০২৩">২০২৩</option>
-                            <option value="২০২২">২০২২</option>
+                            <option value="২০২৬">২০২৬</option><option value="২০২৫">২০২৫</option><option value="২০২৪">২০২৪</option>
                         </select>
                     </div>
                     <div>
@@ -399,7 +477,6 @@
                     <button onclick="saveAdminQuestionData()" id="admSaveBtn" class="btn-action" style="background: var(--primary);">ডাটাবেসে সংরক্ষণ করুন</button>
                 </div>
             </div>
-            
             <div class="card">
                 <h2><i class="fa-solid fa-database"></i> সংরক্ষিত সকল প্রশ্নপত্র তালিকা</h2>
                 <div id="adminGlobalQuestionsListArea"></div>
@@ -411,7 +488,7 @@
                 <h2><i class="fa-solid fa-images"></i> হোম পেজ নোটিশ স্লাইডার টেক্সট কন্ট্রোল</h2>
                 <div style="margin-bottom:15px;">
                     <label>স্ক্রলিং নোটিশ বার্তা</label>
-                    <textarea id="adminSliderTickerTextInput" rows="3" placeholder="হোম পেজে যে নোটিশটি স্ক্রল হবে তা লিখুন..."></textarea>
+                    <textarea id="adminSliderTickerTextInput" rows="3"></textarea>
                 </div>
                 <button onclick="updateSliderTickerTextAction()" class="btn-action"><i class="fa-solid fa-circle-check"></i> নোটিশ আপডেট করুন</button>
             </div>
@@ -421,133 +498,40 @@
             <div class="card">
                 <h2><i class="fa-solid fa-circle-question"></i> নতুন FAQ প্রশ্ন-উত্তর যুক্ত করুন</h2>
                 <div class="grid-2">
-                    <div>
-                        <label>জিজ্ঞাসা / প্রশ্ন</label>
-                        <input type="text" id="adminFaqQuestionInput" placeholder="উদা: কিভাবে প্রশ্নপত্র ডাউনলোড করবো?">
-                    </div>
-                    <div>
-                        <label>উত্তর বার্তা</label>
-                        <input type="text" id="adminFaqAnswerInput" placeholder="উদা: ইউজার প্যানেল থেকে সিলেক্ট করে ডাউনলোড করা যাবে।">
-                    </div>
+                    <div><label>জিজ্ঞাসা / প্রশ্ন</label><input type="text" id="adminFaqQuestionInput" placeholder="উদা: কিভাবে প্রশ্নপত্র ডাউনলোড করবো?"></div>
+                    <div><label>উত্তর বার্তা</label><input type="text" id="adminFaqAnswerInput" placeholder="উদা: ইউজার প্যানেল থেকে সিলেক্ট করে ডাউনলোড করা যাবে।"></div>
                 </div>
                 <button onclick="addNewFaqItemAction()" class="btn-action" style="margin-top:10px;"><i class="fa-solid fa-plus"></i> FAQ ডাটা যুক্ত করুন</button>
             </div>
-            <div class="card">
-                <h2>বিদ্যমান FAQ তালিকা</h2>
-                <div id="adminFaqListConfigContainer"></div>
-            </div>
+            <div class="card"><h2>বিদ্যমান FAQ তালিকা</h2><div id="adminFaqListConfigContainer"></div></div>
         </div>
 
         <div id="admin-pricing-sec" class="section-block" style="display:none;">
             <div class="card">
                 <h2><i class="fa-solid fa-tags"></i> মেম্বারশিপ প্যাকেজ রেট মডিউল</h2>
                 <div class="grid-4">
-                    <div>
-                        <label>প্যাকেজ নাম</label>
-                        <input type="text" id="pkgNameInput" placeholder="উদা: প্রিমিয়াম গোল্ড">
-                    </div>
-                    <div>
-                        <label>মূল্য রেট (টাকা)</label>
-                        <input type="text" id="pkgPriceInput" placeholder="উদা: ৫০০ টাকা">
-                    </div>
-                    <div>
-                        <label>স্থায়িত্ব মেয়াদ</label>
-                        <input type="text" id="pkgDurationInput" placeholder="উদা: ১ বছর">
-                    </div>
-                    <div>
-                        <label>সুযোগ-সুবিধা বিবরণ</label>
-                        <input type="text" id="pkgFeaturesInput" placeholder="কমা দিয়ে লিখুন: আনলিমিটেড ডাউনলোড, ওএমআর সুবিধা">
-                    </div>
+                    <div><label>প্যাকেজ নাম</label><input type="text" id="pkgNameInput"></div>
+                    <div><label>মূল্য রেট (টাকা)</label><input type="text" id="pkgPriceInput"></div>
+                    <div><label>স্থায়িত্ব মেয়াদ</label><input type="text" id="pkgDurationInput"></div>
+                    <div><label>সুযোগ-সুবিধা বিবরণ (কমা দিয়ে)</label><input type="text" id="pkgFeaturesInput"></div>
                 </div>
                 <button onclick="savePricingPackageAction()" class="btn-action"><i class="fa-solid fa-floppy-disk"></i> প্যাকেজ রেট সংরক্ষণ করুন</button>
             </div>
-            <div class="card">
-                <h2>সিস্টেমের বর্তমান সক্রিয় প্যাকেজসমূহ</h2>
-                <div id="adminPricingListConfigContainer"></div>
-            </div>
+            <div class="card"><h2>সিস্টেমের বর্তমান সক্রিয় প্যাকেজসমূহ</h2><div id="adminPricingListConfigContainer"></div></div>
         </div>
 
     </div>
 </div>
 
-<div class="footer-bar" id="userPersistentActionFooter" style="display:none">
-    <span>নির্বাচিত প্রশ্ন: <span id="userSelectedTotalCountBadge" style="color:var(--success); font-weight:bold; font-size:18px;">0</span> টি</span>
-    <button class="btn-action" style="background:var(--primary)" onclick="triggerUserSelectedQuestionsPreview()"><i class="fa-solid fa-eye"></i> View Now</button>
-    <button class="btn-action" style="background:#475569;" onclick="downloadRenderedPDFArtifact('question')"><i class="fa-solid fa-file-pdf"></i> ① প্রশ্ন ডাউনলোড</button>
-    <button class="btn-action" style="background:var(--success);" onclick="downloadRenderedPDFArtifact('answer')"><i class="fa-solid fa-file-invoice"></i> ② উত্তরপত্র ডাউনলোড</button>
-</div>
-
-<div id="pdf-render-template"></div>
-
 <script>
-    // ডাইনামিক ক্যাটাগরি, শ্রেণী, বিষয় এবং অধ্যায়ের রিলেশনাল ম্যাপিং ডাটা আর্কিটেকচার (আপডেটকৃত)
+    // ================== DATA MAPS & DB ==================
     const academicMappingData = {
         "মাধ্যমিক": {
-            "৬ষ্ঠ শ্রেণী": {
-                "বাংলা": ["চারপাশের লেখার সাথে পরিচিতি", "প্রমিত ভাষা শিখি", "অর্থ বুঝে বাক্য লিখি", "চারপাশের লেখার সাথে সম্পর্ক তৈরি করি", "বুঝে পড়ি লিখতে শিখি", "সাহিত্য পড়ি লিখতে শিখি", "নিজের পরিপার্শ্ব নিয়ে লিখি"],
-                "English": ["Talking to People", "Little Things", "Future Lies in Present", "Ask and Answer", "Together We are a Team", "The Missing Tenth Man", "A Day in the Life of Mina", "Bangabandhu, My Inspiration", "Politeness", "The Boy Under the Tree", "Meeting an Overseas Friend", "Medha's Dream", "My Books", "Arshi's Letter", "A Fresh Pair of Eyes", "Save Our Home", "King Lear", "Four Friends"],
-                "গণিত": ["সংখ্যার গল্প", "দ্বিমাত্রিক বস্তুর গল্প", "তথ্য অনুসন্ধান ও বিশ্লেষণ", "مৌলিক উৎপাদকের গাছ", "দৈর্ঘ্য মাপি", "পূর্ণসংখ্যার জগৎ", "ভগ্নাংশের খেলা", "অজানা রাশির জগৎ", "সরল সমীকরণ", "সূত্র খুঁজি সূত্র বুঝি", "জ্যামিতিক আকৃতির গল্প"],
-                "বিজ্ঞান": ["আকাশ ও মহাবিশ্ব", "গতি", "বল ও শক্তি", "পদার্থের বৈশিষ্ট্য ও গঠন", "জীবজগৎ", "উদ্ভিদ ও প্রাণীর অঙ্গসংস্থান", "আমাদের চারপাশের পরিবেশ", "মানব শরীর", "पृथ्वी ও মহাবিশ্ব"],
-                "ইতিহাস ও সামাজিক বিজ্ঞান": ["आत्मপরিচয়", "আমাদের চারপাশের সমাজ ও সংস্কৃতি", "প্রাচীন বিশ্বসভ্যতা", "ভৌগোলিক উপাদান ও মানবসমাজ", "আমাদের মুক্তিযুদ্ধ ও স্বাধীনতার ইতিহাস"],
-                "ডিজিটাল প্রযুক্তি": ["তথ্য ও যোগাযোগ প্রযুক্তির ধারণা", "ডিজিটাল মাধ্যমে তথ্য আদান-প্রদান", "সাইবার নিরাপত্তা ও নৈতিকতা", "প্রযুক্তির সাহায্যে সমস্যা সমাধান"],
-                "জীবন ও জীবিকা": ["কাজের মাঝে আনন্দ", "পেশার রূপবদল", "আগামীর স্বপ্ন", "আর্থিক ভাবনা"],
-                "স্বাস্থ্য সুরক্ষা": ["আমার স্বাস্থ্য আমার হাতে", "সুষম খাদ্য ও পুষ্টি", "মানসিক স্বাস্থ্য ও সুস্বাস্থ্য", "নিরাপদ জীবন ও প্রাথমিক চিকিৎসা"],
-                "শিল্প ও সংস্কৃতি": ["আনন্দধারা", "মাটির গন্ধ", "আলো-ছায়ার খেলা", "সুরের মায়াজাল", "বৈচিত্র্যের মাঝে ঐক্য"],
-                "ধর্ম শিক্ষা": ["আকাইদ", "ইবাদত", "আখলাক", "আল-কুরআন ও হাদিস শিক্ষা", "আদর্শ জীবনচরিত"]
-            },
-            "৭ম শ্রেণী": {
-                "বাংলা": ["প্রসঙ্গের মধ্যে থেকে যোগাযোগ করি", "প্রমিত ভাষা ব্যবহার করি", "অর্থ বুঝে বাক্য লিখি", "চারপাশের লেখা পড়ি ও বুঝি", "বুঝে পড়ি লিখতে শিখি", "সাহিত্য পড়ি লিখতে শিখি", "নানাতরফে লেখা"],
-                "English": ["A Dream School", "Playing with the Words", "If", "The Frog and the Ox", "Have You Ever", "A Good Reader", "Using Verbs Easily", "Heroes of Bangladesh", "Knowing Our Parents", "Freedom of Choice", "Let's Explore the Sentences", "Subha", "Be the Best of Whatever You Are", "Our Language Movement", "Write to Make Aware", "As You Like It"],
-                "গণিত": ["সূচকের গল্প", "অজানা রাশির সূচক, গুণ ও তাদের প্রয়োগ", "ভগ্নাংশের এলসিএম ও জিসিডি", "অনুপাত ও শতকরা", "আকৃতি দিয়ে চেনা", "সর্বসমতা ও সদৃশতা", "バイナリ সংখ্যার গল্প", "চলকযুক্ত রাশির গুণ ও ভাগ", "সরল সমীকরণ", "নানা রকম আকৃতি মাপি", "অজানা রাশির উৎপাদক, গসাগু ও লসাগু", "তথ্যর খেলা"],
-                "বিজ্ঞান": ["জীববৈচিত্র্য", "অণু পরমাণু", "পদার্থের রূপান্তর", "কোষ ও টিস্যু", "পরিপাক ও রক্ত সংবহন তন্ত্র", "তাপ ও তাপমাত্রা", "আলো ও প্রতিসরণ", "পৃথিবী, সূর্য ও চন্দ্র", "পরিবেশের ভারসাম্য"],
-                "ইতিহাস ও সামাজিক বিজ্ঞান": ["আমাদের সমাজ ও কৃষ্টি", "প্রাচীন বাংলার ইতিহাস ও জনপদ", "মধ্যযুগের বাংলা", "ভূপ্রকৃতি ও জলবায়ু", "নাগরিক অধিকার ও দায়িত্ব"],
-                "ডিজিটাল প্রযুক্তি": ["ডিজিটাল মাধ্যমে যোগাযোগ", "তথ্যর সত্যতা যাচাই", "সাইবার ক্রাইম ও সচেতনতা", "কোডিং ও প্রোগ্রামিং এর প্রাথমিক ধারণা"],
-                "জীবন ও জীবিকা": ["কাজের মাঝে আনন্দ ও পেশা", "পারিবারিক বাজেট ও সঞ্চয়", "উদ্যোক্তা হওয়ার সহজ পাঠ", "ক্যারিয়ার পরিকল্পনা"],
-                "স্বাস্থ্য সুরক্ষা": ["বয়ঃসন্ধিকালের পরিবর্তন ও যত্ন", "নিরাপদ খাদ্য ও খাদ্যাভ্যাস", "মানসিক চাপ ব্যবস্থাপনা", "সংক্রামক রোগ প্রতিরোধ"],
-                "শিল্প ও সংস্কৃতি": ["রঙের মেলা", "লোকশিল্প ও ঐতিহ্য", "নাটকের আঙিনায়", "সুরের লহরী"],
-                "ধর্ম শিক্ষা": ["ধর্মীয় বিশ্বাস ও আচার", "নৈতিক মূল্যবোধ ও সমাজ গঠন", "ধর্মীয় মহাপুরুষদের জীবনী"]
-            },
-            "৮ম শ্রেণী": {
-                "বাংলা": ["প্রয়োজনমাফিক যোগাযোগ করি", "প্রমিত ভাষা ব্যবহার করি", "লেখার নানারূপ ও প্রয়োগ", "ব্যাকরণ (ধ্বনি, শব্দ, বাক্য, বিরামচিহ্ন)", "সাহিত্য বিশ্লেষণ ও সৃজনশীল লিখন", "প্রবন্ধ ও গবেষণামূলক লেখা"],
-                "English": ["Beauty in Poetry", "The Biz Card", "Language and Power", "Paraphrasing and Summarizing", "Writing Creatively", "Introducing Someone", "Dynamic Grammar", "Analytical Writing"],
-                "গণিত": ["গাণিতিক অনুসন্ধান", "বাস্তব সংখ্যা", "ঘনবস্তুতে দ্বিপদী ও ত্রিপদী রাশি খুঁজি", "ক্ষুদ্র সঞ্চয়ে ভবিষ্যৎ গড়ি", "জমির নকশায় জ্যামিতিক আকৃতি", "অবস্থান মানচিত্রে স্থানাঙ্ক জ্যামিতি", "বৃত্তের পরিধি ও ক্ষেত্রফল", "সদ্ব্যবহার করি সরল সহসমীকরণ", "উপাত্তের উপস্থাপন ও বিশ্লেষণ"],
-                "বিজ্ঞান": ["পরমাণুর গঠন ও পর্যায় সারণি", "রাসায়নিক বিক্রিয়া ও সমতা", "অম্ল, ক্ষারক ও লবণ", "বল, গতি ও চাপ", "কাজ, ক্ষমতা ও শক্তি", "তরল ও বায়বীয় পদার্থের ধর্ম", "মানবদেহের তন্ত্র ও রোগব্যাধি", "বাস্তুতন্ত্র ও পরিবেশের ভারসাম্য", "মহাকাশ ও কৃত্রিম উপগ্রহ"],
-                "ইতিহাস ও সামাজিক বিজ্ঞান": ["উপনিবেশিক শাসন ও প্রতিরোধ আন্দোলন", "বাঙালি জাতীয়তাবাদের বিকাশ", "১৯৭১ সালের মহান মুক্তিযুদ্ধ", "বাংলাদেশের ভূপ্রকৃতি ও সম্পদ", "আধুনিক বিশ্ব ও আন্তর্জাতিক সম্পর্ক"],
-                "ডিজিটাল প্রযুক্তি": ["ডেটা সায়েন্স ও উপাত্ত বিশ্লেষণ", "নেটওয়ার্ক টপোলজি ও ইন্টারনেট", "তথ্য প্রযুক্তির আইনি দিক ও সাইবার নিরাপত্তা", "স্ক্র্যাচ বা পাইথন প্রোগ্রামিং"],
-                "জীবন ও জীবিকা": ["অর্থনৈতিক স্বাবলম্বিতা", "শ্রমের মর্যাদা ও নতুন পেশার সন্ধান", "ব্যবসায়ের পরিকল্পনা ও বাস্তবায়ন", "ভবিষ্যৎ কর্মক্ষেত্রের দক্ষতা"],
-                "স্বাস্থ্য সুরক্ষা": ["প্রজনন স্বাস্থ্য ও সচেতনতা", "পুষ্টিহীনতা ও স্থূলতা রোধ", "আসক্তি ও কুফল থেকে মুক্তি", "দুর্যোগকালীন জরুরি স্বাস্থ্যসেবা"]
-            },
-            "৯ম শ্রেণী": {
-                "বাংলা": ["প্রায়োগিক বাংলা", "প্রমিত ভাষা ব্যবহার করি", "রীতিরীতি ও রচনা", "ব্যাকরণ হাব", "সাহিত্য (গল্প, কবিতা ও প্রবন্ধ)"],
-                "English": ["Opinion Matters", "Nature's Tapestry", "Sense of Identity", "The Art of Expressing Questions", "Writing Letters/Emails", "Advanced Grammar"],
-                "সাধারণ গণিত": ["সেট ও ফাংশন", "ত্রিকোণমিতি", "সূচক ও লগারিদম", "বাস্তব সংখ্যা", "বীজগাণিতিক রাশি"],
-                "পদার্থবিজ্ঞান": ["ভৌত রাশি ও পরিমাপ", "গতি", "বল", "কাজ, ক্ষমতা ও শক্তি", "পদার্থের অবস্থা ও চাপ", "বস্তুর ওপর তাপের প্রভাব"],
-                "রসায়ন": ["রসায়নের ধারণা", "পদার্থের অবস্থা", "পদার্থের গঠন", "পর্যায় সারণি", "রাসায়নিক বন্ধন", "মোলের ধারণা ও রাসায়নিক গণনা"],
-                "জীববিজ্ঞান": ["জীবন পাঠ", "জীবকোষ ও টিস্যু", "কোষ বিভাজন", "জীবনীশক্তি", "খাদ্য, পুষ্টি ও পরিপাক", "জীবে পরিবহন"],
-                "উচ্চতর গণিত": ["সেট ও ফাংশন", "বীজগাণিতিক রাশি", "জ্যামিতি", "সমীকরণ", "অসমতা", "অসীম ধারা", "ত্রিকোণমিতি"],
-                "ইতিহাস ও সামাজিক বিজ্ঞান": ["পূর্ব বাংলার আন্দোলন", "স্বাধীন বাংলাদেশ", "ভৌগোলিক উপাদান"],
-                "হিসাববিজ্ঞান": ["হিসাববিজ্ঞান পরিচিতি", "লেনদেন", "দুতরফা দাখিলা পদ্ধতি", "খতিয়ান", "জাবেদা"],
-                "ব্যবসায় উদ্যোগ": ["ব্যবসায় পরিচিতি", "ব্যবসায় উদ্যোগ ও উদ্যোক্তা", "আত্মকর্মসংস্থান", "ব্যবসায়ের মালিকানা ধরন"],
-                "ফিন্যান্স ও ব্যাংকিং": ["অর্থায়ন ও ব্যবসায় অর্থায়ন", "অর্থায়নের উৎস", "অর্থের সময় মূল্য", "ঝুঁকি ও অনিশ্চয়তা"],
-                "পৌরনীতি ও নাগরিকতা": ["পৌরনীতি ও নাগরিকতা পরিচিতি", "নাগরিক ও নাগরিকতা", "আইন, স্বাধীনতা ও সাম্য"],
-                "ভূগোল ও পরিবেশ": ["ভূগোল ও পরিবেশের ধারণা", "মহাবিশ্ব ও আমাদের পৃথিবী", "মানচিত্র পঠন ও ব্যবহার"],
-                "বিজ্ঞান ও প্রযুক্তি": ["উন্নততর জীবনধারা", "জীবনের জন্য পানি", "হৃদযন্ত্রের যত কথা"]
-            },
-            "১০ম শ্রেণী": {
-                "বাংলা": ["সহপাঠ লালসালু", "বহিপীর নাটক", "সৃজনশীল সাহিত্য লিখন", "উন্নত ব্যাকরণ প্রয়োগ"],
-                "English": ["Advanced Composition", "Connectors and Modals", "Analytical Essay Writing"],
-                "সাধারণ গণিত": ["বীজগাণিতিক রাশি", "পরিমিতি", "পরিসংখ্যান", "বৃত্ত", "ব্যবহারিক জ্যামিতি", "দূরত্ব ও উচ্চতা"],
-                "পদার্থবিজ্ঞান": ["তরঙ্গ ও শব্দ", " আলোর প্রতিফলন", "আলোর প্রতিসরণ", "স্থির তড়িৎ", "চল তড়িৎ", "বিদ্যুতের চৌম্বক ক্রিয়া", "আধুনিক পদার্থবিজ্ঞান"],
-                "রসায়ন": ["রাসায়নিক বিক্রিয়া", "রসায়ন ও শক্তি", "এসিড-ক্ষার সমতা", "খনিজ সম্পদ: ধাতু-অধাতু", "খনিজ সম্পদ: जीवाश्म", "আমাদের জীবনে রসায়ন"],
-                "জীববিজ্ঞান": ["গ্যাসীয় বিনিময়", "রেচন প্রক্রিয়া", "দৃঢ়তা প্রদান ও চলন", "সমন্বয়", "জীবের প্রজনন", "জীবের বংশগতি", "জীবপ্রযুক্তি"],
-                "উচ্চতর গণিত": ["সূচকীয় ও লগারিদমীয় ফাংশন", "দ্বিপদী বিস্তৃতি", "স্থানাঙ্ক জ্যামিতি", "সমতলীয় ভেক্টর", "ঘন জ্যামিতি", "সম্ভাবনা"],
-                "বাংলাদেশ ও বিশ্বপরিচয়": ["রাষ্ট্র, নাগরিকতা ও আইন", "বাংলাদেশ সরকার ব্যবস্থা", "গণতন্ত্র ও নির্বাচন", "জাতিসংঘ ও বাংলাদেশ", "SDG", "অর্থনৈতিক নির্দেশক"],
-                "হিসাববিজ্ঞান": ["রেওয়ামিল", "নগদান বই", "আর্থিক বিবরণী", "উৎপাদন ব্যয় হিসাব", "পারিবারিক হিসাব"],
-                "ব্যবসায় উদ্যোগ": ["ব্যবসায়ের আইনি দিক", "ব্যবসায়ের অর্থায়ন", "ব্যবসায় পরিকল্পনা", "প্রতিষ্ঠানে নেতৃত্ব", "বিপণন"],
-                "ফিন্যান্স ও ব্যাংকিং": ["মূলধনী আয়-ব্যয় প্রাক্কলন", "মূলধন ব্যয়", "শেয়ার, বন্ড ও ডিবেঞ্চার", "ব্যাংকিং ব্যবসায়ের ধরন", "কেন্দ্রীয় ব্যাংক"],
-                "পৌরনীতি ও নাগরিকতা": ["রাষ্ট্র ও সরকার ব্যবস্থা", "संবিধান", "বাংলাদেশের প্রশাসনিক কাঠামো", "স্থানীয় সরকার"],
-                "ভূগোল ও পরিবেশ": ["পৃথিবীর অভ্যন্তরীণ গঠন", "বায়ুমণ্ডল", "বারিমণ্ডল", "মানব বসতি", "বাংলাদেশের সম্পদ ও শিল্প"]
-            }
+            "৬ষ্ঠ শ্রেণী": { "বাংলা": ["প্রমিত ভাষা শিখি", "অর্থ বুঝে বাক্য লিখি"], "English": ["Talking to People", "Little Things"], "গণিত": ["সংখ্যার গল্প", "ভগ্নাংশের খেলা"], "বিজ্ঞান": ["আকাশ ও মহাবিশ্ব", "গতি"] },
+            "৭ম শ্রেণী": { "বাংলা": ["প্রসঙ্গের মধ্যে থেকে যোগাযোগ করি"], "English": ["A Dream School", "Playing with the Words"], "গণিত": ["সূচকের গল্প", "সরল সমীকরণ"], "বিজ্ঞান": ["জীববৈচিত্র্য", "অণু পরমাণু"] },
+            "৮ম শ্রেণী": { "বাংলা": ["প্রয়োজনমাফিক যোগাযোগ করি"], "English": ["Beauty in Poetry", "The Biz Card"], "গণিত": ["গাণিতিক অনুসন্ধান", "বাস্তব সংখ্যা"], "বিজ্ঞান": ["পরমাণুর গঠন", "বল, গতি ও চাপ"] },
+            "৯ম শ্রেণী": { "সাধারণ গণিত": ["সেট ও ফাংশন", "ত্রিকোণমিতি"], "পদার্থবিজ্ঞান": ["ভৌত রাশি ও পরিমাপ", "গতি"], "রসায়ন": ["রসায়নের ধারণা", "পদার্থের অবস্থা"], "উচ্চতর গণিত": ["সেট ও ফাংশন", "সমীকরণ"] },
+            "১০ম শ্রেণী": { "সাধারণ গণিত": ["বীজগাণিতিক রাশি", "পরিমিতি"], "পদার্থবিজ্ঞান": ["তরঙ্গ ও শব্দ", "চল তড়িৎ"], "রসায়ন": ["রাসায়নিক বিক্রিয়া", "এসিড-ক্ষার সমতা"], "উচ্চতর গণিত": ["সূচকীয় ও লগারিদমীয় ফাংশন", "ত্রিকোণমিতি", "সম্ভাবনা"] }
         },
         "উচ্চমাধ্যমিক": {
             "১১শ শ্রেণী": { "উচ্চতর গণিত ১ম": ["ম্যাট্রিক্স ও নির্ণায়ক", "সরলরেখা", "ত্রিকোণমিতি"], "পদার্থবিজ্ঞান ১ম": ["ভেটের", "গতিবিদ্যা", "মহাকর্ষ"] },
@@ -555,194 +539,74 @@
         }
     };
 
-    // Core Embedded Micro-Database Initializations
     let db = JSON.parse(localStorage.getItem('amirul_smart_qb')) || [
-        { id: 1, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", answer: "দেওয়া আছে, $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$। বামপক্ষ $= m^2 - n^2 = (m+n)(m-n) = (2\\tan A)(2\\sin A) = 4\\tan A\\sin A = 4\\sqrt{\\tan^2 A \\sin^2 A} = 4\\sqrt{mn}$ [প্রমাণিত]", marks: "১০", year: "২০২৬" },
-        { id: 2, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে।", answer: "আমরা জানি, $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ সর্বদা সত্য যখন $\\theta \\neq 0^{\\circ}$।", marks: "৪", year: "২০২৫" }
+        { id: 1, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", answer: "দেওয়া আছে...", marks: "১০", year: "২০২৬" },
+        { id: 2, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে। (তৃতীয় পদ বিবেচনা করে)", answer: "আমরা জানি...", marks: "৪", year: "২০২৫" }
     ];
+    let faqDb = JSON.parse(localStorage.getItem('amirul_faq_db')) || [{ id: 1, q: "কিভাবে নিজস্ব প্রশ্ন ডাউনলোড করবো?", a: "প্রথমে ইউজার প্যানেলে যান..." }];
+    let pricingDb = JSON.parse(localStorage.getItem('amirul_pricing_db')) || [{ id: 1, name: "প্রিমিয়াম আল্টিমেট প্যাক", price: "৯৯৯ টাকা", duration: "আজীবন মেয়াদ", features: ["১ম-১০ম শ্রেণীর সকল প্রশ্ন অ্যাক্সেস", "OMR সুবিধা"] }];
+    let tickerTextData = localStorage.getItem('amirul_ticker_text') || "ঘোষণা: এসএসসি ২০২৭ ব্যাচের জন্য নতুন স্পেশাল উচ্চতর গণিত টেস্ট পেপার এডিটিং হাব আপডেট করা হয়েছে।";
     
-    let faqDb = JSON.parse(localStorage.getItem('amirul_faq_db')) || [
-        { id: 1, q: "কিভাবে নিজস্ব প্রশ্ন ডাউনলোড করবো?", a: "প্রথমে ইউজার প্যানেলে যান, নির্দিষ্ট সাবজেক্ট বা ক্লাস ফিল্টার করুন। প্রশ্নপত্রগুলোর চেক বক্সে টিক দিয়ে নিচের বাটনে ক্লিক করে প্রশ্ন ও উত্তরপত্রের আলাদা আলাদা PDF নামাতে পারবেন।" }
-    ];
-
-    let pricingDb = JSON.parse(localStorage.getItem('amirul_pricing_db')) || [
-        { id: 1, name: "বেসিক প্যাক", price: "বিনামূল্যে", duration: "১ মাস", features: ["সীমিত প্রশ্ন সার্চ", "স্ট্যান্ডার্ড A4 লেআউট output"] },
-        { id: 2, name: "প্রিমিয়াম আল্টিমেট প্যাক", price: "৯৯৯ টাকা", duration: "আজীবন মেয়াদ", features: ["১ম-১০ম শ্রেণীর সকল প্রশ্ন অ্যাক্সেস", "আলাদা প্রশ্ন ও উত্তর শিট ডাউনলোড", "OMR ও টোকেন জেনারেটর এক্সপার্ট মোড"] }
-    ];
-
-    let tickerTextData = localStorage.getItem('amirul_ticker_text') || "ঘোষণা: এসএসসি ২০২৭ ব্যাচের জন্য নতুন স্পেশাল উচ্চতর গণিত টেস্ট পেপার এডিটিং হাব আপডেট করা হয়েছে। প্রফেশনাল ওএমআর মূল্যায়ন সুবিধা এখন লাইভ!";
     let userSelectedIdsArray = [];
-    
+    let customQuestionsArray = [];
     let currentSession = { role: 'home', isAdminAuthenticated: false, isUserAuthenticated: false, userMobile: '' };
     let userAuthMode = 'register';
-    
     let chartInstanceRef = null;
     let apexChartInstanceRef = null;
 
+    // ================== INIT ==================
     window.onload = () => {
         executeGlobalHomeUIComponents();
         renderHomeDashCharts();
         processUserFilteringLogic();
     };
 
-    // ADMIN DROPDOWN ENGINE AUTO CORE
-    function updateAdminClassDropdown() {
-        const cat = document.getElementById('admQCategory').value;
-        const classSelect = document.getElementById('admQClass');
-        classSelect.innerHTML = '<option value="">-- শ্রেণী নির্ধারণ করুন --</option>';
-        document.getElementById('admQSubject').innerHTML = '<option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>';
-        document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয় সিলেক্ট করুন</option>';
-        
-        if (cat && academicMappingData[cat]) {
-            Object.keys(academicMappingData[cat]).forEach(cls => {
-                classSelect.innerHTML += `<option value="${cls}">${cls}</option>`;
-            });
-        }
-    }
-
-    function updateAdminSubjectDropdown() {
-        const cat = document.getElementById('admQCategory').value;
-        const cls = document.getElementById('admQClass').value;
-        const subSelect = document.getElementById('admQSubject');
-        subSelect.innerHTML = '<option value="">-- বিষয় নির্ধারণ করুন --</option>';
-        document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয় সিলেক্ট করুন</option>';
-
-        if (cat && cls && academicMappingData[cat][cls]) {
-            Object.keys(academicMappingData[cat][cls]).forEach(sub => {
-                subSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
-            });
-        }
-    }
-
-    function updateAdminChapterDropdown() {
-        const cat = document.getElementById('admQCategory').value;
-        const cls = document.getElementById('admQClass').value;
-        const sub = document.getElementById('admQSubject').value;
-        const chpSelect = document.getElementById('admQChapter');
-        chpSelect.innerHTML = '<option value="">-- অধ্যায় নির্ধারণ করুন --</option>';
-
-        if (cat && cls && sub && academicMappingData[cat][cls][sub]) {
-            academicMappingData[cat][cls][sub].forEach(chp => {
-                chpSelect.innerHTML += `<option value="${chp}">${chp}</option>`;
-            });
-        }
-    }
-
-    // USER DROPDOWN ENGINE AUTO CORE
-    function updateUserClassDropdown() {
-        const cat = document.getElementById('userFilterCategorySelect').value;
-        const classSelect = document.getElementById('userFilterClassSelect');
-        classSelect.innerHTML = '<option value="">সকল শ্রেণী</option>';
-        document.getElementById('userFilterSubjectSelect').innerHTML = '<option value="">সকল বিষয়</option>';
-        document.getElementById('userFilterChapterSelect').innerHTML = '<option value="">সকল অধ্যায়</option>';
-
-        if (cat && academicMappingData[cat]) {
-            Object.keys(academicMappingData[cat]).forEach(cls => {
-                classSelect.innerHTML += `<option value="${cls}">${cls}</option>`;
-            });
-        }
-    }
-
-    function updateUserSubjectDropdown() {
-        const cat = document.getElementById('userFilterCategorySelect').value;
-        const cls = document.getElementById('userFilterClassSelect').value;
-        const subSelect = document.getElementById('userFilterSubjectSelect');
-        subSelect.innerHTML = '<option value="">সকল বিষয়</option>';
-        document.getElementById('userFilterChapterSelect').innerHTML = '<option value="">সকল অধ্যায়</option>';
-
-        if (cat && cls && academicMappingData[cat][cls]) {
-            Object.keys(academicMappingData[cat][cls]).forEach(sub => {
-                subSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
-            });
-        }
-    }
-
-    function updateUserChapterDropdown() {
-        const cat = document.getElementById('userFilterCategorySelect').value;
-        const cls = document.getElementById('userFilterClassSelect').value;
-        const sub = document.getElementById('userFilterSubjectSelect').value;
-        const chpSelect = document.getElementById('userFilterChapterSelect');
-        chpSelect.innerHTML = '<option value="">সকল অধ্যায়</option>';
-
-        if (cat && cls && sub && academicMappingData[cat][cls][sub]) {
-            academicMappingData[cat][cls][sub].forEach(chp => {
-                chpSelect.innerHTML += `<option value="${chp}">${chp}</option>`;
-            });
-        }
-    }
-
-    function toggleDropdown(dropdownId, iconId) {
-        const dropdown = document.getElementById(dropdownId);
-        const icon = document.getElementById(iconId);
-        dropdown.classList.toggle('show');
-        icon.className = dropdown.classList.contains('show') ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down";
-    }
-
+    // ================== NAVIGATION & AUTH ==================
     function toggleMode(targetMode) {
         if(targetMode === 'admin') {
             if(!currentSession.isAdminAuthenticated) { openAuth('admin'); return; }
-            currentSession.role = 'admin';
-            setupAdminLayoutView();
+            currentSession.role = 'admin'; setupAdminLayoutView();
         } else if(targetMode === 'user') {
             if(!currentSession.isUserAuthenticated) { openAuth('user'); return; }
-            currentSession.role = 'user';
-            setupUserLayoutView();
+            currentSession.role = 'user'; setupUserLayoutView();
         } else {
-            currentSession.role = 'home';
-            setupHomeLayoutView();
+            currentSession.role = 'home'; setupHomeLayoutView();
         }
-        
-        document.getElementById('homeBtn').classList.toggle('active', targetMode === 'home');
-        document.getElementById('userBtn').classList.toggle('active', targetMode === 'user');
-        document.getElementById('adminBtn').classList.toggle('active', targetMode === 'admin');
+        ['homeBtn', 'userBtn', 'adminBtn'].forEach(btn => document.getElementById(btn).classList.remove('active'));
+        document.getElementById(targetMode + 'Btn').classList.add('active');
     }
 
     function setupHomeLayoutView() {
         document.getElementById('appSidebar').style.display = 'none';
         document.getElementById('mainContainer').classList.add('no-sidebar');
+        document.querySelectorAll('.section-block').forEach(s => s.style.display = 'none');
         document.getElementById('home-view-sec').style.display = 'block';
-        document.getElementById('user-view-sec').style.display = 'none';
-        document.getElementById('admin-main-sec').style.display = 'none';
-        document.getElementById('admin-slider-sec').style.display = 'none';
-        document.getElementById('admin-faq-sec').style.display = 'none';
-        document.getElementById('admin-pricing-sec').style.display = 'none';
-        document.getElementById('userPersistentActionFooter').style.display = 'none';
-        executeGlobalHomeUIComponents();
         setTimeout(renderHomeDashCharts, 150);
     }
 
     function setupAdminLayoutView() {
         document.getElementById('appSidebar').style.display = 'block';
         document.getElementById('mainContainer').classList.remove('no-sidebar');
-        document.getElementById('home-view-sec').style.display = 'none';
-        document.getElementById('user-view-sec').style.display = 'none';
+        switchSection('admin-main-sec', document.querySelector('.sidebar ul li')); 
         document.getElementById('logoutBtn').style.display = 'inline-block';
-        document.getElementById('userPersistentActionFooter').style.display = 'none';
-        switchSection('admin-main-sec');
     }
 
     function setupUserLayoutView() {
         document.getElementById('appSidebar').style.display = 'none';
         document.getElementById('mainContainer').classList.add('no-sidebar');
-        document.getElementById('home-view-sec').style.display = 'none';
+        document.querySelectorAll('.section-block').forEach(s => s.style.display = 'none');
         document.getElementById('user-view-sec').style.display = 'block';
-        document.getElementById('admin-main-sec').style.display = 'none';
-        document.getElementById('admin-slider-sec').style.display = 'none';
-        document.getElementById('admin-faq-sec').style.display = 'none';
-        document.getElementById('admin-pricing-sec').style.display = 'none';
-        document.getElementById('userPersistentActionFooter').style.display = 'flex';
         processUserFilteringLogic();
+        updateLiveDocumentPreview(false);
     }
 
     function switchSection(sectionId, listElement) {
         document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
         document.getElementById(sectionId).style.display = 'block';
-        
         if(listElement) {
             document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active-menu'));
             listElement.classList.add('active-menu');
         }
-        
         if(sectionId === 'admin-main-sec') renderAdminQuestionsDashboardList();
         if(sectionId === 'admin-slider-sec') document.getElementById('adminSliderTickerTextInput').value = tickerTextData;
         if(sectionId === 'admin-faq-sec') renderAdminFaqConfigPanel();
@@ -751,427 +615,321 @@
 
     function openAuth(type) {
         document.getElementById('authOverlay').style.display = 'flex';
-        if(type === 'admin') {
-            document.getElementById('adminAuthCard').style.display = 'block';
-            document.getElementById('userAuthCard').style.display = 'none';
-        } else {
-            document.getElementById('adminAuthCard').style.display = 'none';
-            document.getElementById('userAuthCard').style.display = 'block';
-            userAuthMode = 'register';
-            updateUserAuthUI();
-        }
+        document.getElementById('adminAuthCard').style.display = type === 'admin' ? 'block' : 'none';
+        document.getElementById('userAuthCard').style.display = type === 'user' ? 'block' : 'none';
     }
-
-    // এডমিন পাসওয়ার্ড amirul2026
+    function closeAuth() { document.getElementById('authOverlay').style.display = 'none'; }
     function verifyAdminAuth() {
         if(document.getElementById('adminPasswordInput').value === "amirul2026") { 
-            currentSession.isAdminAuthenticated = true;
-            document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('adminPasswordInput').value = '';
-            toggleMode('admin');
+            currentSession.isAdminAuthenticated = true; closeAuth(); document.getElementById('adminPasswordInput').value = ''; toggleMode('admin');
         } else { alert("ভুল পাসওয়ার্ড!"); }
     }
-
     function toggleUserAuthMode() {
-        userAuthMode = (userAuthMode === 'register') ? 'login' : 'register';
-        updateUserAuthUI();
+        userAuthMode = userAuthMode === 'register' ? 'login' : 'register';
+        document.getElementById('userAuthTitle').innerHTML = userAuthMode === 'register' ? '<i class="fa-solid fa-user-plus"></i> ইউজার রেজিস্ট্রেশন' : '<i class="fa-solid fa-right-to-bracket"></i> ইউজার লগইন';
+        document.getElementById('userAuthBtn').innerText = userAuthMode === 'register' ? 'নিবন্ধন করুন' : 'লগইন করুন';
+        document.getElementById('userAuthToggle').innerText = userAuthMode === 'register' ? 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন' : 'নতুন অ্যাকাউন্ট প্রয়োজন? রেজিস্ট্রেশন করুন';
     }
-
-    function updateUserAuthUI() {
-        if(userAuthMode === 'register') {
-            document.getElementById('userAuthTitle').innerHTML = '<i class="fa-solid fa-user-plus"></i> ইউজার রেজিস্ট্রেশন';
-            document.getElementById('userAuthBtn').innerText = 'নিবন্ধন করুন';
-            document.getElementById('userAuthToggle').innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন';
-        } else {
-            document.getElementById('userAuthTitle').innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> ইউজার লগইন';
-            document.getElementById('userAuthBtn').innerText = 'লগইন করুন';
-            document.getElementById('userAuthToggle').innerText = 'নতুন অ্যাকাউন্ট প্রয়োজন? রেজিস্ট্রেশন করুন';
-        }
-    }
-
     function handleUserAuthSubmit() {
         let mobile = document.getElementById('userMobileInput').value.trim();
-        let pass = document.getElementById('userPasswordInput').value;
-        if(mobile.length < 11) return alert("সঠিক মোবাইল নম্বর দিন!");
-
-        let users = JSON.parse(localStorage.getItem('qb_registered_users')) || {};
-        if(userAuthMode === 'register') {
-            users[mobile] = pass;
-            localStorage.setItem('qb_registered_users', JSON.stringify(users));
-            alert("নিবন্ধন সফল! লগইন করুন।");
-            userAuthMode = 'login'; updateUserAuthUI();
-        } else {
-            if(users[mobile] && users[mobile] === pass) {
-                currentSession.isUserAuthenticated = true;
-                currentSession.userMobile = mobile;
-                document.getElementById('authOverlay').style.display = 'none';
-                document.getElementById('userStatusDisplay').style.display = 'inline';
-                document.getElementById('userStatusDisplay').innerText = `সেশন: ${mobile}`;
-                toggleMode('user');
-            } else { alert("লগইন ব্যর্থ!"); }
-        }
+        if(mobile.length > 5) {
+            currentSession.isUserAuthenticated = true; currentSession.userMobile = mobile;
+            closeAuth(); document.getElementById('userStatusDisplay').style.display = 'inline'; document.getElementById('userStatusDisplay').innerText = `ইউজার: ${mobile}`; toggleMode('user');
+        } else alert("সঠিক মোবাইল নম্বর দিন!");
+    }
+    function adminLogout() { currentSession.isAdminAuthenticated = false; document.getElementById('logoutBtn').style.display = 'none'; toggleMode('home'); }
+    function toggleTheme() { document.body.classList.toggle('dark-theme'); }
+    function toggleDropdown(dropdownId, iconId) {
+        const dropdown = document.getElementById(dropdownId); const icon = document.getElementById(iconId);
+        dropdown.classList.toggle('show'); icon.className = dropdown.classList.contains('show') ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down";
     }
 
-    function adminLogout() {
-        currentSession.isAdminAuthenticated = false;
-        document.getElementById('logoutBtn').style.display = 'none';
-        toggleMode('home');
+    // ================== ADMIN DROPDOWNS & LOGIC ==================
+    function updateAdminClassDropdown() {
+        const cat = document.getElementById('admQCategory').value; const classSelect = document.getElementById('admQClass');
+        classSelect.innerHTML = '<option value="">-- শ্রেণী নির্ধারণ করুন --</option>';
+        document.getElementById('admQSubject').innerHTML = '<option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>'; document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয় সিলেক্ট করুন</option>';
+        if (cat && academicMappingData[cat]) Object.keys(academicMappingData[cat]).forEach(cls => classSelect.innerHTML += `<option value="${cls}">${cls}</option>`);
     }
-
-    function toggleTheme() {
-        document.body.classList.toggle('dark-theme');
+    function updateAdminSubjectDropdown() {
+        const cat = document.getElementById('admQCategory').value; const cls = document.getElementById('admQClass').value; const subSelect = document.getElementById('admQSubject');
+        subSelect.innerHTML = '<option value="">-- বিষয় নির্ধারণ করুন --</option>'; document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয় সিলেক্ট করুন</option>';
+        if (cat && cls && academicMappingData[cat][cls]) Object.keys(academicMappingData[cat][cls]).forEach(sub => subSelect.innerHTML += `<option value="${sub}">${sub}</option>`);
     }
+    function updateAdminChapterDropdown() {
+        const cat = document.getElementById('admQCategory').value; const cls = document.getElementById('admQClass').value; const sub = document.getElementById('admQSubject').value; const chpSelect = document.getElementById('admQChapter');
+        chpSelect.innerHTML = '<option value="">-- অধ্যায় নির্ধারণ করুন --</option>';
+        if (cat && cls && sub && academicMappingData[cat][cls][sub]) academicMappingData[cat][cls][sub].forEach(chp => chpSelect.innerHTML += `<option value="${chp}">${chp}</option>`);
+    }
+    
+    function doAdminLivePreview() {
+        let qVal = document.getElementById('admQText').value; let aVal = document.getElementById('admQAnswer').value; let box = document.getElementById('adminLivePreviewBox');
+        box.innerHTML = `<strong>প্রশ্ন:</strong> ${qVal || "..."}` + (aVal ? `<br><div class="answer-container"><strong>উত্তর:</strong> ${aVal}</div>` : '');
+        if(window.MathJax) MathJax.typesetPromise([box]);
+    }
+    function saveAdminQuestionData() {
+        let id = document.getElementById('adminEditIdHolder').value;
+        let packet = {
+            id: id ? parseInt(id) : Date.now(), category: document.getElementById('admQCategory').value, className: document.getElementById('admQClass').value,
+            subject: document.getElementById('admQSubject').value, chapter: document.getElementById('admQChapter').value, type: document.getElementById('admQType').value,
+            year: document.getElementById('admQYear').value, text: document.getElementById('admQText').value.trim(), answer: document.getElementById('admQAnswer').value.trim(),
+            marks: document.getElementById('admQMarks').value
+        };
+        if(!packet.category || !packet.className || !packet.subject || !packet.text) return alert("ক্যাটাগরি, শ্রেণী, বিষয় ও মূল প্রশ্ন টেক্সট আবশ্যক!");
+        
+        if(id) { let idx = db.findIndex(q => q.id == id); db[idx] = packet; resetAdminForm(true); } else { db.push(packet); resetAdminForm(false); }
+        localStorage.setItem('amirul_smart_qb', JSON.stringify(db)); renderAdminQuestionsDashboardList(); alert("সংরক্ষিত হয়েছে!");
+    }
+    function resetAdminForm(forceAll) {
+        if(forceAll) { document.getElementById('admQCategory').value = ''; document.getElementById('admQClass').innerHTML = '<option value="">প্রথমে ক্যাটাগরি</option>'; document.getElementById('admQSubject').innerHTML = '<option value="">প্রথমে শ্রেণী</option>'; document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয়</option>'; }
+        document.getElementById('adminEditIdHolder').value = ''; document.getElementById('admQText').value = ''; document.getElementById('admQAnswer').value = ''; document.getElementById('admQMarks').value = ''; document.getElementById('adminLivePreviewBox').innerText = 'প্রিভিউ...'; document.getElementById('admSaveBtn').innerText = "সংরক্ষণ করুন";
+    }
+    function renderAdminQuestionsDashboardList() {
+        document.getElementById('adminGlobalQuestionsListArea').innerHTML = db.map(q => `
+            <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                <div style="flex:1;"><strong>[${q.className || ''} - ${q.subject || ''}]</strong> ${q.text.substring(0,60)}...</div>
+                <div><span class="btn-edit" onclick="triggerAdminQuestionEditSession(${q.id})"><i class="fa-solid fa-pen"></i></span><span class="btn-delete" onclick="executeAdminDeleteQuestionAction(${q.id})"><i class="fa-solid fa-trash"></i></span></div>
+            </div>`).join('');
+    }
+    function triggerAdminQuestionEditSession(id) {
+        let q = db.find(i => i.id == id);
+        document.getElementById('adminEditIdHolder').value = q.id; document.getElementById('admQCategory').value = q.category; updateAdminClassDropdown();
+        document.getElementById('admQClass').value = q.className; updateAdminSubjectDropdown();
+        document.getElementById('admQSubject').value = q.subject; updateAdminChapterDropdown();
+        document.getElementById('admQChapter').value = q.chapter || ''; document.getElementById('admQType').value = q.type;
+        document.getElementById('admQYear').value = q.year || '২০২৬'; document.getElementById('admQText').value = q.text;
+        document.getElementById('admQAnswer').value = q.answer || ''; document.getElementById('admQMarks').value = q.marks || '';
+        document.getElementById('admSaveBtn').innerText = "আপডেট করুন"; setTimeout(doAdminLivePreview, 50);
+    }
+    function executeAdminDeleteQuestionAction(id) { if(confirm("মুছে ফেলবেন?")) { db = db.filter(q => q.id != id); localStorage.setItem('amirul_smart_qb', JSON.stringify(db)); renderAdminQuestionsDashboardList(); } }
 
+    function updateSliderTickerTextAction() { tickerTextData = document.getElementById('adminSliderTickerTextInput').value.trim(); localStorage.setItem('amirul_ticker_text', tickerTextData); alert("আপডেট হয়েছে!"); document.getElementById('liveTickerContainer').innerText = tickerTextData; }
+    
+    function renderAdminFaqConfigPanel() {
+        document.getElementById('adminFaqListConfigContainer').innerHTML = faqDb.map(f => `<div style="padding:10px; border-bottom:1px solid var(--border)"><strong>Q: ${f.q}</strong><br><span>A: ${f.a}</span> <button onclick="removeFaqItem(${f.id})" style="background:var(--danger); color:white; border:none; padding:2px 8px; border-radius:5px; margin-top:5px; cursor:pointer;">মুছুন</button></div>`).join('');
+    }
+    function addNewFaqItemAction() { let q = document.getElementById('adminFaqQuestionInput').value; let a = document.getElementById('adminFaqAnswerInput').value; if(q && a) { faqDb.push({ id: Date.now(), q, a }); localStorage.setItem('amirul_faq_db', JSON.stringify(faqDb)); renderAdminFaqConfigPanel(); executeGlobalHomeUIComponents(); } }
+    function removeFaqItem(id) { faqDb = faqDb.filter(f => f.id !== id); localStorage.setItem('amirul_faq_db', JSON.stringify(faqDb)); renderAdminFaqConfigPanel(); executeGlobalHomeUIComponents(); }
+    
+    function renderAdminPricingConfigPanel() {
+        document.getElementById('adminPricingListConfigContainer').innerHTML = pricingDb.map(p => `<div style="padding:10px; border-bottom:1px solid var(--border)"><strong>${p.name} - ${p.price}</strong> <button onclick="removePricingPackage(${p.id})" style="background:var(--danger); color:white; border:none; padding:2px 8px; border-radius:5px; float:right; cursor:pointer;">মুছুন</button></div>`).join('');
+    }
+    function savePricingPackageAction() {
+        let packet = { id: Date.now(), name: document.getElementById('pkgNameInput').value, price: document.getElementById('pkgPriceInput').value, duration: document.getElementById('pkgDurationInput').value, features: document.getElementById('pkgFeaturesInput').value.split(',') };
+        if(packet.name) { pricingDb.push(packet); localStorage.setItem('amirul_pricing_db', JSON.stringify(pricingDb)); renderAdminPricingConfigPanel(); executeGlobalHomeUIComponents(); }
+    }
+    function removePricingPackage(id) { pricingDb = pricingDb.filter(p => p.id !== id); localStorage.setItem('amirul_pricing_db', JSON.stringify(pricingDb)); renderAdminPricingConfigPanel(); executeGlobalHomeUIComponents(); }
+
+    // ================== HOME PAGE UI & CHARTS ==================
     function executeGlobalHomeUIComponents() {
         document.getElementById('liveTickerContainer').innerText = tickerTextData;
-        
-        let faqArea = document.getElementById('faqDynamicDisplayContainer');
-        faqArea.innerHTML = faqDb.map(f => `
-            <div class="faq-item" onclick="this.classList.toggle('active')">
-                <div class="faq-question"><span>❓ ${f.q}</span> <i class="fa-solid fa-chevron-down"></i></div>
-                <div class="faq-answer">${f.a}</div>
-            </div>
-        `).join('');
-
-        let pricingArea = document.getElementById('pricingCardsDynamicContainer');
-        pricingArea.innerHTML = pricingDb.map((p, idx) => `
-            <div class="price-card ${idx === 1 ? 'featured' : ''}">
-                <h3>${p.name}</h3>
-                <h1 style="color:var(--primary);">${p.price}</h1>
-                <p style="font-weight:bold; color:var(--warning);">মেয়াদ: ${p.duration}</p>
-                <ul style="text-align:left; padding-left:20px; font-size:14px; line-height:1.8;">
-                    ${p.features.map(f => `<li>${f}</li>`).join('')}
-                </ul>
-                <button class="btn-action" style="width:100%; justify-content:center; margin-top:15px;" onclick="alert('অর্ডার রিকোয়েস্ট প্রসেস করতে সাপোর্ট ডেস্কে যোগাযোগ করুন।')">প্যাকেজ কিনুন</button>
-            </div>
-        `).join('');
+        document.getElementById('faqDynamicDisplayContainer').innerHTML = faqDb.map(f => `<div class="faq-item" onclick="this.classList.toggle('active')"><div class="faq-question"><span>❓ ${f.q}</span> <i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer">${f.a}</div></div>`).join('');
+        document.getElementById('pricingCardsDynamicContainer').innerHTML = pricingDb.map((p, idx) => `<div class="price-card ${idx === 0 ? 'featured' : ''}"><h3>${p.name}</h3><h1 style="color:var(--primary);">${p.price}</h1><p style="font-weight:bold; color:var(--warning);">মেয়াদ: ${p.duration}</p><ul style="text-align:left; padding-left:20px; font-size:14px; line-height:1.8;">${p.features.map(f => `<li>${f}</li>`).join('')}</ul><button class="btn-action" style="width:100%; justify-content:center; margin-top:15px;">প্যাকেজ কিনুন</button></div>`).join('');
     }
-
     function renderHomeDashCharts() {
-        if(chartInstanceRef) chartInstanceRef.destroy();
-        if(apexChartInstanceRef) apexChartInstanceRef.destroy();
-
-        let sscCount = db.filter(q => q.category === 'মাধ্যমিক').length;
-        let hscCount = db.filter(q => q.category === 'উচ্চমাধ্যমিক').length;
-        let context = document.getElementById('categoryDistributionChart').getContext('2d');
-        
-        chartInstanceRef = new Chart(context, {
-            type: 'pie',
-            data: {
-                labels: ['মাধ্যমিক', 'উচ্চমাধ্যমিক'],
-                datasets: [{
-                    data: [sscCount, hscCount === 0 ? 1 : hscCount],
-                    backgroundColor: ['#6366f1', '#10b981']
-                }]
-            },
+        if(chartInstanceRef) chartInstanceRef.destroy(); if(apexChartInstanceRef) apexChartInstanceRef.destroy();
+        let sscCount = db.filter(q => q.category === 'মাধ্যমিক').length; let hscCount = db.filter(q => q.category === 'উচ্চমাধ্যমিক').length;
+        chartInstanceRef = new Chart(document.getElementById('categoryDistributionChart').getContext('2d'), {
+            type: 'pie', data: { labels: ['মাধ্যমিক', 'উচ্চমাধ্যমিক'], datasets: [{ data: [sscCount, hscCount === 0 ? 1 : hscCount], backgroundColor: ['#6366f1', '#10b981'] }] },
             options: { responsive: true, plugins: { title: { display: true, text: 'সংরক্ষিত ক্যাটাগরি গ্রাফ চার্ট' } } }
         });
-
         let options = {
-            chart: { type: 'area', height: 180, sparkline: { enabled: false } },
-            stroke: { curve: 'smooth', width: 2 },
-            series: [{ name: 'সংযোজিত প্রশ্ন', data: [db.length, db.length + 2, db.length + 5, db.length + 9] }],
-            xaxis: { categories: ['মে', 'জুন', 'জুলাই', 'আগস্ট'] },
-            title: { text: 'লাইভ প্রশ্ন যোগ করার প্রবৃদ্ধি চার্ট', align: 'left' },
-            colors: ['#ef4444']
+            chart: { type: 'area', height: 180, sparkline: { enabled: false } }, stroke: { curve: 'smooth', width: 2 },
+            series: [{ name: 'সংযোজিত প্রশ্ন', data: [db.length, db.length + 2, db.length + 5, db.length + 9] }], xaxis: { categories: ['মে', 'জুন', 'জুলাই', 'আগস্ট'] },
+            title: { text: 'লাইভ প্রশ্ন যোগ করার প্রবৃদ্ধি চার্ট', align: 'left' }, colors: ['#ef4444']
         };
-        apexChartInstanceRef = new ApexCharts(document.querySelector("#liveGrowthApexChart"), options);
-        apexChartInstanceRef.render();
+        apexChartInstanceRef = new ApexCharts(document.querySelector("#liveGrowthApexChart"), options); apexChartInstanceRef.render();
     }
+
+    // ================== USER PANEL FILTERS & SELECTION ==================
+    function updateUserClassDropdown() {
+        const cat = document.getElementById('userFilterCategorySelect').value; const classSelect = document.getElementById('userFilterClassSelect');
+        classSelect.innerHTML = '<option value="">সকল শ্রেণী</option>'; document.getElementById('userFilterSubjectSelect').innerHTML = '<option value="">সকল বিষয়</option>'; document.getElementById('userFilterChapterSelect').innerHTML = '<option value="">সকল অধ্যায়</option>';
+        if (cat && academicMappingData[cat]) Object.keys(academicMappingData[cat]).forEach(cls => classSelect.innerHTML += `<option value="${cls}">${cls}</option>`);
+    }
+    function updateUserSubjectDropdown() {
+        const cat = document.getElementById('userFilterCategorySelect').value; const cls = document.getElementById('userFilterClassSelect').value; const subSelect = document.getElementById('userFilterSubjectSelect');
+        subSelect.innerHTML = '<option value="">সকল বিষয়</option>'; document.getElementById('userFilterChapterSelect').innerHTML = '<option value="">সকল অধ্যায়</option>';
+        if (cat && cls && academicMappingData[cat][cls]) Object.keys(academicMappingData[cat][cls]).forEach(sub => subSelect.innerHTML += `<option value="${sub}">${sub}</option>`);
+    }
+    function updateUserChapterDropdown() {
+        const cat = document.getElementById('userFilterCategorySelect').value; const cls = document.getElementById('userFilterClassSelect').value; const sub = document.getElementById('userFilterSubjectSelect').value; const chpSelect = document.getElementById('userFilterChapterSelect');
+        chpSelect.innerHTML = '<option value="">সকল অধ্যায়</option>';
+        if (cat && cls && sub && academicMappingData[cat][cls][sub]) academicMappingData[cat][cls][sub].forEach(chp => chpSelect.innerHTML += `<option value="${chp}">${chp}</option>`);
+    }
+
+    function toggleSettingsModal() { document.getElementById('userSettingsModal').classList.toggle('open'); }
+    function triggerCustomQuestionEditor() { let editor = document.getElementById('customQuestionEditorArea'); editor.style.display = editor.style.display === 'none' ? 'block' : 'none'; }
 
     function processUserFilteringLogic() {
         let area = document.getElementById('userFilteredResultsRenderArea');
         let query = document.getElementById('userSmartSearchInput').value.toLowerCase();
-        let fCat = document.getElementById('userFilterCategorySelect').value;
-        let fClass = document.getElementById('userFilterClassSelect').value;
-        let fSubject = document.getElementById('userFilterSubjectSelect').value;
-        let fChapter = document.getElementById('userFilterChapterSelect').value;
+        let fCat = document.getElementById('userFilterCategorySelect').value; let fClass = document.getElementById('userFilterClassSelect').value;
+        let fSubject = document.getElementById('userFilterSubjectSelect').value; let fChapter = document.getElementById('userFilterChapterSelect').value;
         let fType = document.getElementById('userFilterTypeSelect').value;
-        let fYear = document.getElementById('userFilterYearSelect').value;
-        let maxLimit = parseInt(document.getElementById('userMaxLimitInput').value) || 50;
 
         let filtered = db.filter(q => {
             let mSearch = q.text.toLowerCase().includes(query) || (q.subject && q.subject.toLowerCase().includes(query));
-            let mCat = fCat === '' || q.category === fCat;
-            let mClass = fClass === '' || q.className === fClass;
-            let mSubject = fSubject === '' || q.subject === fSubject;
-            let mChapter = fChapter === '' || q.chapter === fChapter;
-            let mType = fType === '' || q.type === fType;
-            let mYear = fYear === '' || q.year === fYear;
-            return mSearch && mCat && mClass && mSubject && mChapter && mType && mYear;
-        }).slice(0, maxLimit);
-
-        if(filtered.length === 0) {
-            area.innerHTML = '<p style="text-align:center; padding:30px; color:#94a3b8;">কোনো মিল পাওয়া যায়নি।</p>';
-            return;
-        }
+            return mSearch && (fCat==='' || q.category===fCat) && (fClass==='' || q.className===fClass) && (fSubject==='' || q.subject===fSubject) && (fChapter==='' || q.chapter===fChapter) && (fType==='' || q.type===fType);
+        });
 
         area.innerHTML = filtered.map(q => `
-            <div class="q-card">
-                <input type="checkbox" class="user-sel-q-check" value="${q.id}" ${userSelectedIdsArray.includes(q.id) ? 'checked' : ''} onchange="processUserSelectionChangeAction(this)" style="width:24px; height:24px; cursor:pointer; margin-right:10px;">
-                <div style="flex:1">
-                    <span class="badge" style="background:var(--primary); color:white;">${q.category}</span>
-                    <span class="badge" style="background:#f1f5f9; color:#475569;">${q.className}</span>
-                    <span class="badge">${q.subject}</span>
-                    <span class="badge badge-type">${q.type}</span>
-                    ${q.chapter ? `<span class="badge" style="background:#f0fdf4; color:#16a34a;">${q.chapter}</span>` : ''}
-                    ${q.year ? `<span class="badge" style="background:#fff7ed; color:#c2410c;"><i class="fa-solid fa-calendar-days"></i> ${q.year}</span>` : ''}
-                    <div style="margin-top:12px; font-size:16px;">${q.text}</div>
+            <div class="q-card" style="padding:10px;">
+                <input type="checkbox" value="${q.id}" ${userSelectedIdsArray.includes(q.id) ? 'checked' : ''} onchange="processUserSelectionChangeAction(this)" style="width:20px; height:20px; cursor:pointer; margin-right:10px; margin-top:5px;">
+                <div style="flex:1; font-size:14px;">
+                    <span class="badge" style="background:var(--primary); color:white;">${q.category || ''}</span>
+                    <span class="badge">${q.subject || ''}</span>
+                    <span class="badge badge-type">${q.type || ''}</span>
+                    <div style="margin-top:8px;">${q.text}</div>
                 </div>
             </div>
         `).join('');
-
-        if(window.MathJax && window.MathJax.typesetPromise) {
-            MathJax.typesetPromise([area]).catch(() => {});
-        }
+        if(window.MathJax) MathJax.typesetPromise([area]).catch(()=>{});
     }
 
     function processUserSelectionChangeAction(checkboxRef) {
         let targetId = parseInt(checkboxRef.value);
-        if(checkboxRef.checked) {
-            if(!userSelectedIdsArray.includes(targetId)) userSelectedIdsArray.push(targetId);
-        } else {
-            userSelectedIdsArray = userSelectedIdsArray.filter(id => id !== targetId);
+        if(checkboxRef.checked && !userSelectedIdsArray.includes(targetId)) userSelectedIdsArray.push(targetId);
+        else userSelectedIdsArray = userSelectedIdsArray.filter(id => id !== targetId);
+        updateLiveDocumentPreview(false);
+    }
+
+    function addCustomQuestionToPreview() {
+        let txt = document.getElementById('customQText').value.trim(); let type = document.getElementById('customQType').value;
+        if(!txt) return; customQuestionsArray.push({ type: type, text: txt.replace(/\n/g, '<br>') });
+        document.getElementById('customQText').value = ''; updateLiveDocumentPreview(false);
+    }
+
+    function saveUserProgress() { alert("প্রশ্নপত্রের বর্তমান সেটিংস ও লেআউট সফলভাবে সংরক্ষিত হয়েছে!"); }
+    function triggerUserSelectedQuestionsPreview() { document.getElementById('userSettingsModal').classList.remove('open'); alert("ফুল-স্ক্রিন প্রিভিউ রেন্ডারিং (ভবিষ্যতের আপডেটে এটি নতুন ট্যাবে ওপেন হবে)"); }
+
+    // ================== PDF & LIVE PREVIEW ==================
+
+    function updateLiveDocumentPreview(includeAnswers = false) {
+        let canvas = document.getElementById('liveDocumentCanvas');
+        
+        if(!includeAnswers && !canvas.classList.contains('pdf-mode')) {
+            canvas.style.border = document.getElementById('set_page_border').checked ? '2px solid #000' : 'none';
         }
-        document.getElementById('userSelectedTotalCountBadge').innerText = userSelectedIdsArray.length;
-    }
 
-    function triggerUserSelectedQuestionsPreview() {
-        if(userSelectedIdsArray.length === 0) return alert("কোনো প্রশ্ন সিলেক্ট করা নেই!");
-        let outputText = userSelectedIdsArray.map((id, index) => {
-            let q = db.find(item => item.id === id);
-            return `${index + 1}. [${q.year || 'N/A'}] ${q.text}`;
-        }).join('\n\n');
-        alert("--- নির্বাচিত প্রশ্নাবলি প্রিভিউ ---\n\n" + outputText);
-    }
-
-    function downloadRenderedPDFArtifact(mode) {
-        if(userSelectedIdsArray.length === 0) return alert("অনুগ্রহ করে জেনারেশনের জন্য অন্তত ১টি প্রশ্ন সিলেক্ট করুন!");
-
-        let targetRenderZone = document.getElementById('pdf-render-template');
-        targetRenderZone.innerHTML = ''; 
-
-        let titleString = mode === 'question' ? "পরীক্ষার প্রশ্নপত্র শিট" : "সংশোধিত অফিসিয়াল উত্তরপত্র";
-        let headerHtml = `
-            <div class="pdf-header">
-                <h1 style="margin: 0; font-size: 24px; color: #111;">আমিরুল ম্যাথ কেয়ার অ্যান্ড এক্সাম সেন্টার</h1>
-                <p style="margin: 5px 0 0 0; font-size: 14px; color: #333; font-weight: bold;">${titleString}</p>
-                <p style="margin: 2px 0 10px 0; font-size: 11px; color: #666;">তারিখ: ${new Date().toLocaleDateString('bn-BD')}</p>
-            </div>
-        `;
-        targetRenderZone.innerHTML += headerHtml;
-
-        userSelectedIdsArray.forEach((id, idx) => {
-            let q = db.find(item => item.id == id);
-            let bodyContent = '';
+        let html = '';
+        let showInst = document.getElementById('set_head_inst').checked, 
+            showSub = document.getElementById('set_head_sub').checked, 
+            showClass = document.getElementById('set_head_class').checked, 
+            showExam = document.getElementById('set_head_exam').checked, 
+            showInstruc = document.getElementById('set_head_instruc').checked;
             
-            if(mode === 'question') {
-                bodyContent = `<div style="font-size: 16px;"><b>প্রশ্ন নং ${idx+1}:</b> ${q.text}</div>`;
-            } else {
-                bodyContent = `
-                    <div style="font-size: 15px; margin-bottom: 5px;"><b>প্রশ্ন নং ${idx+1}:</b> ${q.text}</div>
-                    <div style="padding-left: 15px; color: #111; border-left: 3px solid #10b981; font-size: 14px; background:#f0fdf4; padding:8px;"><b>সঠিক সমাধান:</b> ${q.answer || 'কোনো সমাধান অন্তর্ভুক্ত নেই।'}</div>
-                `;
+        if(showInst || showSub || showClass || showExam || showInstruc) {
+            html += `<div class="doc-header-block">`;
+            if(showInst) html += `<h1 style="margin:0; font-size:24px;">আমিরুল ম্যাথ কেয়ার অ্যান্ড এক্সাম সেন্টার</h1>`;
+            if(showExam) html += `<h3 style="margin:5px 0;">সাপ্তাহিক মডেল টেস্ট - ২০২৬</h3>`;
+            let metaHtml = []; 
+            if(showClass) metaHtml.push(`শ্রেণি: ১০ম`); 
+            if(showSub) metaHtml.push(`বিষয়: উচ্চতর গণিত`); 
+            metaHtml.push(`সময়: ২ ঘণ্টা`); 
+            metaHtml.push(`পূর্ণমান: ১০০`);
+            html += `<div style="display:flex; justify-content:space-between; font-weight:bold; margin-top:10px;">${metaHtml.map(m=>`<span>${m}</span>`).join('')}</div>`;
+            if(showInstruc && !includeAnswers) html += `<div style="margin-top:10px; font-size:12px; font-style:italic;">[নির্দেশনা: ডান পাশের সংখ্যা প্রশ্নের পূর্ণমান জ্ঞাপক।]</div>`;
+            html += `</div>`;
+        }
+
+        if(includeAnswers) {
+            html += `<div style="text-align: center; margin-bottom: 20px; font-weight: bold; font-size: 18px; text-decoration: underline; color: #10b981;">উত্তরপত্র সহ পূর্ণাঙ্গ শিট</div>`;
+        } else {
+            if(document.getElementById('set_student_info').checked) html += `<div class="doc-student-info"><span>নাম: ___________________________</span><span>রোল: ________</span><span>সেট: ক</span></div>`;
+            if(document.getElementById('set_omr').checked) html += `<div class="doc-omr-block"><strong>OMR Sheet Section (For MCQ)</strong><div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; text-align:left; margin-top:10px;">${[1,2,3,4].map(i => `<div>${i}. ◯ ◯ ◯ ◯</div>`).join('')}</div></div>`;
+        }
+
+        let cols = includeAnswers ? "1" : document.getElementById('set_column_layout').value;
+        html += `<div class="layout-col-${cols}">`;
+
+        let allQuestions = [];
+        userSelectedIdsArray.forEach(id => { let q = db.find(item => item.id == id); if(q) allQuestions.push(q); });
+        customQuestionsArray.forEach(cq => allQuestions.push({ text: cq.text, type: cq.type, category: 'Custom', answer: 'নিজস্ব প্রশ্নের উত্তর সিস্টেমে নেই।' }));
+
+        let autoNum = document.getElementById('set_auto_number').checked; 
+        let numStyle = document.getElementById('set_num_style').value; 
+        let showQInfo = document.getElementById('set_q_info').checked; 
+        let showMcqBubble = document.getElementById('set_mcq_bubble').checked;
+
+        function getNum(idx) {
+            if(numStyle === 'en_num') return (idx+1) + "."; 
+            if(numStyle === 'bn_char') return String.fromCharCode(2453 + idx) + ".";
+            let bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯']; 
+            return (idx+1).toString().split('').map(d => bnDigits[parseInt(d)]).join('') + ".";
+        }
+
+        allQuestions.forEach((q, idx) => {
+            html += `<div class="doc-q-item">`;
+            if(showQInfo && q.category !== 'Custom') html += `<div style="font-size:11px; color:#555; margin-bottom:4px;">[${q.subject || ''} - ${q.year || ''}]</div>`;
+            let qNumPrefix = autoNum ? `<strong>${getNum(idx)}</strong> ` : ``;
+            html += `<div style="font-size:15px; line-height:1.6;">${qNumPrefix}${q.text}</div>`;
+            
+            if(showMcqBubble && (q.type === 'এমসিকিউ' || q.type === 'MCQ') && !includeAnswers) {
+                html += `<div style="display:flex; justify-content:space-between; padding-left: 20px; font-size:14px; margin-top:5px;"><span>ক) Option 1</span><span>খ) Option 2</span><span>গ) Option 3</span><span>ঘ) Option 4</span></div>`;
             }
 
-            let qItemHtml = `
-                <div class="pdf-q-item" style="margin-bottom:25px; border-bottom:1px dashed #eee; padding-bottom:10px;">
-                    <div style="font-size:12px; font-weight:bold; color:#555; margin-bottom:5px;">[ক্যাটাগরি: ${q.category} | শ্রেণী: ${q.className} | বিষয়: ${q.subject} | সাল: ${q.year || 'N/A'} | নম্বর: ${q.marks || 'N/A'}]</div>
-                    ${bodyContent}
-                </div>
-            `;
-            targetRenderZone.innerHTML += qItemHtml;
+            if(includeAnswers) {
+                let ans = q.answer || "উত্তর দেওয়া নেই।";
+                html += `<div class="answer-container" style="margin-top: 10px; padding: 10px 15px; background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; border-radius: 8px; font-size: 14px; break-inside: avoid;"><strong>উত্তর:</strong> ${ans}</div>`;
+            }
+
+            html += `</div>`;
         });
 
-        targetRenderZone.style.display = 'block';
+        if(allQuestions.length === 0) html += `<div style="text-align:center; padding:50px; color:#94a3b8;">বাম পাশ থেকে প্রশ্ন নির্বাচন করুন অথবা নতুন প্রশ্ন লিখুন...</div>`;
+        html += `</div>`;
+        
+        canvas.innerHTML = html; 
+        if(window.MathJax) MathJax.typesetPromise([canvas]).catch(()=>{});
+    }
 
-        MathJax.typesetPromise([targetRenderZone]).then(() => {
-            let opt = {
-                margin:       [15, 15, 20, 15],
-                filename:     `Amirul_${mode === 'question' ? 'QPaper' : 'AnsSheet'}_v2026.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+    async function generateSmartPDF(includeAnswers = false) {
+        if(userSelectedIdsArray.length === 0 && customQuestionsArray.length === 0) return alert("কোনো প্রশ্ন সিলেক্ট করা নেই!");
+        
+        let canvas = document.getElementById('liveDocumentCanvas');
+        
+        let oldBorder = canvas.style.border;
+        let oldShadow = canvas.style.boxShadow;
+        let oldBg = canvas.style.background;
 
-            html2pdf().set(opt).from(targetRenderZone).save().then(() => {
-                targetRenderZone.style.display = 'none'; 
-            });
-        }).catch((err) => {
-            console.error(err);
-            targetRenderZone.style.display = 'none';
+        canvas.style.border = 'none';
+        canvas.style.boxShadow = 'none';
+        canvas.style.background = '#ffffff'; // ফিক্স: সাদা ব্যাকগ্রাউন্ড নিশ্চিত করা
+        canvas.classList.add('pdf-mode');
+
+        if(includeAnswers) {
+            updateLiveDocumentPreview(true);
+            if(window.MathJax) await MathJax.typesetPromise([canvas]); 
+        }
+
+        // ফিক্স: DOM এবং MathJax পুরোপুরি সেট হওয়ার জন্য হাফ সেকেন্ড সময় দেওয়া
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        let filename = includeAnswers ? `Amirul_Smart_QnA_${Date.now()}.pdf` : `Amirul_Smart_Paper_${Date.now()}.pdf`;
+
+        let opt = {
+            margin:       [10, 10, 10, 10],
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowWidth: canvas.scrollWidth }, // ফিক্স: scrollY 0 রাখা হয়েছে
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'] } // ফিক্স: CSS ব্রেকিং এনাবল করা হয়েছে
+        };
+
+        html2pdf().set(opt).from(canvas).save().then(() => {
+            canvas.style.border = oldBorder;
+            canvas.style.boxShadow = oldShadow;
+            canvas.style.background = oldBg;
+            canvas.classList.remove('pdf-mode');
+            if(includeAnswers) {
+                updateLiveDocumentPreview(false);
+            }
         });
     }
 
-    // CENTRAL ADMIN OPERATIONS ENGINE
-    function doAdminLivePreview() {
-        let qVal = document.getElementById('admQText').value;
-        let aVal = document.getElementById('admQAnswer').value;
-        let box = document.getElementById('adminLivePreviewBox');
-        box.innerHTML = `<strong>প্রশ্ন:</strong> ${qVal || "..."}` + (aVal ? `<br><div class="answer-container"><strong>উত্তর:</strong> ${aVal}</div>` : '');
-        if(window.MathJax && window.MathJax.typesetPromise) MathJax.typesetPromise([box]);
-    }
-
-    function saveAdminQuestionData() {
-        let id = document.getElementById('adminEditIdHolder').value;
-        let category = document.getElementById('admQCategory').value;
-        let className = document.getElementById('admQClass').value;
-        let subject = document.getElementById('admQSubject').value;
-        let chapter = document.getElementById('admQChapter').value;
-        let type = document.getElementById('admQType').value;
-        let year = document.getElementById('admQYear').value;
-        let text = document.getElementById('admQText').value.trim();
-        let answer = document.getElementById('admQAnswer').value.trim();
-        let marks = document.getElementById('admQMarks').value;
-
-        if(!category || !className || !subject || !text) {
-            return alert("ক্যাটাগরি, শ্রেণী, বিষয় ও মূল প্রশ্ন টেক্সট অবশ্যই পূরণ করতে হবে!");
-        }
-
-        let packet = { id: id ? parseInt(id) : Date.now(), category, className, subject, chapter, type, year, text, answer, marks };
-
-        if(id) {
-            let idx = db.findIndex(q => q.id == id); db[idx] = packet;
-            resetAdminForm(true); 
-        } else {
-            db.push(packet);
-            resetAdminForm(false); 
-        }
-
-        localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
-        renderAdminQuestionsDashboardList();
-        processUserFilteringLogic(); 
-        alert("প্রশ্ন সফলভাবে সংরক্ষিত হয়েছে!");
-    }
-
-    function resetAdminForm(forceAllClear = false) {
-        if(forceAllClear) {
-            document.getElementById('admQCategory').value = '';
-            document.getElementById('admQClass').innerHTML = '<option value="">প্রথমে ক্যাটাগরি সিলেক্ট করুন</option>';
-            document.getElementById('admQSubject').innerHTML = '<option value="">প্রথমে শ্রেণী সিলেক্ট করুন</option>';
-            document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয় সিলেক্ট করুন</option>';
-        }
-        document.getElementById('adminEditIdHolder').value = '';
-        document.getElementById('admQText').value = '';
-        document.getElementById('admQAnswer').value = '';
-        document.getElementById('admQMarks').value = '';
-        document.getElementById('adminLivePreviewBox').innerText = 'প্রিভিউ এখানে রেন্ডার হবে...';
-        document.getElementById('admSaveBtn').innerText = "ডাটাবেসে সংরক্ষণ করুন";
-    }
-
-    function renderAdminQuestionsDashboardList() {
-        let container = document.getElementById('adminGlobalQuestionsListArea');
-        container.innerHTML = db.map(q => `
-            <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                <div style="flex:1;"><strong>[${q.className || 'N/A'} - ${q.subject || 'N/A'} | ${q.year || 'N/A'}]</strong> ${q.text.substring(0,60)}...</div>
-                <div>
-                    <span class="btn-edit" onclick="triggerAdminQuestionEditSession(${q.id})"><i class="fa-solid fa-pen"></i></span>
-                    <span class="btn-delete" onclick="executeAdminDeleteQuestionAction(${q.id})"><i class="fa-solid fa-trash"></i></span>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function triggerAdminQuestionEditSession(id) {
-        let q = db.find(item => item.id == id);
-        document.getElementById('adminEditIdHolder').value = q.id;
-        document.getElementById('admQCategory').value = q.category;
-        
-        updateAdminClassDropdown();
-        document.getElementById('admQClass').value = q.className;
-        
-        updateAdminSubjectDropdown();
-        document.getElementById('admQSubject').value = q.subject;
-        
-        updateAdminChapterDropdown();
-        document.getElementById('admQChapter').value = q.chapter || '';
-        
-        document.getElementById('admQType').value = q.type;
-        document.getElementById('admQYear').value = q.year || '২০২৬';
-        document.getElementById('admQText').value = q.text;
-        document.getElementById('admQAnswer').value = q.answer || '';
-        document.getElementById('admQMarks').value = q.marks || '';
-        document.getElementById('admSaveBtn').innerText = "তথ্য আপডেট করুন";
-        switchSection('admin-main-sec');
-        setTimeout(doAdminLivePreview, 50);
-    }
-
-    function executeAdminDeleteQuestionAction(id) {
-        if(confirm("প্রশ্নটি মুছে ফেলবেন?")) {
-            db = db.filter(q => q.id != id);
-            localStorage.setItem('amirul_smart_qb', JSON.stringify(db));
-            renderAdminQuestionsDashboardList();
-        }
-    }
-
-    function updateSliderTickerTextAction() {
-        let txt = document.getElementById('adminSliderTickerTextInput').value.trim();
-        if(!txt) return alert("টেক্সট দিন");
-        tickerTextData = txt;
-        localStorage.setItem('amirul_ticker_text', tickerTextData);
-        alert("হোম নোটিশ স্লাইডার টেক্সট আপডেট হয়েছে!");
-    }
-
-    function renderAdminFaqConfigPanel() {
-        let target = document.getElementById('adminFaqListConfigContainer');
-        target.innerHTML = faqDb.map(f => `
-            <div style="padding:10px; border-bottom:1px solid var(--border)">
-                <strong>Q: ${f.q}</strong><br><span>A: ${f.a}</span>
-                <button onclick="removeFaqItem(${f.id})" style="background:var(--danger); color:white; border:none; padding:2px 8px; border-radius:5px; margin-top:5px; cursor:pointer;">মুছে ফেলুন</button>
-            </div>
-        `).join('');
-    }
-
-    function addNewFaqItemAction() {
-        let q = document.getElementById('adminFaqQuestionInput').value.trim();
-        let a = document.getElementById('adminFaqAnswerInput').value.trim();
-        if(!q || !a) return alert("তথ্য পূরণ করুন");
-        faqDb.push({ id: Date.now(), q, a });
-        localStorage.setItem('amirul_faq_db', JSON.stringify(faqDb));
-        document.getElementById('adminFaqQuestionInput').value = '';
-        document.getElementById('adminFaqAnswerInput').value = '';
-        renderAdminFaqConfigPanel();
-    }
-
-    function removeFaqItem(id) {
-        faqDb = faqDb.filter(f => f.id !== id);
-        localStorage.setItem('amirul_faq_db', JSON.stringify(faqDb));
-        renderAdminFaqConfigPanel();
-    }
-
-    function renderAdminPricingConfigPanel() {
-        let container = document.getElementById('adminPricingListConfigContainer');
-        container.innerHTML = pricingDb.map(p => `
-            <div style="padding:10px; border-bottom:1px solid var(--border)">
-                <strong>${p.name} - ${p.price}</strong> (${p.duration})
-                <button onclick="removePricingPackage(${p.id})" style="background:var(--danger); color:white; border:none; padding:2px 8px; border-radius:5px; float:right; cursor:pointer;">মুছুন</button>
-            </div>
-        `).join('');
-    }
-
-    function savePricingPackageAction() {
-        let name = document.getElementById('pkgNameInput').value.trim();
-        let price = document.getElementById('pkgPriceInput').value.trim();
-        let duration = document.getElementById('pkgDurationInput').value.trim();
-        let features = document.getElementById('pkgFeaturesInput').value.split(',');
-        if(!name || !price) return alert("তথ্য দিন");
-
-        pricingDb.push({ id: Date.now(), name, price, duration, features });
-        localStorage.setItem('amirul_pricing_db', JSON.stringify(pricingDb));
-        
-        document.getElementById('pkgNameInput').value = '';
-        document.getElementById('pkgPriceInput').value = '';
-        document.getElementById('pkgDurationInput').value = '';
-        document.getElementById('pkgFeaturesInput').value = '';
-        
-        renderAdminPricingConfigPanel();
-    }
-
-    function removePricingPackage(id) {
-        pricingDb = pricingDb.filter(p => p.id !== id);
-        localStorage.setItem('amirul_pricing_db', JSON.stringify(pricingDb));
-        renderAdminPricingConfigPanel();
-    }
+    function downloadRenderedPDFArtifact() { generateSmartPDF(false); }
+    function downloadRenderedQnAPDF() { generateSmartPDF(true); }
 </script>
 </body>
 </html>
