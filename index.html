@@ -146,16 +146,18 @@
         .layout-col-3 { column-count: 3; column-gap: 20px; column-rule: 1px solid #ccc; }
         
         /* 
-         * FIX: html2canvas vertical alignment and overlapping issue 
-         * display: inline-block and width: 100% forces correct height calculation inside columns.
+         * FIX: html2canvas vertical alignment and MathJax overlapping issue (Fixed 1000061533.png bug)
+         * Changed display from inline-block to block, added clear and paddings
          */
         .doc-q-item { 
             page-break-inside: avoid; 
             break-inside: avoid; 
-            margin-bottom: 18px; 
-            display: inline-block; 
+            margin-bottom: 25px; 
+            display: block; 
             width: 100%; 
-            vertical-align: top;
+            clear: both;
+            position: relative;
+            padding-top: 8px;
         }
 
     </style>
@@ -401,7 +403,7 @@
                             <option value="Short">সংক্ষিপ্ত প্রশ্ন</option>
                         </select>
                         <label>প্রশ্ন টেক্সট (ম্যানুয়াল লাইন ব্রেক দিতে Enter চাপুন)</label>
-                        <textarea id="customQText" rows="4" placeholder="উদা: উদ্দীপকটিতে csc এর জায়গায় cosec হবে..."></textarea>
+                        <textarea id="customQText" rows="4" placeholder="উদা: উদ্দীপকটিতে $\text{cosec}$ এর জায়গায়..."></textarea>
                         <button class="btn-action" style="margin-top:10px;" onclick="addCustomQuestionToPreview()"><i class="fa-solid fa-plus"></i> প্রিভিউতে যুক্ত করুন</button>
                     </div>
                 </div>
@@ -450,7 +452,11 @@
                 <div class="grid-3">
                     <div>
                         <label>প্রশ্নের ধরন</label>
-                        <select id="admQType"><option value="সৃজনশীল">সৃজনশীল</option><option value="সংक्षिप्त">সংक्षिप्त</option><option value="এমসিকিউ">এমসিকিউ</option></select>
+                        <select id="admQType" onchange="updateAdminInputUI()">
+                            <option value="সৃজনশীল">সৃজনশীল</option>
+                            <option value="সংक्षिप्त">সংক্ষিপ্ত</option>
+                            <option value="এমসিকিউ">এমসিকিউ</option>
+                        </select>
                     </div>
                     <div>
                         <label>প্রশ্ন তৈরির সাল (Year)</label>
@@ -463,14 +469,10 @@
                         <input type="number" id="admQMarks" placeholder="১০">
                     </div>
                 </div>
-                <div style="margin-bottom:15px;">
-                    <label>মূল প্রশ্ন টেক্সট (LaTeX সমীকরণের জন্য $x^2$ অথবা $\text{cosec}\theta$ ব্যবহার করুন)</label>
-                    <textarea id="admQText" rows="4" placeholder="প্রশ্ন টাইপ করুন..." onkeyup="doAdminLivePreview()"></textarea>
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label>প্রশ্নের সমাধান / উত্তরপত্র</label>
-                    <textarea id="admQAnswer" rows="3" placeholder="উত্তর এখানে লিখুন..." onkeyup="doAdminLivePreview()"></textarea>
-                </div>
+                
+                <!-- Dynamic Input Area for Different Question Types -->
+                <div id="dynamicInputArea"></div>
+                
                 <div class="preview-box" id="adminLivePreviewBox">প্রিভিউ এখানে রেন্ডার হবে...</div>
                 <div style="display: flex; gap: 15px; justify-content: flex-end;">
                     <button onclick="resetAdminForm(true)" class="btn-action" style="background: #64748b;">সব রিসেট</button>
@@ -483,6 +485,7 @@
             </div>
         </div>
 
+        <!-- Slider Section -->
         <div id="admin-slider-sec" class="section-block" style="display:none;">
             <div class="card">
                 <h2><i class="fa-solid fa-images"></i> হোম পেজ নোটিশ স্লাইডার টেক্সট কন্ট্রোল</h2>
@@ -494,6 +497,7 @@
             </div>
         </div>
 
+        <!-- FAQ Section -->
         <div id="admin-faq-sec" class="section-block" style="display:none;">
             <div class="card">
                 <h2><i class="fa-solid fa-circle-question"></i> নতুন FAQ প্রশ্ন-উত্তর যুক্ত করুন</h2>
@@ -506,6 +510,7 @@
             <div class="card"><h2>বিদ্যমান FAQ তালিকা</h2><div id="adminFaqListConfigContainer"></div></div>
         </div>
 
+        <!-- Pricing Section -->
         <div id="admin-pricing-sec" class="section-block" style="display:none;">
             <div class="card">
                 <h2><i class="fa-solid fa-tags"></i> মেম্বারশিপ প্যাকেজ রেট মডিউল</h2>
@@ -540,8 +545,8 @@
     };
 
     let db = JSON.parse(localStorage.getItem('amirul_smart_qb')) || [
-        { id: 1, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়, তবে প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$", answer: "দেওয়া আছে...", marks: "১০", year: "২০২৬" },
-        { id: 2, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে। (তৃতীয় পদ বিবেচনা করে)", answer: "আমরা জানি...", marks: "৪", year: "২০২৫" }
+        { id: 1, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সৃজনশীল", text: "<strong>উদ্দীপক:</strong> যদি $\\tan A + \\sin A = m$ এবং $\\tan A - \\sin A = n$ হয়।<br><br>ক) দেখাও যে... <br>খ) প্রমাণ কর যে, $m^2 - n^2 = 4\\sqrt{mn}$ <br>গ) মান নির্ণয় করো...", answer: "দেওয়া আছে...", marks: "১০", year: "২০২৬" },
+        { id: 2, category: "মাধ্যমিক", className: "১০ম শ্রেণী", subject: "উচ্চতর গণিত", chapter: "ত্রিকোণমিতি", type: "সংক্ষিপ্ত", text: "একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে। (তৃতীয় পদ বিবেচনা করে)", answer: "আমরা জানি...", marks: "৪", year: "২০২৫" }
     ];
     let faqDb = JSON.parse(localStorage.getItem('amirul_faq_db')) || [{ id: 1, q: "কিভাবে নিজস্ব প্রশ্ন ডাউনলোড করবো?", a: "প্রথমে ইউজার প্যানেলে যান..." }];
     let pricingDb = JSON.parse(localStorage.getItem('amirul_pricing_db')) || [{ id: 1, name: "প্রিমিয়াম আল্টিমেট প্যাক", price: "৯৯৯ টাকা", duration: "আজীবন মেয়াদ", features: ["১ম-১০ম শ্রেণীর সকল প্রশ্ন অ্যাক্সেস", "OMR সুবিধা"] }];
@@ -559,6 +564,7 @@
         executeGlobalHomeUIComponents();
         renderHomeDashCharts();
         processUserFilteringLogic();
+        updateAdminInputUI(); // Initialize Dynamic Admin Inputs
     };
 
     // ================== NAVIGATION & AUTH ==================
@@ -607,7 +613,7 @@
             document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active-menu'));
             listElement.classList.add('active-menu');
         }
-        if(sectionId === 'admin-main-sec') renderAdminQuestionsDashboardList();
+        if(sectionId === 'admin-main-sec') { renderAdminQuestionsDashboardList(); updateAdminInputUI(); }
         if(sectionId === 'admin-slider-sec') document.getElementById('adminSliderTickerTextInput').value = tickerTextData;
         if(sectionId === 'admin-faq-sec') renderAdminFaqConfigPanel();
         if(sectionId === 'admin-pricing-sec') renderAdminPricingConfigPanel();
@@ -662,44 +668,200 @@
         if (cat && cls && sub && academicMappingData[cat][cls][sub]) academicMappingData[cat][cls][sub].forEach(chp => chpSelect.innerHTML += `<option value="${chp}">${chp}</option>`);
     }
     
+    // ================== ADMIN DYNAMIC UI FUNCTIONS ==================
+    function updateAdminInputUI(existingData = null) {
+        const type = document.getElementById('admQType').value;
+        const area = document.getElementById('dynamicInputArea');
+        let html = '';
+
+        if (type === 'সৃজনশীল') {
+            html = `
+                <div style="margin-bottom:15px;">
+                    <label>উদ্দীপক (Stem)</label>
+                    <textarea id="cqStem" rows="3" placeholder="উদ্দীপক লিখুন...">${existingData ? existingData.text : ''}</textarea>
+                </div>
+                <div class="grid-2">
+                    <div><label>ক) জ্ঞানমূলক (১)</label><input type="text" id="cqKa" placeholder="ক নং প্রশ্ন..."></div>
+                    <div><label>খ) অনুধাবনমূলক (২)</label><input type="text" id="cqKha" placeholder="খ নং প্রশ্ন..."></div>
+                    <div><label>গ) প্রয়োগমূলক (৩)</label><input type="text" id="cqGa" placeholder="গ নং প্রশ্ন..."></div>
+                    <div><label>ঘ) উচ্চতর দক্ষতামূলক (৪)</label><input type="text" id="cqGha" placeholder="ঘ নং প্রশ্ন..."></div>
+                </div>
+                <div style="margin-top:15px; margin-bottom:15px;">
+                    <label>পূর্ণাঙ্গ উত্তরপত্র / সমাধান</label>
+                    <textarea id="cqAns" rows="3" placeholder="উত্তর এখানে লিখুন...">${existingData ? (existingData.answer || '') : ''}</textarea>
+                </div>
+            `;
+        } else if (type === 'এমসিকিউ') {
+            html = `
+                <div style="margin-bottom:15px;">
+                    <label>মূল প্রশ্ন / উদ্দীপক</label>
+                    <textarea id="mcqText" rows="2" placeholder="প্রশ্ন টাইপ করুন...">${existingData ? existingData.text : ''}</textarea>
+                </div>
+                <div class="grid-2">
+                    <div><label>ক) অপশন</label><input type="text" id="mcqOpt1"></div>
+                    <div><label>খ) অপশন</label><input type="text" id="mcqOpt2"></div>
+                    <div><label>গ) অপশন</label><input type="text" id="mcqOpt3"></div>
+                    <div><label>ঘ) অপশন</label><input type="text" id="mcqOpt4"></div>
+                </div>
+                <div style="margin-top:15px; margin-bottom:15px;">
+                    <label>সঠিক উত্তর / ব্যাখ্যা</label>
+                    <input type="text" id="mcqAns" placeholder="উত্তর লিখুন..." value="${existingData ? (existingData.answer || '') : ''}">
+                </div>
+            `;
+        } else {
+            html = `
+                <div id="shortQuestionsContainer">
+                    <div class="short-q-box" style="margin-bottom:15px; padding:15px; border:1px dashed var(--primary); border-radius:8px; position:relative; background: var(--bg);">
+                        <label>সংক্ষিপ্ত প্রশ্ন (১)</label>
+                        <textarea class="sqText" rows="2" placeholder="প্রশ্ন টাইপ করুন (উদা: একটি কোণকে প্রকাশ করো যার মান $\\text{cosec}^2\\theta - \\cot^2\\theta = 1$ কে সিদ্ধ করে)...">${existingData ? existingData.text : ''}</textarea>
+                        <label style="margin-top:10px;">উত্তর</label>
+                        <input type="text" class="sqAns" placeholder="উত্তর এখানে লিখুন..." value="${existingData ? (existingData.answer || '') : ''}">
+                    </div>
+                </div>
+                <button type="button" class="btn-outline" onclick="addShortQuestionField()" style="margin-bottom:15px;"><i class="fa-solid fa-plus"></i> আরও প্রশ্ন যুক্ত করুন</button>
+            `;
+        }
+        
+        area.innerHTML = html;
+        const inputs = area.querySelectorAll('input, textarea');
+        inputs.forEach(input => input.addEventListener('keyup', doAdminLivePreview));
+        doAdminLivePreview();
+    }
+
+    function addShortQuestionField() {
+        const container = document.getElementById('shortQuestionsContainer');
+        const qCount = container.children.length + 1;
+        const div = document.createElement('div');
+        div.className = 'short-q-box';
+        div.style.cssText = 'margin-bottom:15px; padding:15px; border:1px dashed var(--primary); border-radius:8px; position:relative; background: var(--bg);';
+        div.innerHTML = `
+            <button type="button" onclick="this.parentElement.remove(); doAdminLivePreview();" style="position:absolute; right:15px; top:15px; background:var(--danger); color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            <label>সংক্ষিপ্ত প্রশ্ন (${qCount})</label>
+            <textarea class="sqText" rows="2" placeholder="প্রশ্ন টাইপ করুন..." onkeyup="doAdminLivePreview()"></textarea>
+            <label style="margin-top:10px;">উত্তর</label>
+            <input type="text" class="sqAns" placeholder="উত্তর এখানে লিখুন..." onkeyup="doAdminLivePreview()">
+        `;
+        container.appendChild(div);
+    }
+
+    function getConstructedAdminData() {
+        const type = document.getElementById('admQType').value;
+        let constructedQuestions = []; 
+
+        if(type === 'সৃজনশীল') {
+            let stem = document.getElementById('cqStem')?.value.trim() || '';
+            let ka = document.getElementById('cqKa')?.value.trim() || '';
+            let kha = document.getElementById('cqKha')?.value.trim() || '';
+            let ga = document.getElementById('cqGa')?.value.trim() || '';
+            let gha = document.getElementById('cqGha')?.value.trim() || '';
+            let ans = document.getElementById('cqAns')?.value.trim() || '';
+            
+            let text = `<strong>উদ্দীপক:</strong> ${stem}`;
+            if(ka) text += `<br><br>ক) ${ka}`;
+            if(kha) text += `<br>খ) ${kha}`;
+            if(ga) text += `<br>গ) ${ga}`;
+            if(gha) text += `<br>ঘ) ${gha}`;
+            
+            if(stem || ka || kha) constructedQuestions.push({ text, answer: ans });
+        } else if(type === 'এমসিকিউ') {
+            let qText = document.getElementById('mcqText')?.value.trim() || '';
+            let opt1 = document.getElementById('mcqOpt1')?.value.trim() || '';
+            let opt2 = document.getElementById('mcqOpt2')?.value.trim() || '';
+            let opt3 = document.getElementById('mcqOpt3')?.value.trim() || '';
+            let opt4 = document.getElementById('mcqOpt4')?.value.trim() || '';
+            let ans = document.getElementById('mcqAns')?.value.trim() || '';
+            
+            let text = `${qText}`;
+            if(opt1 || opt2) text += `<br><div style="display:flex; justify-content:space-between; margin-top:5px; padding-left:15px;"><span>ক) ${opt1}</span><span>খ) ${opt2}</span><span>গ) ${opt3}</span><span>ঘ) ${opt4}</span></div>`;
+            
+            if(qText) constructedQuestions.push({ text, answer: ans });
+        } else if(type === 'সংক্ষিপ্ত' || type === 'সংक्षिप्त') {
+            let boxes = document.querySelectorAll('.short-q-box');
+            boxes.forEach(box => {
+                let qText = box.querySelector('.sqText').value.trim();
+                let ans = box.querySelector('.sqAns').value.trim();
+                if(qText !== '') constructedQuestions.push({ text: qText, answer: ans });
+            });
+        }
+        return constructedQuestions;
+    }
+
     function doAdminLivePreview() {
-        let qVal = document.getElementById('admQText').value; let aVal = document.getElementById('admQAnswer').value; let box = document.getElementById('adminLivePreviewBox');
-        box.innerHTML = `<strong>প্রশ্ন:</strong> ${qVal || "..."}` + (aVal ? `<br><div class="answer-container"><strong>উত্তর:</strong> ${aVal}</div>` : '');
+        let qs = getConstructedAdminData();
+        let box = document.getElementById('adminLivePreviewBox');
+        if(qs.length === 0) {
+            box.innerHTML = 'প্রিভিউ...';
+            return;
+        }
+        let html = qs.map(q => `<div style="margin-bottom:15px;"><strong>প্রশ্ন:</strong> <br>${q.text}` + (q.answer ? `<div class="answer-container"><strong>উত্তর:</strong> ${q.answer}</div>` : '') + `</div>`).join('<hr>');
+        box.innerHTML = html;
         if(window.MathJax) MathJax.typesetPromise([box]);
     }
+
     function saveAdminQuestionData() {
-        let id = document.getElementById('adminEditIdHolder').value;
-        let packet = {
-            id: id ? parseInt(id) : Date.now(), category: document.getElementById('admQCategory').value, className: document.getElementById('admQClass').value,
-            subject: document.getElementById('admQSubject').value, chapter: document.getElementById('admQChapter').value, type: document.getElementById('admQType').value,
-            year: document.getElementById('admQYear').value, text: document.getElementById('admQText').value.trim(), answer: document.getElementById('admQAnswer').value.trim(),
+        let basePacket = {
+            category: document.getElementById('admQCategory').value,
+            className: document.getElementById('admQClass').value,
+            subject: document.getElementById('admQSubject').value,
+            chapter: document.getElementById('admQChapter').value,
+            type: document.getElementById('admQType').value,
+            year: document.getElementById('admQYear').value,
             marks: document.getElementById('admQMarks').value
         };
-        if(!packet.category || !packet.className || !packet.subject || !packet.text) return alert("ক্যাটাগরি, শ্রেণী, বিষয় ও মূল প্রশ্ন টেক্সট আবশ্যক!");
+
+        if(!basePacket.category || !basePacket.className || !basePacket.subject) return alert("ক্যাটাগরি, শ্রেণী এবং বিষয় আবশ্যক!");
+
+        let constructedQs = getConstructedAdminData();
+        if(constructedQs.length === 0) return alert("অনুগ্রহ করে প্রশ্ন লিখুন!");
+
+        let id = document.getElementById('adminEditIdHolder').value;
+
+        if(id) {
+            let idx = db.findIndex(q => q.id == id);
+            let updatePacket = { ...basePacket, id: parseInt(id), text: constructedQs[0].text, answer: constructedQs[0].answer };
+            db[idx] = updatePacket;
+        } else {
+            constructedQs.forEach(cq => {
+                let packet = { ...basePacket, id: Date.now() + Math.floor(Math.random() * 10000), text: cq.text, answer: cq.answer };
+                db.push(packet);
+            });
+        }
         
-        if(id) { let idx = db.findIndex(q => q.id == id); db[idx] = packet; resetAdminForm(true); } else { db.push(packet); resetAdminForm(false); }
-        localStorage.setItem('amirul_smart_qb', JSON.stringify(db)); renderAdminQuestionsDashboardList(); alert("সংরক্ষিত হয়েছে!");
+        localStorage.setItem('amirul_smart_qb', JSON.stringify(db)); 
+        renderAdminQuestionsDashboardList(); 
+        resetAdminForm(false);
+        alert("ডাটাবেসে সফলভাবে সংরক্ষিত হয়েছে!");
     }
+
     function resetAdminForm(forceAll) {
         if(forceAll) { document.getElementById('admQCategory').value = ''; document.getElementById('admQClass').innerHTML = '<option value="">প্রথমে ক্যাটাগরি</option>'; document.getElementById('admQSubject').innerHTML = '<option value="">প্রথমে শ্রেণী</option>'; document.getElementById('admQChapter').innerHTML = '<option value="">প্রথমে বিষয়</option>'; }
-        document.getElementById('adminEditIdHolder').value = ''; document.getElementById('admQText').value = ''; document.getElementById('admQAnswer').value = ''; document.getElementById('admQMarks').value = ''; document.getElementById('adminLivePreviewBox').innerText = 'প্রিভিউ...'; document.getElementById('admSaveBtn').innerText = "সংরক্ষণ করুন";
+        document.getElementById('adminEditIdHolder').value = ''; document.getElementById('admQMarks').value = ''; 
+        updateAdminInputUI();
+        document.getElementById('adminLivePreviewBox').innerText = 'প্রিভিউ...'; document.getElementById('admSaveBtn').innerText = "সংরক্ষণ করুন";
     }
+
     function renderAdminQuestionsDashboardList() {
         document.getElementById('adminGlobalQuestionsListArea').innerHTML = db.map(q => `
             <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                <div style="flex:1;"><strong>[${q.className || ''} - ${q.subject || ''}]</strong> ${q.text.substring(0,60)}...</div>
+                <div style="flex:1;"><strong>[${q.className || ''} - ${q.subject || ''}]</strong> ${q.text.substring(0,80)}...</div>
                 <div><span class="btn-edit" onclick="triggerAdminQuestionEditSession(${q.id})"><i class="fa-solid fa-pen"></i></span><span class="btn-delete" onclick="executeAdminDeleteQuestionAction(${q.id})"><i class="fa-solid fa-trash"></i></span></div>
             </div>`).join('');
     }
+
     function triggerAdminQuestionEditSession(id) {
         let q = db.find(i => i.id == id);
-        document.getElementById('adminEditIdHolder').value = q.id; document.getElementById('admQCategory').value = q.category; updateAdminClassDropdown();
+        document.getElementById('adminEditIdHolder').value = q.id; 
+        document.getElementById('admQCategory').value = q.category; updateAdminClassDropdown();
         document.getElementById('admQClass').value = q.className; updateAdminSubjectDropdown();
         document.getElementById('admQSubject').value = q.subject; updateAdminChapterDropdown();
-        document.getElementById('admQChapter').value = q.chapter || ''; document.getElementById('admQType').value = q.type;
-        document.getElementById('admQYear').value = q.year || '২০২৬'; document.getElementById('admQText').value = q.text;
-        document.getElementById('admQAnswer').value = q.answer || ''; document.getElementById('admQMarks').value = q.marks || '';
-        document.getElementById('admSaveBtn').innerText = "আপডেট করুন"; setTimeout(doAdminLivePreview, 50);
+        document.getElementById('admQChapter').value = q.chapter || ''; 
+        document.getElementById('admQType').value = q.type === 'সংक्षिप्त' ? 'সংক্ষিপ্ত' : q.type;
+        document.getElementById('admQYear').value = q.year || '২০২৬'; 
+        document.getElementById('admQMarks').value = q.marks || '';
+        
+        updateAdminInputUI(q);
+        document.getElementById('admSaveBtn').innerText = "আপডেট করুন"; 
+        setTimeout(doAdminLivePreview, 50);
     }
     function executeAdminDeleteQuestionAction(id) { if(confirm("মুছে ফেলবেন?")) { db = db.filter(q => q.id != id); localStorage.setItem('amirul_smart_qb', JSON.stringify(db)); renderAdminQuestionsDashboardList(); } }
 
@@ -866,7 +1028,10 @@
             html += `<div style="font-size:15px; line-height:1.6;">${qNumPrefix}${q.text}</div>`;
             
             if(showMcqBubble && (q.type === 'এমসিকিউ' || q.type === 'MCQ') && !includeAnswers) {
-                html += `<div style="display:flex; justify-content:space-between; padding-left: 20px; font-size:14px; margin-top:5px;"><span>ক) Option 1</span><span>খ) Option 2</span><span>গ) Option 3</span><span>ঘ) Option 4</span></div>`;
+                // Modified dynamically inside structure mostly, but fallback for legacy
+                if(!q.text.includes('ক)')) {
+                    html += `<div style="display:flex; justify-content:space-between; padding-left: 20px; font-size:14px; margin-top:5px;"><span>ক) Option 1</span><span>খ) Option 2</span><span>গ) Option 3</span><span>ঘ) Option 4</span></div>`;
+                }
             }
 
             if(includeAnswers) {
@@ -895,7 +1060,7 @@
 
         canvas.style.border = 'none';
         canvas.style.boxShadow = 'none';
-        canvas.style.background = '#ffffff'; // ফিক্স: সাদা ব্যাকগ্রাউন্ড নিশ্চিত করা
+        canvas.style.background = '#ffffff';
         canvas.classList.add('pdf-mode');
 
         if(includeAnswers) {
@@ -903,18 +1068,18 @@
             if(window.MathJax) await MathJax.typesetPromise([canvas]); 
         }
 
-        // ফিক্স: DOM এবং MathJax পুরোপুরি সেট হওয়ার জন্য হাফ সেকেন্ড সময় দেওয়া
         await new Promise(resolve => setTimeout(resolve, 500));
 
         let filename = includeAnswers ? `Amirul_Smart_QnA_${Date.now()}.pdf` : `Amirul_Smart_Paper_${Date.now()}.pdf`;
 
+        // Fixed html2pdf parameters to ensure MathJax equations won't overlap boundaries
         let opt = {
-            margin:       [10, 10, 10, 10],
+            margin:       [15, 10, 15, 10], // Added safe margin Top and Bottom
             filename:     filename,
             image:        { type: 'jpeg', quality: 1.0 },
-            html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowWidth: canvas.scrollWidth }, // ফিক্স: scrollY 0 রাখা হয়েছে
+            html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowWidth: canvas.scrollWidth },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['css', 'legacy'] } // ফিক্স: CSS ব্রেকিং এনাবল করা হয়েছে
+            pagebreak:    { mode: ['css', 'legacy'] }
         };
 
         html2pdf().set(opt).from(canvas).save().then(() => {
