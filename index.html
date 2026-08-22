@@ -142,22 +142,19 @@
         
         .layout-col-1, .layout-col-2, .layout-col-3 { width: 100%; }
         .layout-col-1 { column-count: 1; }
-        .layout-col-2 { column-count: 2; column-gap: 30px; column-rule: 1px solid #ccc; }
-        .layout-col-3 { column-count: 3; column-gap: 20px; column-rule: 1px solid #ccc; }
+        .layout-col-2 { column-count: 2; column-gap: 30px; column-rule: 1px solid #ccc; column-fill: auto; }
+        .layout-col-3 { column-count: 3; column-gap: 20px; column-rule: 1px solid #ccc; column-fill: auto; }
         
-        /* 
-         * FIX: html2canvas vertical alignment and MathJax overlapping issue (Fixed 1000061533.png bug)
-         * Changed display from inline-block to block, added clear and paddings
-         */
         .doc-q-item { 
             page-break-inside: avoid; 
             break-inside: avoid; 
+            -webkit-column-break-inside: avoid;
             margin-bottom: 25px; 
-            display: block; 
+            display: inline-block; 
             width: 100%; 
-            clear: both;
             position: relative;
             padding-top: 8px;
+            box-sizing: border-box;
         }
 
     </style>
@@ -202,11 +199,43 @@
 
     <div class="settings-group">
         <h4><i class="fa-solid fa-heading"></i> হেডার (Header) অপশন</h4>
-        <div class="setting-item"><span>প্রতিষ্ঠানের নাম</span> <label class="switch"><input type="checkbox" id="set_head_inst" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
-        <div class="setting-item"><span>বিষয়ের নাম</span> <label class="switch"><input type="checkbox" id="set_head_sub" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
-        <div class="setting-item"><span>শ্রেণির নাম</span> <label class="switch"><input type="checkbox" id="set_head_class" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
-        <div class="setting-item"><span>পরীক্ষার নাম</span> <label class="switch"><input type="checkbox" id="set_head_exam" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
-        <div class="setting-item"><span>সাধারণ নির্দেশনা</span> <label class="switch"><input type="checkbox" id="set_head_instruc" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        
+        <label style="font-size:13px;">প্রতিষ্ঠানের নাম</label>
+        <input type="text" id="custom_inst_name" value="আমিরুল ম্যাথ কেয়ার" onkeyup="updateLiveDocumentPreview()" style="margin-bottom:10px; padding:8px; border:1px solid var(--border); font-size:14px;">
+        
+        <label style="font-size:13px;">পরীক্ষার নাম</label>
+        <input type="text" id="custom_exam_name" value="সাপ্তাহিক মডেল টেস্ট - ২০২৬" onkeyup="updateLiveDocumentPreview()" style="margin-bottom:10px; padding:8px; border:1px solid var(--border); font-size:14px;">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:10px;">
+            <div>
+                <label style="font-size:13px;">শ্রেণি</label>
+                <input type="text" id="custom_class_name" value="১০ম" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid var(--border); font-size:14px;">
+            </div>
+            <div>
+                <label style="font-size:13px;">বিষয়</label>
+                <input type="text" id="custom_subject_name" value="উচ্চতর গণিত" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid var(--border); font-size:14px;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:10px;">
+            <div>
+                <label style="font-size:13px;">সময়</label>
+                <input type="text" id="custom_time" value="২ ঘণ্টা" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid var(--border); font-size:14px;">
+            </div>
+            <div>
+                <label style="font-size:13px;">পূর্ণমান</label>
+                <input type="text" id="custom_marks" value="১০০" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid var(--border); font-size:14px;">
+            </div>
+        </div>
+        
+        <label style="font-size:13px;">সাধারণ নির্দেশনা</label>
+        <input type="text" id="custom_instruction" value="[নির্দেশনা: ডান পাশের সংখ্যা প্রশ্নের পূর্ণমান জ্ঞাপক।]" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid var(--border); font-size:14px; margin-bottom: 15px;">
+
+        <div class="setting-item"><span>প্রতিষ্ঠানের নাম দেখান</span> <label class="switch"><input type="checkbox" id="set_head_inst" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>বিষয়ের নাম দেখান</span> <label class="switch"><input type="checkbox" id="set_head_sub" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>শ্রেণির নাম দেখান</span> <label class="switch"><input type="checkbox" id="set_head_class" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>পরীক্ষার নাম দেখান</span> <label class="switch"><input type="checkbox" id="set_head_exam" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <div class="setting-item"><span>সাধারণ নির্দেশনা দেখান</span> <label class="switch"><input type="checkbox" id="set_head_instruc" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
     </div>
 
     <div class="settings-group">
@@ -218,28 +247,14 @@
     <div class="settings-group">
         <h4><i class="fa-solid fa-list-ol"></i> প্রশ্ন ও নম্বর সেটিংস</h4>
         <div class="setting-item"><span>প্রশ্নের তথ্য (অধ্যায়/সাল)</span> <label class="switch"><input type="checkbox" id="set_q_info" onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
-        <div class="setting-item">
-            <div style="line-height:1.2;">
-                <span>স্বয়ংক্রিয় সিরিয়াল নম্বর</span><br>
-                <small style="color:var(--danger); font-weight:normal;">ডিফল্ট: অফ (ম্যানুয়াল লাইন ব্রেক সমর্থন করে)</small>
-            </div> 
-            <label class="switch"><input type="checkbox" id="set_auto_number" onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label>
-        </div>
-        <div style="margin-top:10px;">
-            <label>প্রশ্নের নম্বর স্টাইল</label>
-            <select id="set_num_style" onchange="updateLiveDocumentPreview()" style="padding:8px;">
-                <option value="bn_num">বাংলা সংখ্যা (১, ২, ৩)</option>
-                <option value="en_num">English Num (1, 2, 3)</option>
-                <option value="bn_char">বাংলা বর্ণ (ক, খ, গ)</option>
-            </select>
-        </div>
         <div class="setting-item" style="margin-top:10px;"><span>MCQ Option Bubble (○)</span> <label class="switch"><input type="checkbox" id="set_mcq_bubble" checked onchange="updateLiveDocumentPreview()"> <span class="slider"></span></label></div>
+        <small style="color:var(--danger); display:block; margin-top:10px;">* ম্যানুয়াল নম্বর এন্ট্রির স্বার্থে স্বয়ংক্রিয় সিকোয়েন্স নম্বর বন্ধ রাখা হয়েছে।</small>
     </div>
 
     <div class="settings-group">
         <h4><i class="fa-solid fa-file-lines"></i> পেজ ও কলাম লেআউট</h4>
         <div style="margin-bottom:10px;">
-            <label>ম্যানুয়াল কলাম অ্যাডজাস্টমেন্ট (অটোমেটিক নয়)</label>
+            <label>ম্যানুয়াল কলাম অ্যাডজাস্টমেন্ট</label>
             <select id="set_column_layout" onchange="updateLiveDocumentPreview()" style="padding:8px;">
                 <option value="1">১ কলাম (সম্পূর্ণ প্রস্থ)</option>
                 <option value="2">২ কলাম (ম্যানুয়াল স্প্লিট)</option>
@@ -332,7 +347,6 @@
                     <button class="btn-outline" onclick="toggleSettingsModal()"><i class="fa-solid fa-sliders"></i> Settings</button>
                     <button class="btn-outline" onclick="triggerCustomQuestionEditor()"><i class="fa-solid fa-pen-to-square"></i> Write Question</button>
                 </div>
-                <!-- Updated Toolbar with Q&A Button -->
                 <div class="toolbar-group">
                     <button class="btn-action" style="background:#475569;" onclick="saveUserProgress()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
                     <button class="btn-action" style="background:var(--primary);" onclick="triggerUserSelectedQuestionsPreview()"><i class="fa-solid fa-eye"></i> View Now</button>
@@ -393,7 +407,7 @@
 
                     <div id="userFilteredResultsRenderArea" style="margin-top:20px; max-height: 500px; overflow-y:auto; padding-right:10px;"></div>
 
-                    <!-- Custom Question Editor Section (Inside Left Panel) -->
+                    <!-- Custom Question Editor Section -->
                     <div id="customQuestionEditorArea" style="display:none; margin-top:20px; border-top:2px dashed var(--border); padding-top:20px;">
                         <h3><i class="fa-solid fa-pen"></i> ম্যানুয়াল প্রশ্ন যুক্ত করুন</h3>
                         <label>প্রশ্নের ধরন</label>
@@ -410,7 +424,6 @@
 
                 <!-- Right: Live Document Preview -->
                 <div class="card" style="margin-bottom:0; background: #e2e8f0; display:flex; justify-content:center; overflow-x:auto;">
-                    <!-- A4 Size Representation -->
                     <div id="liveDocumentCanvas" class="document-preview-area" style="width: 210mm; min-height: 297mm; box-sizing:border-box;">
                         <!-- Preview content injected by JS -->
                     </div>
@@ -470,7 +483,6 @@
                     </div>
                 </div>
                 
-                <!-- Dynamic Input Area for Different Question Types -->
                 <div id="dynamicInputArea"></div>
                 
                 <div class="preview-box" id="adminLivePreviewBox">প্রিভিউ এখানে রেন্ডার হবে...</div>
@@ -485,7 +497,6 @@
             </div>
         </div>
 
-        <!-- Slider Section -->
         <div id="admin-slider-sec" class="section-block" style="display:none;">
             <div class="card">
                 <h2><i class="fa-solid fa-images"></i> হোম পেজ নোটিশ স্লাইডার টেক্সট কন্ট্রোল</h2>
@@ -497,7 +508,6 @@
             </div>
         </div>
 
-        <!-- FAQ Section -->
         <div id="admin-faq-sec" class="section-block" style="display:none;">
             <div class="card">
                 <h2><i class="fa-solid fa-circle-question"></i> নতুন FAQ প্রশ্ন-উত্তর যুক্ত করুন</h2>
@@ -510,7 +520,6 @@
             <div class="card"><h2>বিদ্যমান FAQ তালিকা</h2><div id="adminFaqListConfigContainer"></div></div>
         </div>
 
-        <!-- Pricing Section -->
         <div id="admin-pricing-sec" class="section-block" style="display:none;">
             <div class="card">
                 <h2><i class="fa-solid fa-tags"></i> মেম্বারশিপ প্যাকেজ রেট মডিউল</h2>
@@ -524,7 +533,6 @@
             </div>
             <div class="card"><h2>সিস্টেমের বর্তমান সক্রিয় প্যাকেজসমূহ</h2><div id="adminPricingListConfigContainer"></div></div>
         </div>
-
     </div>
 </div>
 
@@ -535,9 +543,13 @@
             "৬ষ্ঠ শ্রেণী": { "বাংলা": ["প্রমিত ভাষা শিখি", "অর্থ বুঝে বাক্য লিখি"], "English": ["Talking to People", "Little Things"], "গণিত": ["সংখ্যার গল্প", "ভগ্নাংশের খেলা"], "বিজ্ঞান": ["আকাশ ও মহাবিশ্ব", "গতি"] },
             "৭ম শ্রেণী": { "বাংলা": ["প্রসঙ্গের মধ্যে থেকে যোগাযোগ করি"], "English": ["A Dream School", "Playing with the Words"], "গণিত": ["সূচকের গল্প", "সরল সমীকরণ"], "বিজ্ঞান": ["জীববৈচিত্র্য", "অণু পরমাণু"] },
             "৮ম শ্রেণী": { "বাংলা": ["প্রয়োজনমাফিক যোগাযোগ করি"], "English": ["Beauty in Poetry", "The Biz Card"], "গণিত": ["গাণিতিক অনুসন্ধান", "বাস্তব সংখ্যা"], "বিজ্ঞান": ["পরমাণুর গঠন", "বল, গতি ও চাপ"] },
-            "১০ম শ্রেণী/৯ম শ্রেণী": { "সাধারণ গণিত": ["বাস্তব সংখ্যা", "সেট ও ফাংশন", "বীজগাণিতিক রাশি", "সূচক ও লগারিদম", "এক চলকবিশিষ্ট সমীকরণ", "রেখা, কোণ ও ত্রিভুজ", "ব্যবহারিক জ্যামিতি", "বৃত্ত", "ত্রিকোণমিতিক অনুপাত", "দূরত্ব ও সময়", "বীজগাণিতিক অনুপাত ও সমানুপাত", "দুই চলক বিশিষ্ট সরল সমীকরণ", "সসীম ধারা", "অনুপাত, সদৃশতা ও প্রতিসমতা", "ক্ষেত্রফল সম্পর্কিত উপপাদ্য ও সম্পাদ্য", "পরিমিতি", "পরিসংখ্যান"] ,
-                "পদার্থবিজ্ঞান": ["ভৌত রাশি ও পরিমাপ", "গতি"], "রসায়ন": ["রসায়নের ধারণা", "পদার্থের অবস্থা"], "উচ্চতর গণিত": ["সেট ও ফাংশন", "সমীকরণ"] },
+            "১০ম শ্রেণী/৯ম শ্রেণী": { 
+                "সাধারণ গণিত": ["বাস্তব সংখ্যা", "সেট ও ফাংশন", "বীজগাণিতিক রাশি", "সূচক ও লগারিদম", "এক চলকবিশিষ্ট সমীকরণ", "রেখা, কোণ ও ত্রিভুজ", "ব্যবহারিক জ্যামিতি", "বৃত্ত", "ত্রিকোণমিতিক অনুপাত", "দূরত্ব ও সময়", "বীজগাণিতিক অনুপাত ও সমানুপাত", "দুই চলক বিশিষ্ট সরল সমীকরণ", "সসীম ধারা", "অনুপাত, সদৃশতা ও প্রতিসমতা", "ক্ষেত্রফল সম্পর্কিত উপপাদ্য ও সম্পাদ্য", "পরিমিতি", "পরিসংখ্যান"],
+                "পদার্থবিজ্ঞান": ["ভৌত রাশি ও পরিমাপ", "গতি"], 
+                "রসায়ন": ["রসায়নের ধারণা", "পদার্থের অবস্থা"], 
+                "উচ্চতর গণিত": ["সেট ও ফাংশন", "সমীকরণ", "ত্রিকোণমিতি"] 
             }
+        },
         "উচ্চমাধ্যমিক": {
             "১১শ শ্রেণী": { "উচ্চতর গণিত ১ম": ["ম্যাট্রিক্স ও নির্ণায়ক", "সরলরেখা", "ত্রিকোণমিতি"], "পদার্থবিজ্ঞান ১ম": ["ভেটের", "গতিবিদ্যা", "মহাকর্ষ"] },
             "১২শ শ্রেণী": { "উচ্চতর গণিত ২য়": ["জटिल সংখ্যা", "বহুপদী", "কনিক"], "পদার্থবিজ্ঞান ২য়": ["তাপগতিবিদ্যা", "স্থির তড়িৎ"] }
@@ -564,7 +576,7 @@
         executeGlobalHomeUIComponents();
         renderHomeDashCharts();
         processUserFilteringLogic();
-        updateAdminInputUI(); // Initialize Dynamic Admin Inputs
+        updateAdminInputUI();
     };
 
     // ================== NAVIGATION & AUTH ==================
@@ -981,41 +993,25 @@
             showExam = document.getElementById('set_head_exam').checked, 
             showInstruc = document.getElementById('set_head_instruc').checked;
             
+        // Render stylized headers based on inputs in settings modal
         if(showInst || showSub || showClass || showExam || showInstruc) {
-            html += <div class="settings-group" style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid #e2e8f0;">
-    <h4 style="margin-top:0; color:#6366f1; margin-bottom:10px;"><i class="fa-solid fa-pen"></i> হেডারের লেখা কাস্টমাইজ করুন</h4>
-    
-    <label style="font-size:13px;">প্রতিষ্ঠানের নাম</label>
-    <input type="text" id="custom_inst_name" value="আমিরুল ম্যাথ কেয়ার" onkeyup="updateLiveDocumentPreview()" style="margin-bottom:10px; padding:8px; border:1px solid #cbd5e1; font-size:14px;">
-    
-    <label style="font-size:13px;">পরীক্ষার নাম</label>
-    <input type="text" id="custom_exam_name" value="সাপ্তাহিক মডেল টেস্ট - ২০২৬" onkeyup="updateLiveDocumentPreview()" style="margin-bottom:10px; padding:8px; border:1px solid #cbd5e1; font-size:14px;">
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:10px;">
-        <div>
-            <label style="font-size:13px;">শ্রেণি</label>
-            <input type="text" id="custom_class_name" value="১০ম" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid #cbd5e1; font-size:14px;">
-        </div>
-        <div>
-            <label style="font-size:13px;">বিষয়</label>
-            <input type="text" id="custom_subject_name" value="উচ্চতর গণিত" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid #cbd5e1; font-size:14px;">
-        </div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:10px;">
-        <div>
-            <label style="font-size:13px;">সময়</label>
-            <input type="text" id="custom_time" value="২ ঘণ্টা" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid #cbd5e1; font-size:14px;">
-        </div>
-        <div>
-            <label style="font-size:13px;">পূর্ণমান</label>
-            <input type="text" id="custom_marks" value="১০০" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid #cbd5e1; font-size:14px;">
-        </div>
-    </div>
-    
-    <label style="font-size:13px;">সাধারণ নির্দেশনা</label>
-    <input type="text" id="custom_instruction" value="[নির্দেশনা: ডান পাশের সংখ্যা প্রশ্নের পূর্ণমান জ্ঞাপক।]" onkeyup="updateLiveDocumentPreview()" style="padding:8px; border:1px solid #cbd5e1; font-size:14px;">
-</div>
+            html += `<div class="doc-header-block" style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px;">`;
+            
+            if(showInst) html += `<h2 style="margin: 0; font-size: 26px;">${document.getElementById('custom_inst_name').value}</h2>`;
+            if(showExam) html += `<h3 style="margin: 8px 0; font-size: 18px;">${document.getElementById('custom_exam_name').value}</h3>`;
+            
+            if(showClass || showSub) {
+                html += `<div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; margin-top: 10px;">`;
+                html += `<div>` + (showClass ? `শ্রেণি: ${document.getElementById('custom_class_name').value}` : ``) + `</div>`;
+                html += `<div>` + (showSub ? `বিষয়: ${document.getElementById('custom_subject_name').value}` : ``) + `</div>`;
+                html += `<div>সময়: ${document.getElementById('custom_time').value}</div>`;
+                html += `<div>পূর্ণমান: ${document.getElementById('custom_marks').value}</div>`;
+                html += `</div>`;
+            }
+            
+            if(showInstruc) html += `<div style="margin-top: 15px; font-size: 14px; text-align: left;">${document.getElementById('custom_instruction').value}</div>`;
+            
+            html += `</div>`;
         }
 
         if(includeAnswers) {
@@ -1032,26 +1028,17 @@
         userSelectedIdsArray.forEach(id => { let q = db.find(item => item.id == id); if(q) allQuestions.push(q); });
         customQuestionsArray.forEach(cq => allQuestions.push({ text: cq.text, type: cq.type, category: 'Custom', answer: 'নিজস্ব প্রশ্নের উত্তর সিস্টেমে নেই।' }));
 
-        let autoNum = document.getElementById('set_auto_number').checked; 
-        let numStyle = document.getElementById('set_num_style').value; 
         let showQInfo = document.getElementById('set_q_info').checked; 
         let showMcqBubble = document.getElementById('set_mcq_bubble').checked;
-
-        function getNum(idx) {
-            if(numStyle === 'en_num') return (idx+1) + "."; 
-            if(numStyle === 'bn_char') return String.fromCharCode(2453 + idx) + ".";
-            let bnDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯']; 
-            return (idx+1).toString().split('').map(d => bnDigits[parseInt(d)]).join('') + ".";
-        }
 
         allQuestions.forEach((q, idx) => {
             html += `<div class="doc-q-item">`;
             if(showQInfo && q.category !== 'Custom') html += `<div style="font-size:11px; color:#555; margin-bottom:4px;">[${q.subject || ''} - ${q.year || ''}]</div>`;
-            let qNumPrefix = autoNum ? `<strong>${getNum(idx)}</strong> ` : ``;
-            html += `<div style="font-size:15px; line-height:1.6;">${qNumPrefix}${q.text}</div>`;
+            
+            // Auto-sequence is removed to support manual line breaks per user demand
+            html += `<div style="font-size:15px; line-height:1.6;">${q.text}</div>`;
             
             if(showMcqBubble && (q.type === 'এমসিকিউ' || q.type === 'MCQ') && !includeAnswers) {
-                // Modified dynamically inside structure mostly, but fallback for legacy
                 if(!q.text.includes('ক)')) {
                     html += `<div style="display:flex; justify-content:space-between; padding-left: 20px; font-size:14px; margin-top:5px;"><span>ক) Option 1</span><span>খ) Option 2</span><span>গ) Option 3</span><span>ঘ) Option 4</span></div>`;
                 }
@@ -1091,13 +1078,13 @@
             if(window.MathJax) await MathJax.typesetPromise([canvas]); 
         }
 
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // MathJax এবং কলাম লেআউট সম্পূর্ণ রেন্ডার হওয়ার জন্য সময় দেওয়া হলো
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         let filename = includeAnswers ? `Amirul_Smart_QnA_${Date.now()}.pdf` : `Amirul_Smart_Paper_${Date.now()}.pdf`;
 
-        // Fixed html2pdf parameters to ensure MathJax equations won't overlap boundaries
         let opt = {
-            margin:       [15, 10, 15, 10], // Added safe margin Top and Bottom
+            margin:       [15, 10, 15, 10], 
             filename:     filename,
             image:        { type: 'jpeg', quality: 1.0 },
             html2canvas:  { scale: 2, useCORS: true, scrollY: 0, windowWidth: canvas.scrollWidth },
